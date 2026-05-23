@@ -1,0 +1,11 @@
+# 根目录勿再放全库备份（与 gccd_server/private/database/gxgccd.sql 重复）
+/gxgccd.sql
+
+.DS_Store
+**/._*
+
+# 本地调试临时文件
+/extracted_schemas.txt
+/console_output.png
+/login_*.png
+/page_*.png
