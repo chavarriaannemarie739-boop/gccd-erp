@@ -1,0 +1,58 @@
+<!--pages/mine/mine.wxml-->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <view class="navbar-left"></view>
+  <view class="navbar-title">我的</view>
+  <view class="navbar-right"></view>
+</view>
+
+<view class="page-content mine-page" style="padding-top: {{statusBarHeight + 44}}px">
+  <view class="user-card">
+    <van-image src="https://img.yzcdn.cn/vant/cat.jpeg" custom-class="avatar" />
+    <view class="user-info">
+      <view class="nickname">{{nickName || '未登录'}}</view>
+      <view class="welcome">欢迎使用高齿传动系统</view>
+    </view>
+  </view>
+
+  <!-- 二级菜单：沿用 van-cell is-link + url（与改前一致，可稳定跳转分包页） -->
+  <view class="mine-section-label">数据与决策</view>
+  <view class="menu-list">
+    <van-cell-group>
+      <van-cell
+        title="经营看板"
+        label="设备运行、能耗与产能总览（管理岗）"
+        is-link
+        url="/pageMine/pages/wageEfficiency/wageEfficiency"
+      />
+    </van-cell-group>
+  </view>
+
+  <view class="mine-section-label">考勤</view>
+  <view class="menu-list">
+    <van-cell-group>
+      <van-cell
+        title="每日签到"
+        label="签到签退，记录出勤工时"
+        is-link
+        url="/pageMine/pages/attendance/attendance"
+      />
+    </van-cell-group>
+  </view>
+
+  <view class="mine-section-label">个人</view>
+  <view class="menu-list">
+    <van-cell-group>
+      <van-cell
+        title="工资列表"
+        is-link
+        url="/pageMine/pages/wageRecord/wageRecord"
+      />
+    </van-cell-group>
+  </view>
+
+  <view class="logout-btn">
+    <van-button type="danger" block bindtap="handleLogout">退出登录</van-button>
+  </view>
+</view>
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" />

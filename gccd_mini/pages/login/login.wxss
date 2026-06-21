@@ -1,0 +1,97 @@
+/* 全局 */
+.container-t {
+  width: 750rpx;
+  min-height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(165deg, #ecfdf5 0%, #f0f2f5 45%, #e0f2f1 100%);
+}
+
+/* 背景图 */
+.all-bk {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* 头部字体 */
+.headers {
+  width: 100%;
+  height: 200rpx;
+  position: absolute;
+  top: 100rpx;
+  text-align: center;
+}
+.headers image {
+  width: 200rpx;
+  height: 200rpx;
+  margin: 0 auto;
+}
+
+.headers view {
+  font-size: 26px;
+  font-weight: bolder;
+  color: #fff;
+  padding: 10rpx 0;
+}
+
+/* 登录盒子 */
+.login-box {
+  width: 90%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 200rpx;
+  background-color: #fff;
+  border-radius: 32rpx;
+  text-align: center;
+  padding: 48rpx 40rpx 56rpx;
+  box-sizing: border-box;
+  box-shadow: 0 16rpx 48rpx rgba(15, 23, 42, 0.08);
+  border: 1rpx solid #e5e7eb;
+}
+
+.login-title {
+  margin-top: 24rpx;
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #0f766e;
+  letter-spacing: 2rpx;
+}
+
+.login-image {
+  height: 15rpx;
+  width: 100%;
+}
+
+.form-item {
+  width: 100%;
+  margin: 48rpx auto 40rpx;
+}
+
+/* 发送验证码 */
+.custom-button {
+  color: #0f766e !important;
+  font-weight: 100 !important;
+  border: none !important;
+}
+
+/* 表单样式 */
+.login-text {
+  padding-left: 20rpx !important;
+}
+
+/* 登录按钮 */
+.loginType {
+  font-size: 34rpx !important;
+  font-weight: 500 !important;
+}
+
+/* 注册 */
+.registrationType {
+  padding: 30rpx 0;
+  font-size: 28rpx;
+  color: #0d9488;
+  margin-bottom: 30rpx;
+}

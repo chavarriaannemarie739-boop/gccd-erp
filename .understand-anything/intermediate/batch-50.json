@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/apidoc/assets/bat.cfc9382a.js",
+    "public/apidoc/assets/bicep.1efc561e.js",
+    "public/apidoc/assets/cameligo.94bd5dcf.js",
+    "public/apidoc/assets/clojure.8543305e.js",
+    "public/apidoc/assets/coffee.de0bee73.js",
+    "public/apidoc/assets/cpp.2c1314ec.js",
+    "public/apidoc/assets/csharp.3ef4312c.js",
+    "public/apidoc/assets/csp.078b1205.js",
+    "public/apidoc/assets/css.28b1e2dc.js",
+    "public/apidoc/assets/dart.72c9207c.js",
+    "public/apidoc/assets/dockerfile.eea0f5a9.js",
+    "public/apidoc/assets/ecl.5e0f116e.js",
+    "public/apidoc/assets/elixir.0c870cc0.js",
+    "public/apidoc/assets/flow9.ddcaa44f.js",
+    "public/apidoc/assets/freemarker2.c4d6af74.js",
+    "public/apidoc/assets/fsharp.637308b5.js",
+    "public/apidoc/assets/go.a5321182.js",
+    "public/apidoc/assets/graphql.e74c3061.js",
+    "public/apidoc/assets/handlebars.31696753.js",
+    "public/apidoc/assets/hcl.980f5800.js",
+    "public/apidoc/assets/html.59ca504d.js",
+    "public/apidoc/assets/index.02823b79.js",
+    "public/apidoc/assets/index.62336d3a.js",
+    "public/apidoc/assets/index.9c98a0a7.js",
+    "public/apidoc/assets/index.e699082e.js"
+  ],
+  "results": []
+}

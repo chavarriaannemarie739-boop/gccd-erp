@@ -1,0 +1,27 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/css/FileUploads.ClJ30b0z.css",
+    "public/admin/css/SystemSetting.DpGSWWfN.css",
+    "public/admin/css/article.rnTey5Y7.css",
+    "public/admin/css/backfill.VeNCtTIi.css",
+    "public/admin/css/el-avatar.BmRr_O8d.css",
+    "public/admin/css/el-card.fwQOLwdi.css",
+    "public/admin/css/el-checkbox-group.D_6SYB2i.css",
+    "public/admin/css/el-checkbox.DIPHKmvR.css",
+    "public/admin/css/el-col.DD1Vn-Yu.css",
+    "public/admin/css/el-color-picker.CWZy8c9C.css",
+    "public/admin/css/el-date-picker.CHTGPwWA.css",
+    "public/admin/css/el-descriptions-item.o9ObloqJ.css",
+    "public/admin/css/el-dialog.Cop0q8z2.css",
+    "public/admin/css/el-empty.D4ZqTl4F.css",
+    "public/admin/css/el-form-item.CKZiX9BY.css",
+    "public/admin/css/el-image-viewer.gjGgbSV7.css",
+    "public/admin/css/el-link.B58a4a3I.css",
+    "public/admin/css/el-loading.C5IeuJ3V.css",
+    "public/admin/css/el-popconfirm.Du63PGr7.css",
+    "public/admin/css/el-popover.Cktl5fHm.css"
+  ],
+  "results": []
+}

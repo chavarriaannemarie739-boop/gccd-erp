@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/service/content/TagService.php",
+    "app/common/service/file/ExportService.php",
+    "app/common/service/file/FileService.php",
+    "app/common/service/file/GroupService.php",
+    "app/common/service/file/ImportService.php",
+    "app/common/service/file/SettingService.php",
+    "app/common/service/file/StorageService.php",
+    "app/common/service/file/TagService.php",
+    "app/common/service/member/ApiService.php",
+    "app/common/service/member/ExportService.php",
+    "app/common/service/member/GroupService.php",
+    "app/common/service/member/ImportService.php",
+    "app/common/service/member/LogService.php",
+    "app/common/service/member/MemberService.php",
+    "app/common/service/member/SettingService.php",
+    "app/common/service/member/TagService.php",
+    "app/common/service/member/ThirdService.php",
+    "app/common/service/member/TokenService.php",
+    "app/common/service/setting/AccordService.php",
+    "app/common/service/setting/CarouselService.php",
+    "app/common/service/setting/FeedbackService.php",
+    "app/common/service/setting/LinkService.php",
+    "app/common/service/setting/NoticeService.php",
+    "app/common/service/setting/RegionService.php",
+    "app/common/service/setting/SettingService.php"
+  ],
+  "results": []
+}

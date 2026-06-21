@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/validate/file/ExportValidate.php",
+    "app/common/validate/file/FileValidate.php",
+    "app/common/validate/file/GroupValidate.php",
+    "app/common/validate/file/ImportValidate.php",
+    "app/common/validate/file/SettingValidate.php",
+    "app/common/validate/file/TagValidate.php",
+    "app/common/validate/member/ApiValidate.php",
+    "app/common/validate/member/GroupValidate.php",
+    "app/common/validate/member/LogValidate.php",
+    "app/common/validate/member/MemberValidate.php",
+    "app/common/validate/member/SettingValidate.php",
+    "app/common/validate/member/TagValidate.php",
+    "app/common/validate/member/ThirdValidate.php",
+    "app/common/validate/setting/AccordValidate.php",
+    "app/common/validate/setting/CarouselValidate.php",
+    "app/common/validate/setting/FeedbackValidate.php",
+    "app/common/validate/setting/LinkValidate.php",
+    "app/common/validate/setting/NoticeValidate.php",
+    "app/common/validate/setting/RegionValidate.php",
+    "app/common/validate/setting/SettingValidate.php",
+    "app/common/validate/system/DeptValidate.php",
+    "app/common/validate/system/MenuValidate.php",
+    "app/common/validate/system/NoticeValidate.php",
+    "app/common/validate/system/OutValidate.php",
+    "app/common/validate/system/PostValidate.php"
+  ],
+  "results": []
+}

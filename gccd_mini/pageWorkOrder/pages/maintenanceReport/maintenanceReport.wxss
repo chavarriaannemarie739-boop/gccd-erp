@@ -1,0 +1,83 @@
+.page-content { padding: 24rpx 24rpx 48rpx; min-height: 100vh; background-color: #f7f8fa; box-sizing: border-box; }
+
+/* 导航栏 */
+.custom-navbar { position: fixed; top: 0; left: 0; width: 100%; height: 44px; background-color: #ffffff; z-index: 100; display: flex; align-items: center; justify-content: center; }
+.back-icon { position: absolute; left: 32rpx; padding: 10rpx; font-size: 40rpx; color: #333; }
+.navbar-title { font-size: 32rpx; font-weight: bold; color: #333; }
+
+/* 分区 */
+.section { margin-bottom: 28rpx; }
+.section-title { display: flex; align-items: center; gap: 12rpx; margin-bottom: 16rpx; padding-left: 4rpx; }
+.section-dot { width: 8rpx; height: 32rpx; border-radius: 4rpx; background-color: #0f766e; }
+.section-title text { font-size: 28rpx; font-weight: 600; color: #1f2937; }
+.section-count { font-size: 24rpx !important; font-weight: 400 !important; color: #6b7280 !important; margin-left: 8rpx; }
+.section-hint { font-size: 22rpx !important; font-weight: 400 !important; color: #9ca3af !important; margin-left: auto; }
+
+/* 表单卡片 */
+.form-card { background-color: #ffffff; border-radius: 20rpx; border: 1rpx solid #e5e7eb; box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02); overflow: hidden; }
+.form-row { display: flex; align-items: center; justify-content: space-between; padding: 28rpx; transition: background-color 0.15s; }
+.form-row--hover { background-color: #f9fafb; }
+.form-label { font-size: 28rpx; color: #374151; font-weight: 500; flex-shrink: 0; }
+.form-value-wrap { display: flex; align-items: center; gap: 8rpx; }
+.form-value { font-size: 28rpx; color: #1f2937; }
+.form-value--placeholder { color: #9ca3af; }
+
+/* 2列拆分布局 */
+.row-split { display: flex; align-items: center; padding: 0 28rpx; }
+.form-col { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 28rpx 0; min-width: 0; }
+.col-divider { width: 1rpx; height: 40rpx; background-color: #e5e7eb; margin: 0 24rpx; }
+.form-label-small { font-size: 26rpx; color: #6b7280; font-weight: 500; flex-shrink: 0; margin-right: 12rpx; }
+.form-value-small { font-size: 26rpx; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 维修项明细 */
+.item-list-compact { display: flex; flex-direction: column; gap: 12rpx; margin-top: 16rpx; }
+.item-row-card { background-color: #ffffff; border-radius: 16rpx; border: 1rpx solid #e5e7eb; padding: 20rpx 24rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.02); }
+.item-row-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12rpx; }
+.item-name { font-size: 28rpx; font-weight: 600; color: #1f2937; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-row-remove { padding: 4rpx; flex-shrink: 0; }
+.item-content-textarea { width: 100%; min-height: 64rpx; font-size: 26rpx; color: #1f2937; line-height: 1.5; background-color: #f9fafb; border: 1rpx solid #e5e7eb; border-radius: 12rpx; padding: 16rpx; box-sizing: border-box; }
+.item-qty-unit { font-size: 22rpx; color: #9ca3af; flex-shrink: 0; }
+.item-qty-input { flex: 1; height: 40rpx; font-size: 30rpx; font-weight: 700; text-align: center; color: #1f2937; }
+
+/* 添加按钮 */
+.add-btn-wrap { margin-bottom: 28rpx; }
+.add-btn { display: flex; align-items: center; justify-content: center; gap: 10rpx; padding: 24rpx 0; background-color: #ffffff; border: 2rpx dashed #ccfbf1; border-radius: 20rpx; transition: background-color 0.15s; }
+.add-btn--hover { background-color: #f0fdfa; }
+.add-btn-text { font-size: 28rpx; font-weight: 600; color: #0f766e; }
+
+/* 已添加记录紧凑行 */
+.record-row-card { display: flex; align-items: center; background-color: #ffffff; border-radius: 20rpx; border: 1rpx solid #e5e7eb; margin-bottom: 16rpx; padding: 24rpx; box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02); }
+.record-row-main { flex: 1; min-width: 0; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12rpx; }
+.record-row-device { font-size: 28rpx; font-weight: 700; color: #1f2937; flex-shrink: 0; }
+.record-row-user { font-size: 24rpx; color: #6b7280; flex-shrink: 0; }
+.record-item-tag { display: inline-flex; align-items: center; gap: 6rpx; background-color: #f0fdfa; border: 1rpx solid #ccfbf1; border-radius: 8rpx; padding: 4rpx 16rpx; }
+.record-item-name { font-size: 24rpx; color: #0f766e; }
+.record-item-qty { font-size: 24rpx; font-weight: 700; color: #0f766e; }
+.record-row-action { padding: 8rpx; flex-shrink: 0; margin-left: 16rpx; }
+
+.remark-card { padding: 20rpx 28rpx; }
+.remark-input { width: 100%; height: 160rpx; font-size: 28rpx; color: #1f2937; line-height: 1.5; }
+.remark-input-short { width: 100%; height: 64rpx; font-size: 28rpx; color: #1f2937; line-height: 1.5; }
+
+.submit-wrap { margin-top: 16rpx; padding-bottom: env(safe-area-inset-bottom); }
+
+/* ====== 搜索弹窗 ====== */
+.search-popup { display: flex; flex-direction: column; height: 100%; background: #fff; border-radius: 32rpx 32rpx 0 0; overflow: hidden; }
+.search-popup-header { display: flex; justify-content: space-between; align-items: center; padding: 28rpx 32rpx 12rpx; flex-shrink: 0; }
+.search-popup-title { font-size: 32rpx; font-weight: 700; color: #1f2937; }
+.search-popup-count { font-size: 24rpx; color: #9ca3af; }
+.search-bar { display: flex; align-items: center; gap: 12rpx; margin: 12rpx 32rpx 16rpx; padding: 16rpx 24rpx; background-color: #f3f4f6; border-radius: 16rpx; flex-shrink: 0; }
+.search-input { flex: 1; height: 48rpx; font-size: 28rpx; color: #1f2937; background: transparent; }
+.search-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.search-item { display: flex; align-items: center; justify-content: space-between; padding: 28rpx 32rpx; border-bottom: 1rpx solid #f3f4f6; }
+.search-item--hover { background-color: #f0fdfa; }
+.device-info, .user-info { display: flex; flex-direction: column; gap: 4rpx; }
+.device-name, .user-name { font-size: 30rpx; font-weight: 600; color: #1f2937; }
+.device-code, .user-dept { font-size: 26rpx; color: #6b7280; }
+.search-popup-footer { flex-shrink: 0; padding: 16rpx 32rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.04); display: flex; gap: 16rpx; }
+.search-popup-footer van-button { flex: 1; }
+
+.search-item--check { cursor: pointer; }
+.search-item--selected { background-color: #f0fdfa; }
+.search-item-label { font-size: 30rpx; font-weight: 600; color: #1f2937; }
+.check-circle { width: 36rpx; height: 36rpx; border-radius: 50%; border: 2rpx solid #d1d5db; flex-shrink: 0; }

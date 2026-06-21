@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/model/content/AttributesModel.php",
+    "app/common/model/content/CategoryModel.php",
+    "app/common/model/content/ContentModel.php",
+    "app/common/model/content/SettingModel.php",
+    "app/common/model/content/TagModel.php",
+    "app/common/model/file/ExportModel.php",
+    "app/common/model/file/FileModel.php",
+    "app/common/model/file/GroupModel.php",
+    "app/common/model/file/ImportModel.php",
+    "app/common/model/file/SettingModel.php",
+    "app/common/model/file/TagModel.php",
+    "app/common/model/file/TagsModel.php",
+    "app/common/model/member/ApiModel.php",
+    "app/common/model/member/AttributesModel.php",
+    "app/common/model/member/GroupApisModel.php",
+    "app/common/model/member/GroupModel.php",
+    "app/common/model/member/LogModel.php",
+    "app/common/model/member/MemberModel.php",
+    "app/common/model/member/SettingModel.php",
+    "app/common/model/member/TagModel.php",
+    "app/common/model/member/ThirdModel.php",
+    "app/common/model/setting/AccordModel.php",
+    "app/common/model/setting/CarouselModel.php",
+    "app/common/model/setting/FeedbackModel.php",
+    "app/common/model/setting/LinkModel.php"
+  ],
+  "results": []
+}

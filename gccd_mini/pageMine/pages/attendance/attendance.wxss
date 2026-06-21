@@ -1,0 +1,275 @@
+/* 每日签到页面样式 */
+.page-content {
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    padding-bottom: 40rpx;
+}
+
+/* 今日签到卡片 */
+.today-card {
+    margin: 24rpx;
+    padding: 40rpx 32rpx;
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    border-radius: 24rpx;
+    box-shadow: 0 8rpx 32rpx rgba(15, 118, 110, 0.3);
+    color: #fff;
+    text-align: center;
+}
+
+.today-date {
+    font-size: 36rpx;
+    font-weight: 600;
+    margin-bottom: 8rpx;
+}
+
+.today-weekday {
+    font-size: 28rpx;
+    opacity: 0.85;
+    margin-bottom: 24rpx;
+}
+
+/* 状态标签 */
+.status-badge {
+    display: inline-block;
+    padding: 8rpx 32rpx;
+    border-radius: 32rpx;
+    font-size: 26rpx;
+    font-weight: 500;
+    margin-bottom: 24rpx;
+}
+
+.status-pending {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.status-active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.status-done {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+/* 时间信息 */
+.time-info {
+    margin-bottom: 24rpx;
+}
+
+.time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12rpx 0;
+    border-bottom: 1rpx solid rgba(255, 255, 255, 0.15);
+}
+
+.time-row:last-child {
+    border-bottom: none;
+}
+
+.time-label {
+    font-size: 28rpx;
+    opacity: 0.85;
+}
+
+.time-value {
+    font-size: 28rpx;
+    font-weight: 500;
+}
+
+.time-value.highlight {
+    font-size: 32rpx;
+    font-weight: 700;
+    color: #fcd34d;
+}
+
+/* 操作区 */
+.action-area {
+    margin-top: 16rpx;
+}
+
+/* 工时调整 */
+.hours-input-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32rpx;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 16rpx;
+    padding: 20rpx;
+}
+
+.hours-label {
+    font-size: 28rpx;
+    opacity: 0.9;
+    margin-right: 20rpx;
+}
+
+.hours-control {
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+}
+
+.hours-btn {
+    width: 60rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    text-align: center;
+    font-size: 40rpx;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12rpx;
+    color: #fff;
+}
+
+.hours-input {
+    width: 120rpx;
+    height: 72rpx;
+    text-align: center;
+    font-size: 40rpx;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12rpx;
+}
+
+.hours-unit {
+    font-size: 26rpx;
+    opacity: 0.85;
+    margin-left: 12rpx;
+}
+
+/* 签到/签退按钮 */
+.sign-btn {
+    width: 60%;
+    height: 88rpx;
+    line-height: 88rpx;
+    text-align: center;
+    font-size: 34rpx;
+    font-weight: 600;
+    border-radius: 48rpx;
+    border: none;
+}
+
+.sign-in-btn {
+    background: #fff;
+    color: #0d9488;
+}
+
+.sign-btn::after {
+    border: none;
+}
+
+/* 汇总卡片 */
+.summary-card {
+    margin: 0 24rpx 24rpx;
+    padding: 32rpx;
+    background: #fff;
+    border-radius: 24rpx;
+    box-shadow: 0 4rpx 20rpx rgba(15, 23, 42, 0.06);
+}
+
+.section-title {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 24rpx;
+}
+
+.summary-grid {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.summary-item {
+    flex: 1;
+}
+
+.summary-num {
+    display: block;
+    font-size: 48rpx;
+    font-weight: 700;
+    color: #0d9488;
+    margin-bottom: 8rpx;
+}
+
+.summary-label {
+    font-size: 24rpx;
+    color: #6b7280;
+}
+
+/* 历史记录 */
+.history-section {
+    margin: 0 24rpx;
+}
+
+.history-section .section-title {
+    padding: 0 8rpx;
+}
+
+.history-list {
+    background: #fff;
+    border-radius: 24rpx;
+    overflow: hidden;
+    border: 1rpx solid #e5e7eb;
+}
+
+.history-item {
+    padding: 24rpx 32rpx;
+    border-bottom: 1rpx solid #f3f4f6;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12rpx;
+}
+
+.history-day {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.history-status {
+    font-size: 24rpx;
+    font-weight: 500;
+}
+
+.status-done-text {
+    color: #10b981;
+}
+
+.status-active-text {
+    color: #f59e0b;
+}
+
+.history-detail {
+    font-size: 24rpx;
+    color: #6b7280;
+}
+
+/* 空状态和加载提示 */
+.empty-tip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+}
+
+.loading-tip {
+    text-align: center;
+    padding: 24rpx;
+    font-size: 24rpx;
+    color: #9ca3af;
+}

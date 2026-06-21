@@ -1,0 +1,33 @@
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <view class="navbar-left"></view>
+  <view class="navbar-title">生产管理</view>
+  <view class="navbar-right"></view>
+</view>
+
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+
+  <view class="entry-card entry-card--primary" hover-class="entry-card--hover" bind:tap="goStocktake">
+    <view class="entry-icon-wrap entry-icon-wrap--primary">
+      <van-icon name="orders-o" size="48rpx" color="#fff" />
+    </view>
+    <view class="entry-info">
+      <text class="entry-title">生产盘点</text>
+      <text class="entry-desc">每日产量汇报，按工序盘点各班次生产数量</text>
+    </view>
+    <van-icon name="arrow" size="36rpx" color="#0d9488" />
+  </view>
+
+  <view class="entry-card entry-card--secondary" hover-class="entry-card--hover" bind:tap="goQualityCheck">
+    <view class="entry-icon-wrap entry-icon-wrap--secondary">
+      <van-icon name="search" size="48rpx" color="#fff" />
+    </view>
+    <view class="entry-info">
+      <text class="entry-title">质量检验</text>
+      <text class="entry-desc">不良品登记，按工序汇报质检结果</text>
+    </view>
+    <van-icon name="arrow" size="36rpx" color="#6366f1" />
+  </view>
+
+</view>
+
+<van-toast id="van-toast" />

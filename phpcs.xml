@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="高齿传动ERP">
+    <description>高齿传动 ERP 项目 PSR-12 编码规范</description>
+
+    <!-- 只检查源码，忽略第三方库 -->
+    <file>gccd_server/app</file>
+    <file>gccd_server/config</file>
+    <file>gccd_server/route</file>
+    <file>gccd_server/extend/thirdsdk</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/extend/bce-php-sdk*</exclude-pattern>
+    <exclude-pattern>*/extend/esdk-obs-php*</exclude-pattern>
+    <exclude-pattern>*/.php-cs-fixer.php</exclude-pattern>
+
+    <!-- PSR-12 基础规范 -->
+    <rule ref="PSR12"/>
+
+    <!-- 额外规则 -->
+    <rule ref="Generic.Files.LineEndings"/>
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="150"/>
+        </properties>
+    </rule>
+    <rule ref="Generic.NamingConventions.CamelCapsFunctionName"/>
+
+    <!-- 禁止未使用的导入 -->
+    <rule ref="Generic.Classes.DuplicateClassName"/>
+    
+</ruleset>

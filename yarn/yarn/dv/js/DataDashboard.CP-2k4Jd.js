@@ -1,0 +1,1 @@
+import{s as t}from"./request.DiJWZ6DK.js";import"./index.BmERz2dA.js";import"./index.NUrX-pgo.js";import"./en.CZzNvOHu.js";const e="/admin/wechat.WeChat/";function o(o){return t({url:e+"dashboardBoard",method:"post",data:o||{}})}function r(o){return t({url:e+"getDevice",method:"post",data:o||{}})}export{o as dashboardBoard,r as getDevice};

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "质量检验",
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index"
+  }
+}

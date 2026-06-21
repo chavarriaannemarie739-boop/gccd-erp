@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "config/database.php",
+    "config/easysms.php",
+    "config/filesystem.php",
+    "config/gateway_worker.php",
+    "config/lang.php",
+    "config/log.php",
+    "config/middleware.php",
+    "config/queue.php",
+    "config/route.php",
+    "config/session.php",
+    "config/throttle.php",
+    "config/view.php",
+    "config/worker_server.php",
+    "config/worker.php",
+    "database/daily_work_migration.sql",
+    "extend/bce-php-sdk-0.9.23/index.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Auth/BceV1Signer.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Auth/SignerInterface.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Auth/SignOptions.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Bce.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/BceBaseClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/BceClientConfigOptions.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/BceHttpResponse.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Exception/BceBaseException.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Exception/BceClientException.php"
+  ],
+  "results": []
+}

@@ -1,0 +1,1 @@
+import{s as t}from"./request.DiJWZ6DK.js";const r="/admin/repair.Device/";function a(a){return t({url:r+"list",method:"post",data:a})}function e(a){return t({url:r+"repairlist",method:"post",data:a})}function o(a){return t({url:r+"add",method:"post",data:a})}function s(a){return t({url:r+"repairDele",method:"post",data:a})}export{o as a,s as b,a as l,e as r};

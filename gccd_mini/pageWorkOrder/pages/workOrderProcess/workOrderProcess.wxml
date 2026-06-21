@@ -1,0 +1,44 @@
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">工序列表</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 工序信息列表 -->
+    <view class="section-title">工序信息</view>
+    <view class="process-list">
+        <!-- 加载中 -->
+        <block wx:if="{{loading}}">
+            <view style="text-align:center;padding:80rpx 0;">
+                <van-loading size="24px" vertical>加载中...</van-loading>
+            </view>
+        </block>
+        <!-- 加载失败，显示重试 -->
+        <block wx:elif="{{loadFailed}}">
+            <van-empty description="加载失败，请点击重试">
+                <van-button round type="primary" size="small" bindtap="retryLoad">重新加载</van-button>
+            </van-empty>
+        </block>
+        <!-- 正常显示列表 -->
+        <block wx:elif="{{processList.length > 0}}">
+            <block wx:for="{{processList}}" wx:key="id">
+                <view class="process-item">
+                    <view class="process-info-row">
+                        <view class="process-code">工序: {{item.processes_name}}（{{item.process_code}}）</view>
+                        <view class="routing-code">工艺: {{routing_name }}（{{item.routing_code}}）</view>
+                    </view>
+                    <view class="process-action">
+                        <button class="report-btn" size="mini" type="primary" bindtap="handleReport" data-item="{{item}}">提交报工</button>
+                        <!-- <button class="report-btn" size="mini" type="primary" bindtap="handleEnergy" data-item="{{item}}">添加能耗</button> -->
+                    </view>
+                </view>
+            </block>
+        </block>
+        <!-- 无数据 -->
+        <block wx:else>
+            <van-empty description="暂无数据" />
+        </block>
+    </view>
+</view>

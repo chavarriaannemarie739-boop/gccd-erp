@@ -1,0 +1,13 @@
+/* pages/components/scan-code/1.wxss */
+.scan-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.scan-text {
+  margin-left: 8rpx;
+  font-size: 26rpx;
+  color: #0f766e;
+  font-weight: 500;
+}

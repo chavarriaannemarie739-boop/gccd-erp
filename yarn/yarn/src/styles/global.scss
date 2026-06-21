@@ -1,0 +1,132 @@
+//自定义element ui样式
+$cellBag: #eef9ff;
+.el-table--border th.el-table__cell {
+  background: $cellBag !important;
+  color: #606266;
+  //font-weight: normal;
+}
+
+/**
+左侧菜单 防止缩小后 内容去的左右距离不一样
+ */
+.app .hideSidebar .mix-wrapper__left {
+  overflow-x: hidden;
+}
+
+.app-container {
+  padding: 10px !important;
+}
+
+.app-container {
+  //查询框每行显示三个
+  .el-form.queryParams {
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+  input,
+  .el-select__placeholder,
+  .el-select__tags-text {
+    font-size: 12px !important;
+  }
+}
+/**
+table滚动条 0
+ */
+//横向
+.el-scrollbar__bar.is-horizontal {
+  height: 10px !important;
+}
+.el-scrollbar__bar.is-vertical {
+  width: 10px !important;
+}
+.el-scrollbar__bar .el-scrollbar__thumb {
+  &:hover {
+    background-color: #0aa1f6;
+  }
+  background-color: #169dea;
+  border-radius: 10px;
+}
+/**
+table滚动条 1
+ */
+/**
+滚动条  0
+ */
+/* 整个滚动条 */
+::-webkit-scrollbar {
+  border-radius: 10px;
+  height: 8px;
+  width: 8px; /* 滚动条宽度 */
+}
+/* 滚动条轨道 */
+::-webkit-scrollbar-track {
+  //background: rgba(64, 158, 255, 0.1); /* 轨道颜色 */
+  background-color: #f5f4f4;
+  border-radius: 10px;
+}
+
+/* 滚动条的滑块 */
+::-webkit-scrollbar-thumb {
+  //background: rgb(64, 158, 255, 0.2); /* 滑块颜色 */
+  //background-color: #c1c1c1;
+  background-color: #aedffa;
+  border-radius: 10px;
+}
+
+/* 滑块hover效果 */
+::-webkit-scrollbar-thumb:hover {
+  //background: rgba(64, 158, 255, 0.4); /* 滑块hover颜色 */
+  background-color: #84c9ef;
+}
+/**
+滚动条  1
+ */
+/**
+单元格 0
+ */
+.el-table--border .el-table__cell {
+  border-right: 2px solid #ebeef5 !important;
+}
+
+.el-table td.el-table__cell,
+.el-table th.el-table__cell.is-leaf {
+  border-bottom: 2px solid #ebeef5 !important;
+}
+/**
+单元格 1
+ */
+/**
+表格左右边框
+ */
+.el-table__border-left-patch,
+.el-table--border:after {
+  width: 2.5px !important;
+}
+/**
+表格上下边框
+ */
+.el-table__inner-wrapper:before,
+.el-table--border .el-table__inner-wrapper:after {
+  height: 2.5px !important;
+}
+
+// /**
+// 搜索框外层
+// */
+// .el-form-item--default .el-form-item__label {
+//   color: #363636;
+//   font-weight: 700;
+//   font-size: 14px;
+//  }
+
+//  /**
+//   搜索框里层
+//  */
+//  .el-input__inner {
+//   font-size: 12px;
+//  }
+
+.el-form-item__label {
+  font-weight: 700;
+  font-size: 14px !important;
+}

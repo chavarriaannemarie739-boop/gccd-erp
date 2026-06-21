@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/service/system/ApidocService.php",
+    "app/common/service/system/DeptService.php",
+    "app/common/service/system/IndexService.php",
+    "app/common/service/system/LoginService.php",
+    "app/common/service/system/MenuService.php",
+    "app/common/service/system/NoticeService.php",
+    "app/common/service/system/PostService.php",
+    "app/common/service/system/RoleService.php",
+    "app/common/service/system/SettingService.php",
+    "app/common/service/system/UserCenterService.php",
+    "app/common/service/system/UserLogService.php",
+    "app/common/service/system/UserService.php",
+    "app/common/service/system/UserTokenService.php",
+    "app/common/service/utils/AjCaptchaUtils.php",
+    "app/common/service/utils/CaptchaUtils.php",
+    "app/common/service/utils/EmailUtils.php",
+    "app/common/service/utils/RetCodeUtils.php",
+    "app/common/service/utils/SmsUtils.php",
+    "app/common/service/utils/Utils.php",
+    "app/common/service/wechat/WeChatUserService.php",
+    "app/common/service/wechat/WxRegisterService.php",
+    "app/common/validate/content/CategoryValidate.php",
+    "app/common/validate/content/ContentValidate.php",
+    "app/common/validate/content/SettingValidate.php",
+    "app/common/validate/content/TagValidate.php"
+  ],
+  "results": []
+}

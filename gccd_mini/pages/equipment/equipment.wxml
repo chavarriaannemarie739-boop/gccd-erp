@@ -1,0 +1,345 @@
+<!--pages/equipment/equipment.wxml-->
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left">
+        <scan-code bind:scanSuccess="onScanSuccess" />
+    </view>
+    <view class="navbar-title">设备管理</view>
+    <view class="navbar-right"></view>
+</view>
+
+<!-- 扫码报修表单弹窗 -->
+<!-- <van-popup show="{{show}}" round position="center" custom-style="width: 80%; padding: 20px; border-radius: 8px;" bind:close="onClose">
+    <view class="form-container">
+        <view class="form-title">设备报修</view>
+
+        <view class="form-item">
+            <text class="form-label">设备编码：</text>
+            <input value="{{device_code}}" disabled class="form-input" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">报修原因：</text>
+            <van-field value="{{reason}}" placeholder="请填写报修原因" border="true" bind:input="onReasonChange" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">上传图片：</text>
+            <van-uploader file-list="{{fileList}}" bind:after-read="afterRead" bind:delete="deleteImage" max-count="9" multiple preview-image="{{true}}" />
+        </view>
+
+        <view class="form-actions">
+            <van-button type="primary" size="small" bindtap="submitRepair" loading="{{loading}}">
+                提交
+            </van-button>
+            <van-button type="default" size="small" bindtap="onClose">
+                取消
+            </van-button>
+        </view>
+    </view>
+</van-popup> -->
+
+<repair-form show="{{showRepairForm}}" device_code="{{repairData.device_code}}" bind:close="closeRepairForm" bind:success="onRepairSuccess" />
+<van-toast id="van-toast" />
+
+<!-- 添加设备表单弹窗 -->
+<!-- <van-popup show="{{showDeviceForm}}" round position="center" custom-style="width: 80%; padding: 20px; border-radius: 8px;" bind:close="closeDeviceForm">
+    <view class="form-container">
+        <view class="form-title">添加设备</view>
+
+        <view class="form-item">
+            <text class="form-label">设备名称：</text>
+            <van-field value="{{deviceForm.device_name}}" placeholder="请输入设备名称" border="{{true}}" bind:input="onDeviceNameChange" />
+        </view>
+
+         <view class="form-item">
+            <text class="form-label">设备编码：</text>
+            <van-field value="{{deviceForm.device_code}}" placeholder="请输入设备编码" border="{{true}}" bind:input="onDeviceCodeChange" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">工序编码：</text>
+            <van-field value="{{deviceForm.processes_code}}" placeholder="请输入工序编码" border="{{true}}" bind:input="onProcessesCodeChange" />
+        </view> 
+
+        <view class="form-actions">
+            <van-button type="primary" size="small" bindtap="submitDeviceForm" loading="{{formLoading}}">
+                提交
+            </van-button>
+            <van-button type="default" size="small" bindtap="closeDeviceForm">
+                取消
+            </van-button>
+        </view>
+    </view>
+</van-popup> -->
+
+<van-toast id="van-toast" />
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <van-tabs active="{{activeTab}}" bind:change="onTabChange" color="#0d9488">
+        <van-tab title="设备列表">
+            <view wx:for="{{deviceList}}" wx:key="id">
+                <view class="list-item-container">
+                    <view class="list-item">
+                        <view class="item-header">
+                            <text class="item-name">{{item.device_name}}</text>
+                            <text class="item-status {{item.status=='0'?'normal':'repairing'}}">{{item.status=='0'?'正常':'维修中'}}</text>
+                        </view>
+                        <view class="item-body">
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">设备编码</text>
+                                    <text class="info-value">{{item.device_code}}</text>
+                                </view>
+                            </view>
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">工序编码</text>
+                                    <text class="info-value">{{item.processes_code||'无'}}</text>
+                                </view>
+                            </view>
+                        </view>
+                        <view class="item-actions">
+                            <van-button type="info" size="small" bindtap="handleDeviceRepair" data-code="{{item.device_code}}" round>
+                                报修
+                            </van-button>
+                            <van-button type="warning" size="small" bind:click="navigateToRepairRecords" data-device_code="{{item.device_code}}" data-device_name="{{item.device_name}}" round>
+                                报修记录
+                            </van-button>
+                        </view>
+                    </view>
+                </view>
+            </view>
+
+            <!-- 设备列表加载状态 -->
+            <view class="load-more" wx:if="{{deviceList.length > 0}}">
+                <block wx:if="{{!loadingMore}}">
+                    <view wx:if="{{currentDevicePage < devicePages}}" class="load-more-btn" bindtap="loadMoreDevices">加载更多</view>
+                    <view wx:else class="no-more">没有更多数据了</view>
+                </block>
+                <block wx:else>
+                    <van-loading size="24px">加载中...</van-loading>
+                </block>
+            </view>
+            <view class="empty" wx:if="{{deviceList.length === 0 && !loading}}">
+                <van-empty description="暂无设备数据" />
+            </view>
+        </van-tab>
+
+        <van-tab title="任务列表">
+            <!-- 任务列表 -->
+            <view wx:for="{{list}}" wx:key="id">
+                <view class="list-item-container">
+                    <view class="list-item">
+                        <view class="item-header">
+                            <text class="item-name">{{item.device_name}}</text>
+                            <text class="item-status {{item.status==0?'repairing':(item.status==1?'waiting':'normal')}}">{{item.status===0 ? '进行中' : (item.status===1 ? '待确认' : '已完成')}}</text>
+                        </view>
+                        <view class="item-body">
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">设备编码</text>
+                                    <text class="info-value">{{item.device_code||'无'}}</text>
+                                </view>
+                            </view>
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">报修人</text>
+                                    <text class="info-value">{{item.create_name||'无'}}</text>
+                                </view>
+                            </view>
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">报修项</text>
+                                    <text class="info-value">{{item.repair_list||'无'}}</text>
+                                </view>
+                            </view>
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">报修原因</text>
+                                    <text class="info-value">{{item.reason||'无'}}</text>
+                                </view>
+                            </view>
+                            <view class="info-row">
+                                <view class="info-item">
+                                    <text class="info-label">报修时间</text>
+                                    <text class="info-value">{{item.create_time||'无'}}</text>
+                                </view>
+                            </view>
+                            <!-- <view class="text">设备编码: {{item.device_code}}</view>
+                        <view class="text">维修原因: {{item.reason}}</view> -->
+                            <!-- <view class="text">工序编码: {{item.processes_code}}</view> -->
+                            <!-- <view class="text">状态: {{item.status===0?'未生产':item.status===1?'生产中':'生产完成'}}</view> -->
+                        </view>
+                        <view class="item-actions">
+                            <!-- <van-button type="danger" size="small" bind:click="handleDelete" data-id="{{item.id}}" round>
+                            删除
+                        </van-button>-->
+                            <!-- <van-button type="primary" size="small" bind:click="previewTaskImages" data-imgs="{{item.imgs}}" round>
+                                查看报修图片
+                            </van-button> -->
+                            <van-button type="warning" size="small" bind:click="showRepairForm" data-item="{{item}}" round disabled="{{item.status === 1}}" custom-style="{{item.status !== 0 ? 'opacity: 0.5; cursor: not-allowed;' : ''}}">
+                                维修
+                            </van-button>
+                            <van-button type="warning" size="small" bind:click="showYesRepairForm" data-item="{{item}}" round disabled="{{item.status !== 1}}" custom-style="{{item.status === 0 ? 'opacity: 0.5; cursor: not-allowed;' : ''}}">
+                                确认维修
+                            </van-button>
+                            <van-button type="danger" size="small" bind:click="showRepairDetail" data-item="{{item}}" round>
+                                维修记录
+                            </van-button>
+                        </view>
+                    </view>
+                </view>
+            </view>
+
+            <!-- 维修记录表单弹窗 -->
+            <van-popup show="{{showRepairRecordForm}}" round position="center" custom-style="width: 80%; padding: 20px; border-radius: 8px;" bind:close="closeRepairForm1">
+                <view class="form-container">
+                    <view class="form-title">维修记录</view>
+
+                    <view class="form-item">
+                        <text class="form-label">设备编码：</text>
+                        <input value="{{repairForm.device_code}}" disabled class="form-input" />
+                    </view>
+
+                    <view class="form-item">
+                        <text class="form-label">设备编码：</text>
+                        <input value="{{repairForm.repair_code}}" disabled class="form-input" />
+                    </view>
+
+                    <view class="form-item">
+                        <text class="form-label">维修项：</text>
+                        <input value="{{repairForm.repair_list}}" disabled class="form-input" />
+                    </view>
+
+                    <view class="form-item">
+                        <text class="form-label">维修人员：</text>
+                        <van-field value="{{repairForm.user}}" placeholder="请输入维修人员姓名" border="true" bind:input="onUserChange" />
+                    </view>
+
+                    <view class="form-item">
+                        <text class="form-label">维修详情：</text>
+                        <van-field value="{{repairForm.detail}}" placeholder="请输入维修详情" border="true" type="textarea" autosize bind:input="onDetailChange" />
+                    </view>
+
+                    <view class="form-item">
+                        <text class="form-label">上传图片：</text>
+                        <van-uploader file-list="{{repairFileList}}" bind:after-read="afterRepairRead" bind:delete="deleteRepairImage" max-count="9" multiple preview-image="{{true}}" />
+                    </view>
+
+                    <view class="form-actions">
+                        <van-button type="primary" size="small" bindtap="submitRepairRecord" loading="{{repairLoading}}">
+                            提交
+                        </van-button>
+                        <van-button type="default" size="small" bindtap="closeRepairForm1">
+                            取消
+                        </van-button>
+                    </view>
+                </view>
+            </van-popup>
+
+            <!-- 报修原因选择弹窗 -->
+            <!-- <van-popup show="{{showReasonPopup}}" round position="bottom" custom-style="height: 60%;">
+                <van-picker title="选择报修原因" show-toolbar columns="{{reasonColumns}}" bind:confirm="onReasonConfirm" bind:cancel="onReasonCancel" display-format="displayFormat" />
+            </van-popup> -->
+
+            <!-- 维修记录详情弹窗 -->
+            <van-popup show="{{showRepairDetail}}" round position="center" custom-style="width: 90%; height: 70vh; padding: 15px; box-sizing: border-box;" bind:close="closeRepairDetail">
+                <view class="repair-detail-container">
+                    <view class="detail-header">
+                        <text class="detail-title">维修记录详情</text>
+                        <van-icon name="cross" size="20px" color="#969799" bindtap="closeRepairDetail" />
+                    </view>
+
+                    <scroll-view scroll-y class="detail-content">
+                        <view class="detail-info">
+                            <text class="info-label">设备名称：</text>
+                            <text class="info-value">{{deviceName}}</text>
+                        </view>
+                        <!-- 维修记录列表 -->
+                        <view wx:for="{{currentDevice}}" wx:key="id" class="detail-item">
+                            <view class="detail-info">
+                                <text class="info-label">维修编码：</text>
+                                <text class="info-value">{{item.repair_code}}</text>
+                            </view>
+                            <view class="detail-info">
+                                <text class="info-label">维修详情：</text>
+                                <text class="info-value">{{item.detail}}</text>
+                            </view>
+                            <view class="detail-info">
+                                <text class="info-label">维修时间：</text>
+                                <text class="info-value">{{item.create_time}}</text>
+                            </view>
+                            <view class="detail-info">
+                                <text class="info-label">维修人员：</text>
+                                <text class="info-value">{{item.user || '未知'}}</text>
+                            </view>
+
+                            <!-- 维修图片 -->
+                            <view class="detail-info" wx:if="{{item.imgs && item.imgs.length > 0}}">
+                                <text class="info-label">维修图片：</text>
+                                <view class="image-grid">
+                                    <block wx:for="{{item.imgs}}" wx:key="*this">
+                                        <image src="{{item}}" mode="aspectFill" class="grid-image" bindtap="previewRepairImage" data-src="{{item}}" />
+                                    </block>
+                                </view>
+                            </view>
+
+                            <van-divider wx:if="{{index < repairDetails.length - 1}}" />
+                        </view>
+                    </scroll-view>
+                </view>
+            </van-popup>
+
+            <!-- 图片预览弹窗 -->
+            <!-- <van-popup show="{{showImagePopup}}" round position="center" custom-style="width: 90%; height: 70vh; background-color: #f8f8f8;" bind:close="closeImagePopup">
+                <view class="image-popup-container">
+                    <view class="popup-header">
+                        <view class="popup-title">设备图片（{{currentImages.length}}张）</view>
+                        <van-icon name="cross" size="20px" color="#969799" bindtap="closeImagePopup" />
+                    </view>
+
+                    <view wx:if="{{currentImages.length === 0}}" class="empty-image-tip">
+                        <van-empty image="search" description="暂无图片" />
+                    </view>
+
+                    <scroll-view wx:else scroll-y class="image-list">
+                        <view class="image-grid">
+                            <block wx:for="{{currentImages}}" wx:key="*this">
+                                <view class="image-item" bindtap="previewImage" data-src="{{item}}">
+                                    <image src="{{item}}" mode="aspectFill" class="grid-image" binderror="onImageError" data-index="{{index}}" />
+                                    <view class="image-error" wx:if="{{item === '[图片加载失败]'}}">
+                                        <van-icon name="photo-fail" size="30px" color="#969799" />
+                                        <text>加载失败</text>
+                                    </view>
+                                </view>
+                            </block>
+                        </view>
+                    </scroll-view>
+                </view>
+            </van-popup> -->
+            <!-- 任务列表加载状态 -->
+            <view class="load-more" wx:if="{{list.length > 0}}">
+                <block wx:if="{{!loadingMore}}">
+                    <view wx:if="{{currentPage < pages}}" class="load-more-btn" bindtap="loadMoreTasks">加载更多</view>
+                    <view wx:else class="no-more">没有更多了</view>
+                </block>
+                <block wx:else>
+                    <van-loading size="24px">加载中...</van-loading>
+                </block>
+            </view>
+            <view class="empty" wx:if="{{list.length === 0 && !loading}}">
+                <van-empty description="暂无任务数据" />
+            </view>
+        </van-tab>
+    </van-tabs>
+</view>
+
+<van-dialog id="van-dialog" />
+<!-- 可拖动的添加按钮（仅用于设备添加） -->
+<!-- <view class="float-buttons-container" style="top: {{btnPosition.top}}px; left: {{btnPosition.left}}px;" bindtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" wx:if="{{activeTab === 0}}">
+    <view class="float-button add-button" bindtap="showAddDeviceForm">
+        <image src="/images/add.png" mode="aspectFit" class="button-image" />
+    </view>
+</view> -->

@@ -1,0 +1,52 @@
+<view class="page">
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left" bindtap="goBack">‹</view>
+    <view class="navbar-title">断钢报工</view>
+    <view class="navbar-right"></view>
+  </view>
+
+  <view class="body" style="padding-top: {{statusBarHeight + 44}}px">
+    <van-tabs active="{{activeTab}}" bind:change="onTabChange" color="#0d9488">
+      <van-tab title="进行中" name="0"></van-tab>
+      <van-tab title="已完成" name="1"></van-tab>
+    </van-tabs>
+
+    <view class="filter-bar">
+      <input
+        class="filter-input"
+        placeholder="圆钢规格/型号/成品规格"
+        value="{{keyword}}"
+        confirm-type="search"
+        bindinput="onKeywordInput"
+        bindconfirm="onKeywordConfirm"
+      />
+      <view wx:if="{{keyword}}" class="filter-clear" bindtap="onKeywordClear">清除</view>
+    </view>
+
+    <scroll-view scroll-y class="list-scroll" bindscrolltolower="loadMore">
+      <view wx:for="{{list}}" wx:key="id" class="card" bindtap="goReport" data-id="{{item.id}}">
+        <view class="card-title">{{item.display_title}}</view>
+        <view class="spec-grid">
+          <view class="spec-row">
+            <text class="spec-label">圆钢规格</text>
+            <text class="spec-value">{{item.display_y_material_spec || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">圆钢型号</text>
+            <text class="spec-value">{{item.y_material_model || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">成品规格</text>
+            <text class="spec-value">{{item.c_material_spec || '—'}}</text>
+          </view>
+        </view>
+        <view class="card-row">计划 {{item.capacity_total}} 吨 · 已报 {{item.reported_total}} 吨</view>
+        <view class="card-row highlight">剩余 {{item.remain_total}} 吨</view>
+      </view>
+      <view wx:if="{{!loading && list.length === 0}}" class="empty">
+        {{keyword ? '未找到匹配的合并任务' : '暂无'}}{{activeTab === '0' ? '进行中' : '已完成'}}{{keyword ? '' : '合并任务'}}
+      </view>
+    </scroll-view>
+  </view>
+  <van-toast id="van-toast" />
+</view>

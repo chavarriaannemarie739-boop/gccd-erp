@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/user.B6HBWFVa.js",
+    "public/admin/js/user.fUEOhDma.js",
+    "public/admin/js/UserCenterEdit.BSP91cIG.js",
+    "public/admin/js/UserCenterInfo.aYMtlhvc.js",
+    "public/admin/js/UserCenterLog.KZqYG5r6.js",
+    "public/admin/js/UserCenterPwd.tunDLZwJ.js",
+    "public/admin/js/van.CIbr__J3.js",
+    "public/admin/js/video-camera-filled.DP3i4Usc.js",
+    "public/admin/js/video-camera.BiTRAslh.js",
+    "public/admin/js/video-pause.Ba8EfR34.js",
+    "public/admin/js/video-play.0drUTwRg.js",
+    "public/admin/js/view.B-DQln2o.js",
+    "public/admin/js/wallet-filled.Bf9gi_5n.js",
+    "public/admin/js/wallet.8CBhfYfi.js",
+    "public/admin/js/warn-triangle-filled.CJltYv-5.js",
+    "public/admin/js/warning-filled.mtmd8-F5.js",
+    "public/admin/js/warning.4h88DpEH.js",
+    "public/admin/js/watch.CvczA9I4.js",
+    "public/admin/js/watermelon.qGBXCLku.js",
+    "public/admin/js/wind-power.DuqR8-0P.js",
+    "public/admin/js/zoom-in.CNXYGQwb.js",
+    "public/admin/js/zoom-out.D_iPaG_4.js",
+    "public/apidoc/assets/abap.bfbdc491.js",
+    "public/apidoc/assets/apex.3a0bbd36.js",
+    "public/apidoc/assets/azcli.2a21dcc8.js"
+  ],
+  "results": []
+}

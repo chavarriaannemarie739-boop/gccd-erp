@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/model/setting/NoticeModel.php",
+    "app/common/model/setting/RegionModel.php",
+    "app/common/model/setting/SettingFilesModel.php",
+    "app/common/model/setting/SettingModel.php",
+    "app/common/model/setting/WechatModel.php",
+    "app/common/model/system/DeptModel.php",
+    "app/common/model/system/MenuModel.php",
+    "app/common/model/system/NoticeModel.php",
+    "app/common/model/system/PostModel.php",
+    "app/common/model/system/RoleMenusModel.php",
+    "app/common/model/system/RoleModel.php",
+    "app/common/model/system/SettingModel.php",
+    "app/common/model/system/UserAttributesModel.php",
+    "app/common/model/system/UserLogModel.php",
+    "app/common/model/system/UserModel.php",
+    "app/common/model/wechat/UserModel.php",
+    "app/common/model/wechat/WxUserModel.php",
+    "app/common/service/admin/CheckService.php",
+    "app/common/service/admin/DailyReportService.php",
+    "app/common/service/admin/DailySummaryService.php",
+    "app/common/service/admin/DailyWorkService.php",
+    "app/common/service/admin/DatabaseInitService.php",
+    "app/common/service/admin/DeviceService.php",
+    "app/common/service/admin/InStockService.php",
+    "app/common/service/admin/MaterialInventoryService.php"
+  ],
+  "results": []
+}

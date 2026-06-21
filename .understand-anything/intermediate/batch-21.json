@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/service/admin/MaterialService.php",
+    "app/common/service/admin/MessageService.php",
+    "app/common/service/admin/OutStockService.php",
+    "app/common/service/admin/ProcessesService.php",
+    "app/common/service/admin/ProcessWageService.php",
+    "app/common/service/admin/ProductCountService.php",
+    "app/common/service/admin/ProductionService.php",
+    "app/common/service/admin/ProductReportService.php",
+    "app/common/service/admin/ProductTaskService.php",
+    "app/common/service/admin/PublicService.php",
+    "app/common/service/admin/QualityCheckRecordService.php",
+    "app/common/service/admin/ReceivingService.php",
+    "app/common/service/admin/RoutingService.php",
+    "app/common/service/admin/SettlementService.php",
+    "app/common/service/admin/ShipService.php",
+    "app/common/service/admin/StockService.php",
+    "app/common/service/admin/SupervisorAttendanceService.php",
+    "app/common/service/admin/SupervisorWageService.php",
+    "app/common/service/admin/TraceabilityService.php",
+    "app/common/service/admin/UserWageService.php",
+    "app/common/service/admin/WageService.php",
+    "app/common/service/content/CategoryService.php",
+    "app/common/service/content/ContentService.php",
+    "app/common/service/content/ExportService.php",
+    "app/common/service/content/SettingService.php"
+  ],
+  "results": []
+}

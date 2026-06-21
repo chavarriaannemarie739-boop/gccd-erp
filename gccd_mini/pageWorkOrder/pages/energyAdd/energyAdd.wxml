@@ -1,0 +1,43 @@
+<!-- 已废弃 -->
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">创建报工</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <view class="section-title">报工信息</view>
+
+    <van-cell-group>
+        <van-field label="关联单号" placeholder="无" value="{{relation_code}}" disabled required />
+        <van-field label="工序名称" placeholder="无" value="{{processes_name}}（{{process_code}}）" readonly required />
+        <van-field label="工艺名称" placeholder="无" value="{{routing_name}}（{{routing_code}}）" readonly required />
+    </van-cell-group>
+
+    <view class="section-title">能耗信息</view>
+    <van-cell-group>
+        <van-field label="电力消耗" placeholder="请输入电力消耗(kWh)" value="{{power_num}}" bind:input="onInputChange" data-field="power_num" required>
+            <view slot="right-icon" class="unit-text">kWh</view>
+        </van-field>
+        <van-field label="气力消耗" placeholder="请输入气力消耗(m³)" value="{{gas_num}}" bind:input="onInputChange" data-field="gas_num" required>
+            <view slot="right-icon" class="unit-text">m³</view>
+        </van-field>
+    </van-cell-group>
+
+    <view class="submit-btn">
+        <van-button type="primary" block bind:click="submitForm" loading="{{loading}}" disabled="{{submitting}}">添加能耗</van-button>
+    </view>
+</view>
+
+<van-dialog
+    show="{{ showSubmitSuccessDialog }}"
+    title="提交成功"
+    message="能耗已成功提交。若刚才网络较慢，请勿重复点击提交；可到上一页列表核对是否已有记录。"
+    show-cancel-button="{{ false }}"
+    confirm-button-text="确定"
+    close-on-click-overlay="{{ false }}"
+    bind:confirm="onSubmitSuccessConfirm"
+    bind:close="onSubmitSuccessDialogClose"
+/>
+<van-toast id="van-toast" />

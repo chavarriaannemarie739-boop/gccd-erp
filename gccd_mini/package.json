@@ -1,0 +1,11 @@
+{
+  "name": "gccd_mini",
+  "private": true,
+  "scripts": {
+    "postinstall": "node scripts/apply-vant-theme.js",
+    "vant-theme": "node scripts/apply-vant-theme.js"
+  },
+  "dependencies": {
+    "@vant/weapp": "1.11.7"
+  }
+}

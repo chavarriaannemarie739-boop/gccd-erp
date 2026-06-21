@@ -1,0 +1,226 @@
+<view class="workorder-shell">
+  <!-- 圆钢：规格+型号拼接展示（与 material 表 material_spec、material_model 一致） -->
+  <wxs module="ySteel">
+function joinRoundSteel(spec, model) {
+  var s = spec == null ? '' : ('' + spec);
+  var m = model == null ? '' : ('' + model);
+  return s + m;
+}
+module.exports.joinRoundSteel = joinRoundSteel;
+  </wxs>
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left">
+      <scan-code bind:scanSuccess="onScanSuccess" />
+    </view>
+    <view class="navbar-title">工单</view>
+    <view class="navbar-right"></view>
+  </view>
+
+  <repair-form show="{{showRepairForm}}" device_code="{{repairData.device_code}}" bind:close="closeRepairForm" bind:success="onRepairSuccess" />
+  <van-toast id="van-toast" />
+
+  <!-- 中间可滚动 + 底部栏 -->
+  <view class="workorder-body" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 检索条件 -->
+    <view class="filter-bar">
+      <view class="filter-item">
+        <input class="filter-input" placeholder="圆钢型号" value="{{filterYSpec}}" bindinput="onFilterInput" data-field="filterYSpec" />
+      </view>
+      <view class="filter-item">
+        <input class="filter-input" placeholder="断钢型号" value="{{filterCSpec}}" bindinput="onFilterInput" data-field="filterCSpec" />
+      </view>
+      <view class="filter-item">
+        <input class="filter-input" placeholder="成品型号" value="{{filterCModel}}" bindinput="onFilterInput" data-field="filterCModel" />
+      </view>
+      <view class="filter-reset" wx:if="{{filterYSpec || filterCSpec || filterCModel}}" bindtap="onFilterReset">重置</view>
+    </view>
+
+    <van-tabs active="{{activeTab}}" bind:change="switchTab" color="#0d9488">
+      <!-- Tab 1: 进行中 -->
+      <van-tab title="进行中">
+        <scroll-view
+          class="workorder-scroll"
+          scroll-y
+          enhanced="{{true}}"
+          show-scrollbar="{{true}}"
+          bindscrolltolower="onWorkOrderScrollToLower"
+          lower-threshold="100"
+          refresher-enabled="{{true}}"
+          refresher-triggered="{{refreshing}}"
+          bindrefresherrefresh="onScrollRefresher"
+        >
+          <view class="content-container workorder-scroll-inner">
+            <view wx:for="{{list}}" wx:key="id" bind:tap="navigateToDetail" data-id="{{item.id}}" data-processes_code="{{item.process_code}}">
+              <view class="work-order-card">
+                <view class="card-header">
+                  <view class="card-header-left">
+                    <text class="task-code">{{item.production_plan_name}}</text>
+                    <text class="plan-code" wx:if="{{item.relation_code}}">{{item.relation_code}}</text>
+                  </view>
+                  <view class="task-status status-processing">生产中</view>
+                </view>
+
+                <view class="card-body">
+                  <view class="info-row-group">
+                    <view class="info-row-half">
+                      <text class="info-label">圆钢型号:</text>
+                      <text class="info-value">{{ySteel.joinRoundSteel(item.y_material_spec, item.y_material_model)}}</text>
+                    </view>
+                    <view class="info-row-half">
+                      <text class="info-label">断钢型号:</text>
+                      <text class="info-value">{{item.c_material_spec}}</text>
+                    </view>
+                  </view>
+                  <view class="info-row">
+                    <text class="info-label">成品型号:</text>
+                    <text class="info-value">{{item.c_material_model}}</text>
+                  </view>
+                  <view class="info-row-group">
+                    <view class="info-row-half">
+                      <text class="info-label">计划数量:</text>
+                      <text class="info-value">{{item.task_num==null?'0':item.task_num}}</text>
+                    </view>
+                    <view class="info-row-half">
+                      <text class="info-label">已报工:</text>
+                      <text class="info-value">{{item.report_num==null?'0':item.report_num}}</text>
+                    </view>
+                  </view>
+
+                  <!-- 工序报工汇总表 -->
+                  <view class="process-report-table" wx:if="{{item.processReports.length > 0}}">
+                    <view class="process-report-row process-report-header">
+                      <view class="process-report-cell" wx:for="{{item.processReports}}" wx:for-item="pr" wx:key="code">{{pr.name}}</view>
+                    </view>
+                    <view class="process-report-row process-report-body">
+                      <view class="process-report-cell" wx:for="{{item.processReports}}" wx:for-item="pr" wx:key="code">{{pr.report_num}}</view>
+                    </view>
+                  </view>
+                </view>
+
+                <view class="card-footer">
+                  <van-button type="warning" size="small" catch:tap="workOrderSubmit" data-routing_code="{{item.routing_code}}" data-id="{{item.id}}" round>
+                    报工
+                  </van-button>
+                </view>
+              </view>
+            </view>
+
+            <view class="load-more" wx:if="{{list.length > 0}}">
+              <block wx:if="{{loadingMore}}">
+                <van-loading size="16px" /> 加载中...
+              </block>
+              <block wx:elif="{{noMore}}">
+                没有更多了
+              </block>
+            </view>
+
+            <van-empty wx:if="{{list.length === 0 && !loading}}" description="暂无进行中的工单" />
+          </view>
+        </scroll-view>
+      </van-tab>
+
+      <!-- Tab 2: 已完成 -->
+      <van-tab title="已完成">
+        <scroll-view
+          class="workorder-scroll"
+          scroll-y
+          enhanced="{{true}}"
+          show-scrollbar="{{true}}"
+          bindscrolltolower="onWorkOrderScrollToLower"
+          lower-threshold="100"
+          refresher-enabled="{{true}}"
+          refresher-triggered="{{finishedRefreshing}}"
+          bindrefresherrefresh="onScrollRefresher"
+        >
+          <view class="content-container workorder-scroll-inner">
+            <view wx:for="{{finishedList}}" wx:key="id" bind:tap="navigateToDetail" data-id="{{item.id}}" data-processes_code="{{item.process_code}}">
+              <view class="work-order-card">
+                <view class="card-header">
+                  <view class="card-header-left">
+                    <text class="task-code">{{item.production_plan_name}}</text>
+                    <text class="plan-code" wx:if="{{item.relation_code}}">{{item.relation_code}}</text>
+                  </view>
+                  <view class="task-status status-completed">已完成</view>
+                </view>
+
+                <view class="card-body">
+                  <view class="info-row-group">
+                    <view class="info-row-half">
+                      <text class="info-label">圆钢型号:</text>
+                      <text class="info-value">{{ySteel.joinRoundSteel(item.y_material_spec, item.y_material_model)}}</text>
+                    </view>
+                    <view class="info-row-half">
+                      <text class="info-label">断钢型号:</text>
+                      <text class="info-value">{{item.c_material_spec}}</text>
+                    </view>
+                  </view>
+                  <view class="info-row">
+                    <text class="info-label">成品型号:</text>
+                    <text class="info-value">{{item.c_material_model}}</text>
+                  </view>
+                  <view class="info-row-group">
+                    <view class="info-row-half">
+                      <text class="info-label">计划数量:</text>
+                      <text class="info-value">{{item.task_num==null?'0':item.task_num}}</text>
+                    </view>
+                    <view class="info-row-half">
+                      <text class="info-label">已报工:</text>
+                      <text class="info-value">{{item.report_num==null?'0':item.report_num}}</text>
+                    </view>
+                  </view>
+
+                  <!-- 工序报工汇总表 -->
+                  <view class="process-report-table" wx:if="{{item.processReports.length > 0}}">
+                    <view class="process-report-row process-report-header">
+                      <view class="process-report-cell" wx:for="{{item.processReports}}" wx:for-item="pr" wx:key="code">{{pr.name}}</view>
+                    </view>
+                    <view class="process-report-row process-report-body">
+                      <view class="process-report-cell" wx:for="{{item.processReports}}" wx:for-item="pr" wx:key="code">{{pr.report_num}}</view>
+                    </view>
+                  </view>
+                </view>
+
+                <!-- 已完成的工单不显示报工按钮 -->
+              </view>
+            </view>
+
+            <view class="load-more" wx:if="{{finishedList.length > 0}}">
+              <block wx:if="{{finishedLoadingMore}}">
+                <van-loading size="16px" /> 加载中...
+              </block>
+              <block wx:elif="{{finishedNoMore}}">
+                没有更多了
+              </block>
+            </view>
+
+            <van-empty wx:if="{{finishedList.length === 0 && !loading}}" description="暂无已完成的工单" />
+          </view>
+        </scroll-view>
+      </van-tab>
+    </van-tabs>
+
+    <view class="workorder-tabbar" style="padding-bottom: {{subTabSafeBottom}}px">
+      <view class="workorder-tabbar__inner">
+        <view class="workorder-tabbar__item" bindtap="onSubTabBarTap" data-path="/pages/workbench/workbench">
+          <image class="workorder-tabbar__icon" src="/images/zhuye.png" mode="aspectFit" />
+          <text class="workorder-tabbar__text">工作台</text>
+        </view>
+        <view class="workorder-tabbar__item" bindtap="onSubTabBarTap" data-path="/pages/equipment/equipment">
+          <image class="workorder-tabbar__icon" src="/images/fabu1.png" mode="aspectFit" />
+          <text class="workorder-tabbar__text">设备</text>
+        </view>
+        <view class="workorder-tabbar__item" bindtap="onSubTabBarTap" data-path="/pages/stocktake/stocktake">
+          <image class="workorder-tabbar__icon" src="/images/ziyuan1.png" mode="aspectFit" />
+          <text class="workorder-tabbar__text">盘点</text>
+        </view>
+        <view class="workorder-tabbar__item" bindtap="onSubTabBarTap" data-path="/pages/mine/mine">
+          <image class="workorder-tabbar__icon" src="/images/wode1.png" mode="aspectFit" />
+          <text class="workorder-tabbar__text">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <van-dialog id="van-dialog" />
+</view>

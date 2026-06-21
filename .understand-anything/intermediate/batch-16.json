@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/cache/content/TagCache.php",
+    "app/common/cache/file/ExportCache.php",
+    "app/common/cache/file/FileCache.php",
+    "app/common/cache/file/GroupCache.php",
+    "app/common/cache/file/ImportCache.php",
+    "app/common/cache/file/SettingCache.php",
+    "app/common/cache/file/TagCache.php",
+    "app/common/cache/member/ApiCache.php",
+    "app/common/cache/member/GroupCache.php",
+    "app/common/cache/member/LogCache.php",
+    "app/common/cache/member/MemberCache.php",
+    "app/common/cache/member/SettingCache.php",
+    "app/common/cache/member/TagCache.php",
+    "app/common/cache/member/ThirdCache.php",
+    "app/common/cache/setting/AccordCache.php",
+    "app/common/cache/setting/CarouselCache.php",
+    "app/common/cache/setting/FeedbackCache.php",
+    "app/common/cache/setting/LinkCache.php",
+    "app/common/cache/setting/NoticeCache.php",
+    "app/common/cache/setting/RegionCache.php",
+    "app/common/cache/setting/SettingCache.php",
+    "app/common/cache/system/DeptCache.php",
+    "app/common/cache/system/MenuCache.php",
+    "app/common/cache/system/NoticeCache.php",
+    "app/common/cache/system/PostCache.php"
+  ],
+  "results": []
+}

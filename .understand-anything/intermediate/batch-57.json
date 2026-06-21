@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/js/d-arrow-left.BF0s6ySN.js",
+    "public/js/d-arrow-right.D08XJnwr.js",
+    "public/js/d-caret.Dw5EuS9T.js",
+    "public/js/data-analysis.D5xbDFKw.js",
+    "public/js/data-board.Ddak6Phc.js",
+    "public/js/data-line.DfOXX9GW.js",
+    "public/js/debounce.CANUAkxO.js",
+    "public/js/delete-filled.DuMDt7wi.js",
+    "public/js/delete-location.BCEhtR0d.js",
+    "public/js/delete.CBg2vXj4.js",
+    "public/js/dept.CLrXx7Gy.js",
+    "public/js/dessert.5wjG5tIW.js",
+    "public/js/discount.DP4a6jqU.js",
+    "public/js/dish-dot.CqmxMJLW.js",
+    "public/js/dish.qj2FYTYm.js",
+    "public/js/document-add.MYcbeCFi.js",
+    "public/js/document-checked.C-fA6Z7F.js",
+    "public/js/document-copy.Dtan0VU2.js",
+    "public/js/document-delete.DLHf-8yc.js",
+    "public/js/document-remove.CLzOUSUl.js",
+    "public/js/document.B5myCrIm.js",
+    "public/js/download.D1RpwxsK.js",
+    "public/js/drizzling.BG4ilCDW.js",
+    "public/js/dropdown.C6MXujiZ.js",
+    "public/js/edit-pen.CX7VH2RK.js"
+  ],
+  "results": []
+}

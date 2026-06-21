@@ -1,0 +1,62 @@
+<view class="page">
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left" bindtap="goBack">‹</view>
+    <view class="navbar-title">断钢报工</view>
+    <view class="navbar-right"></view>
+  </view>
+  <view class="body" style="padding-top: {{statusBarHeight + 44}}px">
+    <view class="info-card">
+      <view class="title">{{group.display_title}}</view>
+      <view class="spec-row"><text class="spec-label">圆钢规格</text><text>{{group.display_y_material_spec || '—'}}</text></view>
+      <view class="spec-row"><text class="spec-label">圆钢型号</text><text>{{group.y_material_model || '—'}}</text></view>
+      <view class="spec-row"><text class="spec-label">成品规格</text><text>{{group.c_material_spec || '—'}}</text></view>
+      <view class="remain">剩余可报：{{group.remain_total}} 吨</view>
+    </view>
+    <view class="field">
+      <text class="label">报工吨数</text>
+      <input class="input" type="digit" value="{{report_num}}" bindinput="onReportInput" placeholder="请输入" />
+    </view>
+    <view class="field">
+      <text class="label">设备</text>
+      <view class="picker-row {{device_name ? '' : 'is-placeholder'}}" bindtap="showDevicePicker">
+        <text class="picker-text">{{device_name || '请选择设备'}}</text>
+        <text class="picker-arrow">›</text>
+      </view>
+    </view>
+    <view class="field">
+      <text class="label">班次</text>
+      <view class="class-row">
+        <view class="class-btn {{class === 0 ? 'active' : ''}}" data-val="0" bindtap="onClassTap">白班</view>
+        <view class="class-btn {{class === 1 ? 'active' : ''}}" data-val="1" bindtap="onClassTap">夜班</view>
+      </view>
+    </view>
+    <van-button type="primary" block loading="{{submitting}}" bind:click="submit">提交报工</van-button>
+  </view>
+
+  <van-popup show="{{showDevicePopup}}" position="bottom" round bind:close="hideDevicePicker" custom-style="height: 50vh">
+    <view class="device-popup">
+      <view class="device-popup-header">
+        <text class="device-popup-title">选择设备</text>
+        <text class="device-popup-count">共 {{deviceList.length}} 台</text>
+      </view>
+      <scroll-view scroll-y class="device-popup-list">
+        <view
+          wx:for="{{deviceList}}"
+          wx:key="device_code"
+          class="device-popup-item {{device_code === item.device_code ? 'is-selected' : ''}}"
+          hover-class="device-popup-item--hover"
+          data-idx="{{index}}"
+          bindtap="onDeviceSelect"
+        >
+          <text class="device-popup-name">{{item.device_name || item.device_code}}</text>
+          <text wx:if="{{device_code === item.device_code}}" class="device-popup-check">✓</text>
+        </view>
+      </scroll-view>
+      <view class="device-popup-footer">
+        <van-button type="default" block bind:click="hideDevicePicker">取消</van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <van-toast id="van-toast" />
+</view>

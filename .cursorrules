@@ -1,224 +1,25 @@
-# UI/UX Pro Max - Cursor Rules
+# 高齿传动 ERP 项目 — Cursor 配置
 
-## Overview
-This skill provides professional UI/UX design capabilities for UI/UX Pro Max framework.
+> ⚠️ **重要提醒**：本项目的全部 AI 工作规范已合并至 `AGENTS.md`。
+> 请在开始工作前先阅读 `AGENTS.md`。
 
-## Capabilities
+## UI/UX 设计参考
 
-### 1. Generate UI/UX Design Documents
-- Complete color specifications (CSS variables)
-- Detailed layout structure (ASCII diagrams)
-- Component specifications (dimensions, content, colors)
-- Interaction and animation guidelines
+本项目的前端设计遵循 UI/UX Pro Max 框架。以下为关键设计原则：
 
-### 2. Generate Figma Make Prompts
-- Structured English prompts for AI prototype generation
-- Complete design specifications
-- Ready-to-use prompts
+### 色板定义
+- 主色：`#409EFF` (Element Plus 默认蓝)
+- 成功：`#67C23A`
+- 警告：`#E6A23C`
+- 危险：`#F56C6C`
+- 信息：`#909399`
 
-### 3. Provide Frontend Code Recommendations
-- Technology stack suggestions
-- Directory structure
-- Component breakdown
-- Chart library configurations (ECharts, AntV)
+### 字体
+- 后台：系统默认字体
+- 小程序：微信默认字体
 
-## Usage
+### 布局
+- 后台使用 Element Plus Layout
+- 小程序使用 Vant Weapp Grid/Cell
 
-### For Data Dashboards
-```
-"Help me design a production monitoring dashboard showing:
-- Production statistics
-- Equipment status
-- Energy monitoring
-- Inventory levels
-Style: Dark tech theme
-Resolution: 1920×1080"
-```
-
-### For Landing Pages
-```
-"Help me design a SaaS product landing page
-Industry: AI/Chatbot platform
-Style: Hero-Centric + Social Proof
-Include: Hero, Features, Testimonials, Pricing, CTA"
-```
-
-### For Mobile Apps
-```
-"Help me design a WeChat Mini Program for ERP system
-Pages: Dashboard, Equipment, Inventory, Reports
-Navigation: Tab bar with 5 tabs"
-```
-
-## Output Format
-
-### 1. UI/UX Design Document
-```markdown
-# Project Name
-
-## Overview
-- Resolution: 1920×1080
-- Style: Dark tech theme
-- Refresh rate: Real-time
-
-## Color Specifications
-```css
---bg-primary: #0a1628;
---color-primary: #00f0ff;
-...
-```
-
-## Layout Structure
-```
-┌─────────────────────────────────────────┐
-│  Header (60px)                          │
-├──────────┬──────────────┬───────────────┤
-│ Card 1   │   Card 2     │    Card 3     │
-│ 280×220  │   1360×400   │   280×220     │
-├──────────┴──────────────┴───────────────┤
-│  Footer (50px)                          │
-└─────────────────────────────────────────┘
-```
-
-## Component Details
-### Component Name (Position)
-- Dimensions: W×H
-- Content: [detailed description]
-- Colors: [specific colors]
-```
-
-### 2. Figma Make Prompt
-```markdown
-Create a [type] for [purpose].
-
-Specifications:
-- Canvas size: [dimensions]
-- Style: [theme]
-- Color palette: [colors]
-
-Layout Structure:
-[Detailed layout description]
-
-UI Elements:
-- All cards: Rounded corners (8px), subtle glow on hover
-- Progress bars: Smooth animation, gradient fill
-- Charts: ECharts-style with smooth lines
-...
-```
-
-### 3. Frontend Code Recommendations
-```json
-{
-  "framework": "Vue 3 + TypeScript",
-  "chart-library": "ECharts 5.x",
-  "ui-components": "Element Plus",
-  "state-management": "Pinia",
-  "websocket": "Socket.io-client"
-}
-```
-
-Directory Structure:
-```
-src/
-├── components/
-│   ├── Dashboard/
-│   │   ├── Header.vue
-│   │   ├── ProductionStats.vue
-│   │   └── ...
-│   └── Charts/
-│       ├── LineChart.vue
-│       └── BarChart.vue
-└── ...
-```
-
-## Design Principles
-
-### Color Theory
-- Use industry-appropriate color palettes
-- Ensure WCAG AA accessibility compliance
-- Implement dark mode support
-- Apply gradient effects where appropriate
-
-### Layout Patterns
-- Grid-based layouts (3 columns standard)
-- Card-based component systems
-- Responsive breakpoints (375px, 768px, 1024px, 1440px)
-
-### Typography
-- Establish clear hierarchy
-- Use monospace for numbers/data
-- Maintain proper spacing (8px grid)
-
-### Interaction Design
-- Smooth transitions (200-300ms)
-- Hover states for all interactive elements
-- Loading states and skeletons
-- Error states and validations
-
-## Quality Checklist
-
-Before delivering any design:
-
-- [ ] No emojis as icons (use SVG: Heroicons/Lucide)
-- [ ] cursor-pointer on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard nav
-- [ ] prefers-reduced-motion respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] Accessibility: WCAG AA compliant
-
-## Integration
-
-### Tools
-- Figma Make - AI prototype generation
-- Cursor - Code generation
-- OpenClaw - Project management
-- GitHub - Version control
-
-### Frameworks
-- Vue 3 + Element Plus
-- React + Ant Design
-- Next.js + Tailwind CSS
-- Flutter (mobile)
-- WeChat Mini Program (小程序)
-
-### Chart Libraries
-- ECharts 5.x
-- AntV G2
-- Chart.js
-- D3.js
-
-## Examples
-
-### Example 1: Production Monitoring Dashboard
-See previous output for complete design document, Figma prompt, and frontend recommendations.
-
-### Example 2: SaaS Landing Page
-```
-User: Design a landing page for AI chatbot
-AI Output:
-1. Pattern: Hero-Centric + Social Proof
-2. Style: AI-Native UI
-3. Colors: Dark mode with purple/blue gradients
-4. Sections: Hero, Features, Testimonials, Pricing, CTA
-5. Complete Figma prompt provided
-6. React + Tailwind CSS code recommendations
-```
-
-### Example 3: WeChat Mini Program
-```
-User: Design ERP WeChat Mini Program
-AI Output:
-1. Pages: Dashboard, Equipment, Inventory, Reports
-2. Navigation: Tab bar (5 tabs)
-3. Components: Cards, Charts, Lists
-4. Figma prompt (mobile optimized)
-5. WeChat Mini Program code structure
-```
-
-## Version
-2.0
-
-## License
-MIT
+> 完整设计规范请参考开源版 UI/UX Pro Max 文档

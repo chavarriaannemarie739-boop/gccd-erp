@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/GetResponseTrait.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Resource/Constants.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Resource/OBSConstants.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Resource/OBSRequestResource.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Resource/V2Constants.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Resource/V2RequestResource.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/SendRequestTrait.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Signature/AbstractSignature.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Signature/DefaultSignature.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Signature/SignatureInterface.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Signature/V4Signature.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Log/ObsConfig.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Log/ObsLog.php",
+    "extend/esdk-obs-php-3.23.11/Obs/ObsClient.php",
+    "extend/esdk-obs-php-3.23.11/Obs/ObsException.php",
+    "extend/thirdsdk/Http.php",
+    "extend/thirdsdk/QqMiniapp.php",
+    "extend/thirdsdk/QqMobile.php",
+    "extend/thirdsdk/QqWebsite.php",
+    "extend/thirdsdk/WbWebsite.php",
+    "extend/thirdsdk/WxMiniapp.php",
+    "extend/thirdsdk/WxMobile.php",
+    "extend/thirdsdk/WxOffiacc.php",
+    "extend/thirdsdk/WxWebsite.php",
+    "fix_material_id.php"
+  ],
+  "results": []
+}

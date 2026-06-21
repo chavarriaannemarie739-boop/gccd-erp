@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/model/admin/ProcessesModel.php",
+    "app/common/model/admin/ProcessWageModel.php",
+    "app/common/model/admin/ProductCountModel.php",
+    "app/common/model/admin/ProductionDetailModel.php",
+    "app/common/model/admin/ProductionModel.php",
+    "app/common/model/admin/ProductPowerModel.php",
+    "app/common/model/admin/ProductReportModel.php",
+    "app/common/model/admin/ProductTaskModel.php",
+    "app/common/model/admin/QualityCheckDefectModel.php",
+    "app/common/model/admin/QualityCheckItemModel.php",
+    "app/common/model/admin/QualityCheckRecordModel.php",
+    "app/common/model/admin/ReceivingModel.php",
+    "app/common/model/admin/RepairDetailModel.php",
+    "app/common/model/admin/RepairModel.php",
+    "app/common/model/admin/ReportCoefficientModel.php",
+    "app/common/model/admin/RoutingDetailModel.php",
+    "app/common/model/admin/RoutingModel.php",
+    "app/common/model/admin/ShipModel.php",
+    "app/common/model/admin/StockMaterialModel.php",
+    "app/common/model/admin/StockModel.php",
+    "app/common/model/admin/SupervisorAttendanceModel.php",
+    "app/common/model/admin/UserWageDetailModel.php",
+    "app/common/model/admin/UserWageModel.php",
+    "app/common/model/admin/WageModel.php",
+    "app/common/model/admin/WmsMaterialModel.php"
+  ],
+  "results": []
+}

@@ -1,0 +1,63 @@
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">能耗上报</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 设备选择 -->
+    <view class="section-title">选择设备</view>
+    <van-field label="设备名称" placeholder="请选择设备" value="{{selectedDevice ? selectedDevice.device_name : ''}}" readonly is-link bind:tap="showDevicePicker" />
+
+    <!-- 能耗表单 -->
+    <!-- <view class="section-title">能耗信息</view> -->
+    <van-cell-group>
+        <!-- 普通设备：仅选择非穿孔40/50机时显示单个电表数 -->
+        <block wx:if="{{!isDualMeterDevice}}">
+            <van-field label="电表数" type="number" placeholder="请输入当前电表数" value="{{formData.power_num}}" bind:input="onInputChange" data-field="power_num" />
+        </block>
+        <!-- 南北电表设备：仅选择穿孔40机或穿孔50机时显示 -->
+        <block wx:elif="{{isDualMeterDevice}}">
+            <van-field label="北电表数" type="number" placeholder="请输入当前北电表数" value="{{formData.power_num_north}}" bind:input="onInputChange" data-field="power_num_north" />
+            <van-field label="南电表数" type="number" placeholder="请输入当前南电表数" value="{{formData.power_num_south}}" bind:input="onInputChange" data-field="power_num_south" />
+        </block>
+        <van-field label="气表数" type="number" placeholder="请输入当前气表数" value="{{isGasReadonly ? (formData.gas_num||0) : formData.gas_num}}" readonly="{{isGasReadonly}}" bind:input="onInputChange" data-field="gas_num" />
+        <block wx:if="{{isAcidWashWorkshop}}">
+            <van-field label="磷化" placeholder="公斤数" value="{{formData.phosphating}}" bind:input="onInputChange" data-field="phosphating" />
+            <van-field label="皂化" placeholder="公斤数" value="{{formData.saponification}}" bind:input="onInputChange" data-field="saponification" />
+            <van-field label="碱" placeholder="公斤数" value="{{formData.alkali}}" bind:input="onInputChange" data-field="alkali" />
+        </block>
+        <van-field label="班次" readonly is-link placeholder="请选择班次" value="{{formData.class == '0' ? '白班' : '夜班'}}" bind:tap="showClassPicker" />
+        <van-field label="备注" type="textarea" placeholder="请输入备注内容" value="{{formData.remark}}" bind:input="onInputChange" data-field="remark" autosize />
+    </van-cell-group>
+
+    <!-- 提交按钮 -->
+    <view class="submit-btn">
+        <van-button type="primary" block round bind:click="submitEnergy" loading="{{loading}}" disabled="{{submitting}}">
+            提交上报
+        </van-button>
+    </view>
+</view>
+
+<!-- 设备选择弹窗 -->
+<van-popup show="{{showDeviceSelect}}" position="bottom" round bind:close="onDeviceSelectClose">
+    <van-picker show-toolbar title="选择设备" columns="{{deviceList}}" value-key="device_name" bind:confirm="onDeviceConfirm" bind:cancel="onDeviceSelectClose" />
+</van-popup>
+
+<!-- 班次选择弹窗 -->
+<van-popup show="{{showClassSelect}}" position="bottom" round bind:close="onClassSelectClose">
+    <van-picker show-toolbar title="选择班次" columns="{{classOptions}}" bind:confirm="onClassConfirm" bind:cancel="onClassSelectClose" />
+</van-popup>
+
+<van-dialog
+    show="{{ showSubmitSuccessDialog }}"
+    title="提交成功"
+    message="能耗上报已成功提交。若刚才网络较慢，请勿重复点击提交；可到上一页列表核对是否已有记录。"
+    show-cancel-button="{{ false }}"
+    confirm-button-text="确定"
+    close-on-click-overlay="{{ false }}"
+    bind:confirm="onSubmitSuccessConfirm"
+    bind:close="onSubmitSuccessDialogClose"
+/>
+<van-toast id="van-toast" />

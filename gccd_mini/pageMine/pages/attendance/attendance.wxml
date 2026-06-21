@@ -1,0 +1,92 @@
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">每日签到</view>
+</view>
+
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+
+    <!-- 今日签到卡片 -->
+    <view class="today-card">
+        <view class="today-date">{{todayDate}}</view>
+        <view class="today-weekday">{{todayWeekday}}</view>
+
+        <!-- 未签到状态 -->
+        <block wx:if="{{!signedIn}}">
+            <view class="status-badge status-pending">未签到</view>
+            <view class="action-area">
+                <view class="hours-input-wrap">
+                    <text class="hours-label">计划工时</text>
+                    <view class="hours-control">
+                        <view class="hours-btn" bindtap="decreaseHours">-</view>
+                        <input class="hours-input" type="number" value="{{workHours}}" data-name="workHours" bindinput="onHoursInput" />
+                        <view class="hours-btn" bindtap="increaseHours">+</view>
+                    </view>
+                    <text class="hours-unit">小时</text>
+                </view>
+                <button class="sign-btn sign-in-btn" bindtap="handleSignIn" loading="{{submitting}}">签到</button>
+            </view>
+        </block>
+
+        <!-- 已签到 -->
+        <block wx:else>
+            <view class="status-badge status-done">已签到</view>
+            <view class="time-info">
+                <view class="time-row">
+                    <text class="time-label">签到时间</text>
+                    <text class="time-value">{{record.check_in_time || '--'}}</text>
+                </view>
+                <view class="time-row">
+                    <text class="time-label">今日工时</text>
+                    <text class="time-value highlight">{{record.work_hours || 0}} 小时</text>
+                </view>
+            </view>
+        </block>
+    </view>
+
+    <!-- 本月汇总 -->
+    <view class="summary-card" wx:if="{{monthSummary}}">
+        <view class="section-title">本月汇总（{{monthSummary.month}}）</view>
+        <view class="summary-grid">
+            <view class="summary-item">
+                <text class="summary-num">{{monthSummary.signed_days}}</text>
+                <text class="summary-label">出勤天数</text>
+            </view>
+            <view class="summary-item">
+                <text class="summary-num">{{monthSummary.total_hours}}</text>
+                <text class="summary-label">总工时</text>
+            </view>
+            <view class="summary-item">
+                <text class="summary-num">{{monthSummary.attendance_rate || '0%'}}</text>
+                <text class="summary-label">出勤率</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 历史记录 -->
+    <view class="history-section" wx:if="{{historyList.length > 0}}">
+        <view class="section-title">签到记录</view>
+        <view class="history-list">
+            <view wx:for="{{historyList}}" wx:key="id" class="history-item">
+                <view class="history-date">
+                    <text class="history-day">{{item.attendance_date}}</text>
+                    <text class="history-status status-done-text">已签到</text>
+                </view>
+                <view class="history-detail">
+                    <text>签到 {{item.check_in_time ? item.check_in_time.split(' ')[1] : '--'}}</text>
+                    <text> | {{item.work_hours}}小时</text>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{historyList.length === 0}}" class="empty-tip">
+        <van-empty description="暂无签到记录" />
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{loading}}" class="loading-tip">加载中...</view>
+    <view wx:if="{{finished && historyList.length > 0}}" class="loading-tip">没有更多了</view>
+
+</view>
+<van-toast id="van-toast" />

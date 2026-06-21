@@ -1,0 +1,8 @@
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+  <view class="navbar-title">质量检验</view>
+</view>
+
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+  <view class="placeholder">功能开发中，可在此接入检验列表与提报逻辑。</view>
+</view>

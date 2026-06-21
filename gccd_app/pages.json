@@ -1,0 +1,21 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false,
+					"bounce": "none",
+					"fullscreen": true
+				}
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "高齿传动",
+		"navigationBarBackgroundColor": "#1a73e8",
+		"backgroundColor": "#f5f5f5"
+	}
+}

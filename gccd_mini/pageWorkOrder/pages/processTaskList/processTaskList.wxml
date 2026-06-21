@@ -1,0 +1,56 @@
+<view class="page">
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left" bindtap="goBack">‹</view>
+    <view class="navbar-title">{{processes_name}}报工</view>
+    <view class="navbar-right"></view>
+  </view>
+
+  <view class="body" style="padding-top: {{statusBarHeight + 44}}px">
+    <view wx:if="{{device_name}}" class="device-bar">
+      <text class="device-label">当前设备</text>
+      <text class="device-name">{{device_name}}</text>
+    </view>
+
+    <view class="filter-bar">
+      <input
+        class="filter-input"
+        placeholder="圆钢规格/型号/成品规格/型号"
+        value="{{keyword}}"
+        confirm-type="search"
+        bindinput="onKeywordInput"
+        bindconfirm="onKeywordConfirm"
+      />
+      <view wx:if="{{keyword}}" class="filter-clear" bindtap="onKeywordClear">清除</view>
+    </view>
+
+    <scroll-view scroll-y class="list-scroll" bindscrolltolower="loadMore">
+      <view wx:for="{{list}}" wx:key="id" class="card" bindtap="goAdd" data-id="{{item.id}}">
+        <view class="card-title">{{item.production_plan_name}}</view>
+        <view class="spec-grid">
+          <view class="spec-row">
+            <text class="spec-label">圆钢规格</text>
+            <text class="spec-value">{{item.y_material_spec || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">圆钢型号</text>
+            <text class="spec-value">{{item.y_material_model || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">成品规格</text>
+            <text class="spec-value">{{item.c_material_spec || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">成品型号</text>
+            <text class="spec-value">{{item.c_material_model || '—'}}</text>
+          </view>
+        </view>
+        <view class="card-row">计划 {{item.task_num}} 吨 · 已报 {{item.process_report_num || 0}} 吨</view>
+        <view class="card-row highlight">剩余 {{item.remain_total}} 吨</view>
+      </view>
+      <view wx:if="{{!loading && list.length === 0}}" class="empty">
+        {{keyword ? '未找到匹配的任务' : '暂无进行中的'}}{{keyword ? '' : processes_name + '任务'}}
+      </view>
+    </scroll-view>
+  </view>
+  <van-toast id="van-toast" />
+</view>

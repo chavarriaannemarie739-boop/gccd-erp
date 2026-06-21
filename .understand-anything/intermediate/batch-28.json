@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Eip/EipClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Eip/model/Billing.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Eip/model/Reservation.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/EipBp/EipBpClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/EipGroup/EipGroupClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/EipGroup/model/Billing.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/EipGroup/model/Reservation.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/EipTp/EipTpClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Lss/LssClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Media/MediaClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Mms/MmsClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Mvs/MvsClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Nat/model/Billing.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Nat/model/Reservation.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Nat/NatClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/PeerConn/model/Billing.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/PeerConn/model/Reservation.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/PeerConn/PeerConnClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Route/RouteClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Sms/model/StatisticsResult.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Sms/SmsClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Sts/StsClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Subnet/SubnetClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vca/VcaClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vcr/VcrClient.php"
+  ],
+  "results": []
+}

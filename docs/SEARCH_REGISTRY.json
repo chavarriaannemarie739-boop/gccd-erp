@@ -1,0 +1,2511 @@
+{
+  "generatedAt": "2026-06-08T09:37:36.532Z",
+  "smokeCases": [
+    {
+      "name": "生产计划-成品型号模糊",
+      "endpoint": "/index.php/admin/production.Production/list",
+      "payload": {
+        "page": 1,
+        "limit": 3,
+        "plan_finish": "0"
+      },
+      "filter": {
+        "material_model": "50"
+      },
+      "expect": "narrow"
+    },
+    {
+      "name": "报工-成品型号模糊",
+      "endpoint": "/index.php/admin/production.ProductReport/list",
+      "payload": {
+        "page": 1,
+        "limit": 3
+      },
+      "filter": {
+        "c_material_model": "51"
+      },
+      "expect": "narrow"
+    },
+    {
+      "name": "盘点-圆钢规格",
+      "endpoint": "/index.php/admin/production.Inventory/list",
+      "payload": {
+        "page": 1,
+        "limit": 3
+      },
+      "filter": {
+        "y_material_spec": "50"
+      },
+      "expect": "narrow_or_zero"
+    }
+  ],
+  "summary": {
+    "adminPages": 38,
+    "miniPages": 17,
+    "issues": {
+      "ui_unbound": 0,
+      "missing_backend": 0,
+      "field_mismatch": 0,
+      "ok": 37
+    }
+  },
+  "searchFieldDefinitions": {
+    "gccd_server/app/common/service/admin/CheckService.php": [
+      "check_name",
+      "check_code",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/DeviceService.php": [
+      "device_code",
+      "device_name",
+      "processes_code",
+      "task_id",
+      "title",
+      "create_start_date",
+      "create_end_date",
+      "user_id",
+      "repair_name",
+      "create_name",
+      "status",
+      "reason",
+      "track_id"
+    ],
+    "gccd_server/app/common/service/admin/InStockService.php": [
+      "material_name",
+      "material_spec",
+      "in_code",
+      "warehouse",
+      "location",
+      "material_batch",
+      "supplier",
+      "relation_code",
+      "create_start_date",
+      "create_end_date",
+      "material_model"
+    ],
+    "gccd_server/app/common/service/admin/MaterialInventoryService.php": [
+      "check_name",
+      "check_code"
+    ],
+    "gccd_server/app/common/service/admin/MaterialService.php": [
+      "id",
+      "material_name",
+      "material_spec",
+      "is_product",
+      "material_thickness",
+      "material_model",
+      "supplier",
+      "manufacturer",
+      "material_property",
+      "material_scope",
+      "stock",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/MessageService.php": [
+      "device_name",
+      "device_code",
+      "device_project",
+      "reason",
+      "material_code",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/OutStockService.php": [
+      "material_name",
+      "material_spec",
+      "out_code",
+      "relation_code",
+      "material_batch",
+      "warehouse",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/ProcessWageService.php": [
+      "processes_code",
+      "processes_name",
+      "post_name"
+    ],
+    "gccd_server/app/common/service/admin/ProcessesService.php": [
+      "processes_name",
+      "processes_code",
+      "is_finally",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/ProductCountService.php": [
+      "id",
+      "parent_id",
+      "repair_name",
+      "remark",
+      "is_product",
+      "material_thickness",
+      "material_model",
+      "supplier",
+      "manufacturer",
+      "material_property",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/ProductReportService.php": [
+      "id",
+      "report_code",
+      "material_spec",
+      "is_product",
+      "routing_code",
+      "relation_code",
+      "processes_code",
+      "device_code",
+      "device_name",
+      "processes_name",
+      "class",
+      "plan_code",
+      "production_plan_name",
+      "create_name",
+      "c_material_spec",
+      "y_material_spec",
+      "c_material_model",
+      "y_material_model",
+      "create_start_date",
+      "create_end_date",
+      "report_date_start",
+      "report_date_end",
+      "create_uid"
+    ],
+    "gccd_server/app/common/service/admin/ProductTaskService.php": [
+      "id",
+      "material_id",
+      "task_code",
+      "processes_code",
+      "relation_code",
+      "routing_code",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/ProductionService.php": [
+      "production_plan_name",
+      "production_plan_code",
+      "username",
+      "reference",
+      "yesterday_money",
+      "month_money",
+      "create_start_date",
+      "create_end_date",
+      "material_spec",
+      "material_model",
+      "y_mateial_spec",
+      "y_mateial_model",
+      "y_material_spec",
+      "y_material_model",
+      "plan_finish"
+    ],
+    "gccd_server/app/common/service/admin/QualityCheckRecordService.php": [
+      "check_start_date",
+      "check_end_date",
+      "process_name"
+    ],
+    "gccd_server/app/common/service/admin/ReceivingService.php": [
+      "receiving_code",
+      "relation_code"
+    ],
+    "gccd_server/app/common/service/admin/RoutingService.php": [
+      "id",
+      "material_name",
+      "material_spec",
+      "is_product",
+      "routing_code",
+      "routing_name",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/SettlementService.php": [
+      "username",
+      "public_name",
+      "wechat_name",
+      "month_send",
+      "month_money",
+      "reference",
+      "track_id",
+      "user_id",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/admin/ShipService.php": [
+      "id",
+      "material_name",
+      "material_spec",
+      "material_thickness",
+      "material_model",
+      "supplier",
+      "manufacturer",
+      "material_num",
+      "relation_code",
+      "ship_code",
+      "material_batch",
+      "customer_name",
+      "y_material_spec",
+      "product_info",
+      "create_start_date",
+      "create_end_date",
+      "ship_date"
+    ],
+    "gccd_server/app/common/service/admin/StockService.php": [
+      "stock_name",
+      "stock_code",
+      "create_start_date",
+      "create_end_date",
+      "track_id",
+      "user_id"
+    ],
+    "gccd_server/app/common/service/admin/UserWageService.php": [
+      "material_spec",
+      "wage",
+      "username",
+      "create_start_date",
+      "create_end_date",
+      "year",
+      "month",
+      "period_start",
+      "period_end",
+      "user_id",
+      "check_name",
+      "check_code"
+    ],
+    "gccd_server/app/common/service/admin/WageService.php": [
+      "material_spec",
+      "wage",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/wechat/WeChatUserService.php": [
+      "username",
+      "password",
+      "public_name",
+      "wechat_name",
+      "track_id",
+      "img",
+      "wx_appid",
+      "reference",
+      "download_num",
+      "is_disable",
+      "create_start_date",
+      "create_end_date"
+    ],
+    "gccd_server/app/common/service/wechat/WxRegisterService.php": [
+      "username",
+      "password",
+      "public_name",
+      "wechat_name",
+      "track_name",
+      "img",
+      "wx_appid",
+      "reference"
+    ]
+  },
+  "admin": [
+    {
+      "page": "yarn/yarn/src/views/mes/AccessoryList/AccessoryList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "配件名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "配件型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "配件规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "厂家",
+          "vModel": "query.manufacturer",
+          "bound": true
+        },
+        {
+          "placeholder": "供应商",
+          "vModel": "query.supplier",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_name",
+        "material_model",
+        "material_spec",
+        "manufacturer",
+        "supplier",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "material_thickness",
+        "material_model",
+        "material_spec",
+        "manufacturer",
+        "supplier",
+        "create_end_date",
+        "create_start_date",
+        "material_property",
+        "material_name"
+      ],
+      "api": "mes/MaterialManagement/MaterialManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Material.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_spec",
+        "material_name",
+        "material_model",
+        "supplier",
+        "manufacturer",
+        "material_thickness",
+        "material_scope",
+        "material_property",
+        "stock",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "MaterialService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/EmployeejobApplication.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "生产报工编号",
+          "vModel": "query.relation_code",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "relation_code"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "relation_code"
+      ],
+      "api": "mes/SalaryList/SalaryList",
+      "listImport": "getUserDayWage",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/wage/UserWage.php",
+      "listFn": "getUserDayWage",
+      "handledParams": [
+        "username",
+        "relation_code",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "UserWageService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/MaterialRequisition.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "领料编号",
+          "vModel": "query.receiving_code",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "receiving_code"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "receiving_code"
+      ],
+      "api": "mes/MaterialRequisition/MaterialRequisition",
+      "listImport": "list",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/receiving/Receiving.php",
+      "listFn": "list",
+      "handledParams": [
+        "receiving_code",
+        "relation_code",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "ReceivingService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/ProcessList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "工序编码",
+          "vModel": "query.processes_code",
+          "bound": true
+        },
+        {
+          "placeholder": "工序名称",
+          "vModel": "query.processes_name",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "processes_code",
+        "processes_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "processes_code",
+        "processes_name"
+      ],
+      "api": "mes/ProcessManagement/ProcessManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/processes/Processes.php",
+      "listFn": "list",
+      "handledParams": [
+        "processes_name",
+        "processes_code",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "ProcessesService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/ProcessRoute.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "工艺编号",
+          "vModel": "query.routing_code",
+          "bound": true
+        },
+        {
+          "placeholder": "工艺名称",
+          "vModel": "query.routing_name",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "routing_code",
+        "routing_name"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "routing_code",
+        "routing_name"
+      ],
+      "api": "mes/ProcessRoute/ProcessRoute",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Routing.php",
+      "listFn": "list",
+      "handledParams": [
+        "routing_code",
+        "routing_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "RoutingService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/ProcessSalary.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "工序编号",
+          "vModel": "query.processes_code",
+          "bound": true
+        },
+        {
+          "placeholder": "工序名称",
+          "vModel": "query.processes_name",
+          "bound": true
+        },
+        {
+          "placeholder": "职位名称",
+          "vModel": "query.post_name",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "processes_code",
+        "processes_name",
+        "post_name"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "processes_code",
+        "processes_name",
+        "post_name"
+      ],
+      "api": "mes/ProcessSalary/ProcessSalary",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/wage/ProcessWage.php",
+      "listFn": "list",
+      "handledParams": [
+        "processes_code",
+        "processes_name",
+        "post_name",
+        "create_start_date",
+        "create_end_date"
+      ]
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/QualityInspectionItem.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "对应工序编码",
+          "vModel": "query.check_code",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "check_code"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "check_code"
+      ],
+      "api": "mes/QualityInspectionItem/QualityInspectionItem",
+      "listImport": "list, dele",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/check/Check.php",
+      "listFn": "list",
+      "handledParams": [
+        "check_code",
+        "check_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "CheckService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/SalaryList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "支持模糊匹配",
+          "vModel": "query.username",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "periodRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "username"
+      ],
+      "queryKeys": [
+        "page",
+        "limit",
+        "username",
+        "year",
+        "month",
+        "period_start",
+        "period_end"
+      ],
+      "api": "mes/SalaryList/SalaryList",
+      "listImport": "BarChart",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/wage/UserWage.php",
+      "listFn": "BarChart"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/BasicSettings/SalaryManagement.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "物料规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_spec",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "material_spec",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/SalaryManagement/SalaryManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/wage/Wage.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_spec",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "WageService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/DailyWork/DailyWorkList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "workDateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "workDateRange"
+      ],
+      "queryKeys": [],
+      "api": "mes/DailyWork/DailyWork",
+      "listImport": "ref, reactive, onMounted",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": null,
+      "listFn": "list"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EnergyConsumption/EnergyConsumption.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "工序名称",
+          "vModel": "query.processes_name",
+          "bound": true
+        },
+        {
+          "placeholder": "设备名称",
+          "vModel": "query.device_name",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "processes_name",
+        "device_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "processes_name",
+        "device_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/EnergyConsumption/EnergyConsumption",
+      "listImport": "powerlist, deletePowerRecord",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/ProductReport.php",
+      "listFn": "powerlist",
+      "handledParams": [
+        "routing_code",
+        "relation_code",
+        "class",
+        "device_code",
+        "processes_name",
+        "device_name",
+        "create_start_date",
+        "create_end_date",
+        "report_date_start",
+        "report_date_end"
+      ],
+      "searchFieldService": "ProductReportService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EnergyConsumption/PicklingWorkshop.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "processes_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/EnergyConsumption/EnergyConsumption",
+      "listImport": "powerlist,\n  deletePowerRecord as deletePowerRecordApi,\n  getPowerConsumptionStats",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/ProductReport.php",
+      "listFn": "powerlist",
+      "handledParams": [
+        "routing_code",
+        "relation_code",
+        "class",
+        "device_code",
+        "processes_name",
+        "device_name",
+        "create_start_date",
+        "create_end_date",
+        "report_date_start",
+        "report_date_end"
+      ],
+      "searchFieldService": "ProductReportService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EquipmentLedger/EquipmentLedger.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "设备编号",
+          "vModel": "query.device_code",
+          "bound": true
+        },
+        {
+          "placeholder": "设备名称",
+          "vModel": "query.device_name",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "device_code",
+        "device_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "device_code",
+        "device_name"
+      ],
+      "api": "mes/EquipmentLedger/EquipmentLedger",
+      "listImport": "list",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/repair/Device.php",
+      "listFn": "list",
+      "handledParams": [
+        "device_code",
+        "create_start_date",
+        "create_end_date",
+        "device_name",
+        "track_id",
+        "processes_code",
+        "user_id"
+      ],
+      "searchFieldService": "DeviceService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EquipmentLedger/MaintenanceRecord.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "设备编码",
+          "vModel": "query.device_code",
+          "bound": true
+        },
+        {
+          "placeholder": "设备名称",
+          "vModel": "query.device_name",
+          "bound": true
+        },
+        {
+          "placeholder": "报修人",
+          "vModel": "query.create_name",
+          "bound": true
+        },
+        {
+          "placeholder": "维修人",
+          "vModel": "query.repair_name",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "device_code",
+        "device_name",
+        "create_name",
+        "repair_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "device_code",
+        "device_name",
+        "create_name",
+        "repair_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/EquipmentLedger/EquipmentLedger",
+      "listImport": "ElMessage, ElMessageBox",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/repair/Device.php",
+      "listFn": "ElMessage"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EquipmentLedger/RepairItem.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "维修项名称",
+          "vModel": "query.repair_name",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "repair_name"
+      ],
+      "queryKeys": [
+        "page",
+        "limit",
+        "repair_name",
+        "parent_id"
+      ],
+      "api": "mes/RepairItem/RepairItem",
+      "listImport": "list, dele, category",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/ProductCount.php",
+      "listFn": "list",
+      "handledParams": [
+        "repair_name",
+        "remark",
+        "parent_id",
+        "material_model",
+        "supplier",
+        "manufacturer",
+        "material_property",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "ProductCountService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EquipmentLedger/RepairList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "维修名称",
+          "vModel": "query.repair_name",
+          "bound": true
+        },
+        {
+          "placeholder": "备注",
+          "vModel": "query.remark",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "repair_name",
+        "remark"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "repair_name",
+        "remark"
+      ],
+      "api": "mes/RepairItem/RepairItem",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/ProductCount.php",
+      "listFn": "list",
+      "handledParams": [
+        "repair_name",
+        "remark",
+        "parent_id",
+        "material_model",
+        "supplier",
+        "manufacturer",
+        "material_property",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "ProductCountService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/EquipmentLedger/RepairReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "设备名称",
+          "vModel": "query.device_name",
+          "bound": true
+        },
+        {
+          "placeholder": "维修原因（关键词）",
+          "vModel": "query.reason",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "device_name",
+        "reason",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "page",
+        "limit",
+        "device_name",
+        "reason",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/EquipmentLedger/EquipmentLedger",
+      "listImport": "ElMessage",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/repair/Device.php",
+      "listFn": "ElMessage"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/MaintenanceReport/MaintenanceReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "设备名称",
+          "vModel": "query.device_name",
+          "bound": true
+        },
+        {
+          "placeholder": "人员",
+          "vModel": "query.user_names",
+          "bound": true
+        },
+        {
+          "placeholder": "维修项目",
+          "vModel": "query.repair_item_name",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        },
+        {
+          "placeholder": "radio",
+          "vModel": "query.report_type",
+          "bound": true,
+          "type": "radio"
+        }
+      ],
+      "boundParams": [
+        "device_name",
+        "user_names",
+        "repair_item_name",
+        "report_type",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "page",
+        "limit",
+        "device_name",
+        "report_type",
+        "process",
+        "user_names",
+        "repair_item_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/MaintenanceReport/MaintenanceReport",
+      "listImport": "maintenanceReportList, maintenanceReportEdit, maintenanceReportDele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/repair/Device.php",
+      "listFn": "maintenanceReportList",
+      "handledParams": [
+        "device_name",
+        "report_type",
+        "process",
+        "user_names",
+        "repair_item_name",
+        "create_start_date",
+        "create_end_date"
+      ]
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/MaterialList/MaterialList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "物料名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "物料型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "物料规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "物料属性",
+          "vModel": "query.material_property",
+          "bound": true
+        },
+        {
+          "placeholder": "厂家",
+          "vModel": "query.manufacturer",
+          "bound": true
+        },
+        {
+          "placeholder": "供应商",
+          "vModel": "query.supplier",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_name",
+        "material_model",
+        "material_spec",
+        "material_property",
+        "manufacturer",
+        "supplier",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "material_thickness",
+        "material_model",
+        "material_spec",
+        "manufacturer",
+        "supplier",
+        "create_end_date",
+        "create_start_date",
+        "material_property",
+        "material_name"
+      ],
+      "api": "mes/MaterialManagement/MaterialManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Material.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_spec",
+        "material_name",
+        "material_model",
+        "supplier",
+        "manufacturer",
+        "material_thickness",
+        "material_scope",
+        "material_property",
+        "stock",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "MaterialService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/ProductList/ProductList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "成品名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "成品型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "成品规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "厂家",
+          "vModel": "query.manufacturer",
+          "bound": true
+        },
+        {
+          "placeholder": "供应商",
+          "vModel": "query.supplier",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_name",
+        "material_model",
+        "material_spec",
+        "manufacturer",
+        "supplier",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "material_thickness",
+        "material_model",
+        "material_spec",
+        "manufacturer",
+        "supplier",
+        "create_end_date",
+        "create_start_date",
+        "material_property",
+        "material_name"
+      ],
+      "api": "mes/MaterialManagement/MaterialManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Material.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_spec",
+        "material_name",
+        "material_model",
+        "supplier",
+        "manufacturer",
+        "material_thickness",
+        "material_scope",
+        "material_property",
+        "stock",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "MaterialService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/ProductStocktake/ProductStocktake.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "原材料",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "工序名称",
+          "vModel": "query.process_name",
+          "bound": true
+        },
+        {
+          "placeholder": "规格",
+          "vModel": "query.y_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "型号",
+          "vModel": "query.y_material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "工序规格",
+          "vModel": "query.c_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_name",
+        "process_name",
+        "y_material_spec",
+        "y_material_model",
+        "c_material_spec",
+        "inventory_start_date",
+        "inventory_end_date"
+      ],
+      "queryKeys": [
+        "page",
+        "limit",
+        "material_name",
+        "process_name",
+        "inventory_start_date",
+        "inventory_end_date",
+        "y_material_spec",
+        "y_material_model",
+        "c_material_spec"
+      ],
+      "api": "mes/ProductStocktake/ProductStocktake",
+      "listImport": "list",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Inventory.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_name",
+        "process_name",
+        "y_material_spec",
+        "finished_product_spec",
+        "y_material_model",
+        "c_material_spec",
+        "current_process_spec",
+        "c_material_model",
+        "inventory_start_date",
+        "inventory_end_date"
+      ]
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/ProductStocktake/ProductStocktakeReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "query.calcDate",
+          "bound": true,
+          "type": "date"
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "monthlyQuery.yearMonth",
+          "bound": true,
+          "type": "date"
+        },
+        {
+          "placeholder": "radio",
+          "vModel": "activeView",
+          "bound": true,
+          "type": "radio"
+        }
+      ],
+      "boundParams": [
+        "calcDate",
+        "yearMonth",
+        "activeView"
+      ],
+      "queryKeys": [
+        "calcDate"
+      ],
+      "api": "mes/ProductStocktake/ProductStocktake",
+      "listImport": "autoCalc, monthlyLedger",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Inventory.php",
+      "listFn": "autoCalc"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/ProductionOrderList/ProductionOrderList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "计划名称",
+          "vModel": "query.production_plan_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢规格",
+          "vModel": "query.y_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢型号",
+          "vModel": "query.y_material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "成品规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "成品型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "计划单号",
+          "vModel": "query.production_plan_code",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "production_plan_name",
+        "y_material_spec",
+        "y_material_model",
+        "material_spec",
+        "material_model",
+        "production_plan_code",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "production_plan_name",
+        "production_plan_code",
+        "material_spec",
+        "material_model",
+        "y_material_spec",
+        "y_material_model",
+        "create_start_date",
+        "create_end_date",
+        "plan_finish"
+      ],
+      "api": "mes/ProductionOrderList/ProductionOrderList",
+      "listImport": "list, dele, exportExcel",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Production.php",
+      "listFn": "list",
+      "handledParams": [
+        "production_plan_name",
+        "create_start_date",
+        "create_end_date",
+        "production_plan_code",
+        "y_material_spec",
+        "y_mateial_spec",
+        "y_material_model",
+        "y_mateial_model",
+        "material_spec",
+        "material_model",
+        "plan_finish"
+      ],
+      "searchFieldService": "ProductionService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/ProductionOrderList/Tasklist/Tasklist.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "任务编号",
+          "vModel": "query.task_code",
+          "bound": true
+        },
+        {
+          "placeholder": "关联单号",
+          "vModel": "query.relation_code",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "task_code",
+        "relation_code"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "task_code",
+        "relation_code"
+      ],
+      "api": "mes/ProductionOrderList/Tasklist/Tasklist",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/ProductTask.php",
+      "listFn": "list",
+      "handledParams": [
+        "task_code",
+        "processes_code",
+        "relation_code",
+        "routing_code",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "ProductTaskService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/ProductionOrderList/WorkReport/WorkReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "计划单号",
+          "vModel": "query.plan_code",
+          "bound": true
+        },
+        {
+          "placeholder": "计划名称",
+          "vModel": "query.production_plan_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢规格",
+          "vModel": "query.y_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢型号",
+          "vModel": "query.y_material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "成品规格",
+          "vModel": "query.c_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "成品型号",
+          "vModel": "query.c_material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "工序",
+          "vModel": "query.processes_name",
+          "bound": true
+        },
+        {
+          "placeholder": "设备",
+          "vModel": "query.device_name",
+          "bound": true
+        },
+        {
+          "placeholder": "报工人员",
+          "vModel": "query.create_name",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        },
+        {
+          "placeholder": "radio",
+          "vModel": "query.class",
+          "bound": true,
+          "type": "radio"
+        }
+      ],
+      "boundParams": [
+        "plan_code",
+        "production_plan_name",
+        "y_material_spec",
+        "y_material_model",
+        "c_material_spec",
+        "c_material_model",
+        "processes_name",
+        "device_name",
+        "create_name",
+        "class",
+        "report_date_start",
+        "report_date_end"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "class",
+        "create_start_date",
+        "create_end_date",
+        "report_date_start",
+        "report_date_end",
+        "plan_code",
+        "production_plan_name",
+        "y_material_spec",
+        "y_material_model",
+        "c_material_spec",
+        "c_material_model",
+        "processes_name",
+        "device_name",
+        "create_name"
+      ],
+      "api": "mes/EnergyConsumption/EnergyConsumption",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/ProductReport.php",
+      "listFn": "list",
+      "handledParams": [
+        "routing_code",
+        "report_code",
+        "relation_code",
+        "processes_code",
+        "processes_name",
+        "device_code",
+        "create_start_date",
+        "create_end_date",
+        "report_date_start",
+        "report_date_end",
+        "class",
+        "device_name",
+        "create_name",
+        "create_uid",
+        "production_plan_name",
+        "plan_code",
+        "c_material_spec",
+        "c_material_model",
+        "y_material_spec",
+        "y_material_model"
+      ],
+      "searchFieldService": "ProductReportService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/QualityInspectionRecord/QualityInspectionRecord.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "工序名称",
+          "vModel": "query.process_name",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "process_name",
+        "check_start_date",
+        "check_end_date"
+      ],
+      "queryKeys": [
+        "page",
+        "limit",
+        "process_name",
+        "check_start_date",
+        "check_end_date"
+      ],
+      "api": "mes/QualityInspectionRecord/QualityInspectionRecord",
+      "listImport": "list",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/QualityCheckRecord.php",
+      "listFn": "list",
+      "handledParams": [
+        "process_name",
+        "check_start_date",
+        "check_end_date"
+      ],
+      "searchFieldService": "QualityCheckRecordService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/QualityInspectionRecord/QualityInspectionReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "check_start_date",
+        "check_end_date"
+      ],
+      "queryKeys": [
+        "check_start_date",
+        "check_end_date"
+      ],
+      "api": "mes/QualityInspectionRecord/QualityInspectionRecord",
+      "listImport": "list as qcrList",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/QualityCheckRecord.php",
+      "listFn": "list",
+      "handledParams": [
+        "process_name",
+        "check_start_date",
+        "check_end_date"
+      ],
+      "searchFieldService": "QualityCheckRecordService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/RoundSteelList/RoundSteelList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "圆钢名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_name",
+        "material_model",
+        "material_spec",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "material_thickness",
+        "material_model",
+        "material_spec",
+        "create_end_date",
+        "create_start_date",
+        "material_property",
+        "material_name"
+      ],
+      "api": "mes/MaterialManagement/MaterialManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Material.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_spec",
+        "material_name",
+        "material_model",
+        "supplier",
+        "manufacturer",
+        "material_thickness",
+        "material_scope",
+        "material_property",
+        "stock",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "MaterialService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/WarehouseManagement/DeliveryNote/DeliveryNote.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "发货编码",
+          "vModel": "query.ship_code",
+          "bound": true
+        },
+        {
+          "placeholder": "关联单号",
+          "vModel": "query.relation_code",
+          "bound": true
+        },
+        {
+          "placeholder": "物料数量",
+          "vModel": "query.material_num",
+          "bound": true
+        },
+        {
+          "placeholder": "物料批次",
+          "vModel": "query.material_batch",
+          "bound": true
+        },
+        {
+          "placeholder": "物料名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "客户",
+          "vModel": "query.customer_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢信息",
+          "vModel": "query.y_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "成品信息",
+          "vModel": "query.product_info",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "query.ship_date",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "ship_code",
+        "relation_code",
+        "material_num",
+        "material_batch",
+        "material_name",
+        "customer_name",
+        "y_material_spec",
+        "product_info",
+        "ship_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "ship_code",
+        "relation_code",
+        "material_num",
+        "material_batch",
+        "material_name",
+        "customer_name",
+        "y_material_spec",
+        "product_info",
+        "ship_date"
+      ],
+      "api": "mes/WarehouseManagement/DeliveryNote",
+      "listImport": "list",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/Ship.php",
+      "listFn": "list",
+      "handledParams": [
+        "material_name",
+        "relation_code",
+        "ship_code",
+        "manufacturer",
+        "material_batch",
+        "material_num",
+        "customer_name",
+        "ship_date",
+        "y_material_spec",
+        "product_info",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "searchFieldService": "ShipService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/WarehouseManagement/MaterialInventory/MaterialInventory.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "物料名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "物料规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "物料批次",
+          "vModel": "query.material_batch",
+          "bound": true
+        },
+        {
+          "placeholder": "型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "库位",
+          "vModel": "query.location",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "material_name",
+        "material_spec",
+        "material_batch",
+        "material_model",
+        "location",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "material_name",
+        "material_spec",
+        "material_model",
+        "location",
+        "warehouse",
+        "material_batch",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/WarehouseManagement/WarehouseManagement",
+      "listImport": "mateiallist",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/stock/InStock.php",
+      "listFn": "mateiallist",
+      "handledParams": [
+        "material_batch",
+        "location",
+        "warehouse",
+        "create_start_date",
+        "create_end_date",
+        "material_name",
+        "material_spec",
+        "material_model"
+      ],
+      "searchFieldService": "InStockService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/WarehouseManagement/OutboundManagement/OutboundList/OutboundList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "出库编码",
+          "vModel": "query.out_code",
+          "bound": true
+        },
+        {
+          "placeholder": "物料名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "物料批次",
+          "vModel": "query.material_batch",
+          "bound": true
+        },
+        {
+          "placeholder": "物料规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "物料型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "out_code",
+        "material_name",
+        "material_batch",
+        "material_spec",
+        "material_model",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "out_code",
+        "material_name",
+        "material_spec",
+        "material_model",
+        "material_batch",
+        "warehouse",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "api": "mes/WarehouseManagement/OutboundManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/stock/OutStock.php",
+      "listFn": "list",
+      "handledParams": [
+        "out_code",
+        "relation_code",
+        "create_start_date",
+        "create_end_date",
+        "warehouse",
+        "material_name",
+        "material_spec",
+        "material_model",
+        "material_batch"
+      ],
+      "searchFieldService": "OutStockService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/WarehouseManagement/RepositoryList/RepositoryList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "仓库编码",
+          "vModel": "query.stock_code",
+          "bound": true
+        },
+        {
+          "placeholder": "仓库名称",
+          "vModel": "query.stock_name",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "stock_code",
+        "stock_name",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "stock_code",
+        "stock_name"
+      ],
+      "api": "mes/WarehouseManagement/RepositoryList",
+      "listImport": "list, dele",
+      "hasSearchBtn": false,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/material/Stock.php",
+      "listFn": "list",
+      "handledParams": [
+        "stock_name",
+        "create_start_date",
+        "create_end_date",
+        "stock_code",
+        "track_id",
+        "user_id"
+      ],
+      "searchFieldService": "StockService"
+    },
+    {
+      "page": "yarn/yarn/src/views/mes/WarehouseManagement/WarehousingManagement/InboundList/InboundList.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "入库编码",
+          "vModel": "query.in_code",
+          "bound": true
+        },
+        {
+          "placeholder": "物料名称",
+          "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "物料批次",
+          "vModel": "query.material_batch",
+          "bound": true
+        },
+        {
+          "placeholder": "规格",
+          "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "型号",
+          "vModel": "query.material_model",
+          "bound": true
+        },
+        {
+          "placeholder": "库位",
+          "vModel": "query.location",
+          "bound": true
+        },
+        {
+          "placeholder": "dateRange",
+          "vModel": "order_times",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "in_code",
+        "material_name",
+        "material_batch",
+        "material_spec",
+        "material_model",
+        "location",
+        "create_start_date",
+        "create_end_date"
+      ],
+      "queryKeys": [
+        "AdminToken",
+        "page",
+        "limit",
+        "in_code",
+        "material_name",
+        "warehouse",
+        "material_batch",
+        "create_start_date",
+        "create_end_date",
+        "material_spec",
+        "material_model",
+        "location"
+      ],
+      "api": "mes/WarehouseManagement/WarehouseManagement",
+      "listImport": "list, dele",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/stock/InStock.php",
+      "listFn": "list",
+      "handledParams": [
+        "in_code",
+        "relation_code",
+        "create_start_date",
+        "create_end_date",
+        "material_name",
+        "material_spec",
+        "material_model",
+        "material_batch",
+        "supplier",
+        "location",
+        "warehouse"
+      ],
+      "searchFieldService": "InStockService"
+    },
+    {
+      "page": "yarn/yarn/src/views/report/BatchMaterialTrace.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "输入生产计划单号、领料单号或出库单号",
+          "vModel": "keyword",
+          "bound": true
+        }
+      ],
+      "boundParams": [
+        "keyword"
+      ],
+      "queryKeys": [],
+      "api": "mes/WarehouseManagement/OutboundManagement",
+      "listImport": "traceMaterialFlow",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/stock/OutStock.php",
+      "listFn": "traceMaterialFlow"
+    },
+    {
+      "page": "yarn/yarn/src/views/report/CoefficientManage.vue",
+      "platform": "admin",
+      "uiFields": [],
+      "boundParams": [],
+      "queryKeys": [
+        "page",
+        "limit",
+        "type"
+      ],
+      "api": "report/coefficient",
+      "listImport": "ElMessage",
+      "hasSearchBtn": false,
+      "status": "ui_empty",
+      "issues": [],
+      "backend": null,
+      "listFn": "list"
+    },
+    {
+      "page": "yarn/yarn/src/views/report/DailyProductionReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "query.date_range",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [
+        "date_range"
+      ],
+      "queryKeys": [
+        "date_range",
+        "processes_name"
+      ],
+      "api": "report/dailyReport",
+      "listImport": "getDailyReport, exportDailyReportExcel",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/DailyReport.php",
+      "listFn": "getDailyReport"
+    },
+    {
+      "page": "yarn/yarn/src/views/report/ProcessCostDailyReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [],
+      "queryKeys": [],
+      "api": "report/dailyReport",
+      "listImport": "ref, computed",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/DailyReport.php",
+      "listFn": "ref"
+    },
+    {
+      "page": "yarn/yarn/src/views/report/ProcessDailyProductionReport.vue",
+      "platform": "admin",
+      "uiFields": [
+        {
+          "placeholder": "dateRange",
+          "vModel": "dateRange",
+          "bound": true,
+          "type": "date"
+        }
+      ],
+      "boundParams": [],
+      "queryKeys": [],
+      "api": "report/dailyReport",
+      "listImport": "ref, computed",
+      "hasSearchBtn": true,
+      "status": "ok",
+      "issues": [],
+      "backend": "gccd_server/app/admin/controller/production/DailyReport.php",
+      "listFn": "ref"
+    }
+  ],
+  "mini": [
+    {
+      "page": "gccd_mini/pageEnergy/pages/addEnergy/addEnergy.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/repair.Device/list",
+        "admin/production.ProductReport/getPower",
+        "admin/production.ProductReport/reportpower"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageMaterial/pages/receiveMaterial/receiveMaterial.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/stock.InStock/mateiallist",
+        "admin/receiving.Receiving/add"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageMine/pages/attendance/attendance.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/member.SupervisorAttendance/today",
+        "admin/member.SupervisorAttendance/summary",
+        "admin/member.SupervisorAttendance/history",
+        "admin/member.SupervisorAttendance/signIn"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageMine/pages/workRecord/workRecord.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductReport/list"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/energyAdd/energyAdd.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductReport/reportpower",
+        "admin/production.ProductTask/info"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/maintenanceReport/maintenanceReport.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductCount/category",
+        "admin/repair.Device/list",
+        "admin/system.User/list",
+        "admin/production.ProductCount/list",
+        "admin/repair.Device/reportBatch"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/qualityCheckAdd/qualityCheckAdd.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.Material/list",
+        "admin/check.Check/list",
+        "admin/production.QualityCheckRecord/submitQualityCheck"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/stocktakeAdd/stocktakeAdd.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.Material/list",
+        "admin/production.Inventory/submitStocktake"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/workOrderAdd/workOrderAdd.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductReport/count",
+        "admin/check.Check/list",
+        "admin/repair.Device/list",
+        "admin/system.User/productlist",
+        "admin/production.ProductTask/info",
+        "admin/wage.Wage/list",
+        "admin/production.ProductReport/report",
+        "admin/production.Material/info"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/components/repair-form/repair-form.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductCount/list",
+        "admin/production.ProductCount/category",
+        "admin/repair.Device/report"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/dailyWork/dailyWork.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/system.User/productlist",
+        "admin/dailyWork/checkLeader"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/energy/energy.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductReport/powerlist",
+        "admin/repair.Device/report"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/equipment/equipment.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/repair.Device/add",
+        "admin/system.User/productlist",
+        "admin/production.ProductCount/category",
+        "admin/repair.Device/repairlist",
+        "admin/repair.Device/list",
+        "admin/production.ProductTask/dele",
+        "admin/production.ProductCount/list",
+        "admin/repair.Device/report",
+        "admin/repair.Device/editStatus",
+        "admin/repair.Device/addrecords"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/index/index.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [],
+      "status": "unknown",
+      "issues": [
+        "未识别检索方式，需人工确认"
+      ]
+    },
+    {
+      "page": "gccd_mini/pages/login/login.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/system.Login/login"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/material/material.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/receiving.Receiving/list",
+        "admin/production.Material/list",
+        "admin/repair.Device/report"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pages/workOrder/workOrder.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductTask/list",
+        "admin/production.ProductTask/dele",
+        "admin/repair.Device/report"
+      ],
+      "status": "api_search",
+      "issues": []
+    }
+  ]
+}

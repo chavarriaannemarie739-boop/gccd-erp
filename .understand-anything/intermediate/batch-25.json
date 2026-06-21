@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/validate/system/RoleValidate.php",
+    "app/common/validate/system/SettingValidate.php",
+    "app/common/validate/system/UserCenterValidate.php",
+    "app/common/validate/system/UserLogValidate.php",
+    "app/common/validate/system/UserValidate.php",
+    "app/event.php",
+    "app/ExceptionHandle.php",
+    "app/job/QueueJob.php",
+    "app/lang/en.php",
+    "app/lang/zh-cn.php",
+    "app/listener/MemberLogListener.php",
+    "app/listener/UserLogListener.php",
+    "app/middleware.php",
+    "app/provider.php",
+    "app/Request.php",
+    "app/service.php",
+    "config/admin.php",
+    "config/ajcaptcha.php",
+    "config/api.php",
+    "config/apidoc.php",
+    "config/app.php",
+    "config/cache.php",
+    "config/captcha.php",
+    "config/console.php",
+    "config/cookie.php"
+  ],
+  "results": []
+}

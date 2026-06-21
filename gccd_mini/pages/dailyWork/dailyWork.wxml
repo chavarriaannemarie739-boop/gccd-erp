@@ -1,0 +1,119 @@
+<view class="dw-shell">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left">
+      <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    </view>
+    <view class="navbar-title">日工报工</view>
+    <view class="navbar-right"></view>
+  </view>
+
+  <view class="dw-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <view class="form-container">
+      <!-- 日期选择 -->
+      <view class="form-item">
+        <text class="form-label">工作日期</text>
+        <picker mode="date" value="{{workDate}}" bindchange="onDateChange">
+          <view class="picker">{{workDate}}</view>
+        </picker>
+      </view>
+
+      <!-- 报工类型 -->
+      <view class="form-item">
+        <text class="form-label">报工类型</text>
+        <van-radio-group value="{{workType}}" bind:change="onWorkTypeChange" direction="horizontal">
+          <van-radio name="1" custom-class="dw-radio">全天日工</van-radio>
+          <van-radio name="2" custom-class="dw-radio">半天日工</van-radio>
+        </van-radio-group>
+      </view>
+
+      <!-- 工时输入 -->
+      <view class="form-item">
+        <text class="form-label">上班时长（小时）</text>
+        <input class="dw-input" type="digit" value="{{workHours}}" bindinput="onHoursChange" placeholder="请输入工时" />
+      </view>
+
+      <!-- 选择人员（多选） -->
+      <view class="form-item" bindtap="showUserPicker">
+        <text class="form-label">选择人员 <text class="form-required">*</text></text>
+        <view class="picker-with-arrow">
+          <text class="{{selectedUserDisplay ? 'picker-value' : 'picker-placeholder'}}">
+            {{selectedUserDisplay || '请选择穿孔工序人员'}}
+          </text>
+          <van-icon name="arrow" class="picker-arrow" />
+        </view>
+        <text class="form-hint" wx:if="{{selectedUsers.length > 0}}">已选 {{selectedUsers.length}} 人</text>
+      </view>
+
+      <!-- 备注 -->
+      <view class="form-item">
+        <text class="form-label">备注</text>
+        <input class="dw-input" value="{{remark}}" bindinput="onRemarkChange" placeholder="选填，如：设备检修" maxlength="200" />
+      </view>
+
+      <!-- 工资预览 -->
+      <view class="wage-preview" wx:if="{{workHours > 0 && selectedUsers.length > 0}}">
+        <view class="preview-title">工资预览</view>
+        <view class="preview-row">
+          <text>日工工资（每人）</text>
+          <text class="preview-val">{{dailyWagePerPerson}} 元</text>
+        </view>
+        <view class="preview-row" wx:if="{{isTeamLeader}}">
+          <text>岗位津贴（每人）</text>
+          <text class="preview-val">{{allowancePerPerson}} 元</text>
+        </view>
+        <view class="preview-row">
+          <text>报工人数</text>
+          <text class="preview-val">{{selectedUsers.length}} 人</text>
+        </view>
+        <view class="preview-row total-row">
+          <text class="total-label">合计</text>
+          <text class="total-val">{{totalWage}} 元</text>
+        </view>
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="form-actions">
+        <van-button type="primary" block round loading="{{loading}}" disabled="{{submitting}}" bind:click="onSubmit">
+          {{editMode ? '修改报工' : '提交报工'}}
+        </van-button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 人员选择弹窗 -->
+  <van-popup show="{{showUserPopup}}" position="bottom" round bind:close="hideUserPicker" custom-style="height: 70vh">
+    <view class="user-picker-container">
+      <view class="user-picker-header">
+        <text class="user-picker-title">选择穿孔工序人员</text>
+        <view class="user-count">已选择 {{selectedUserIds.length}} 人</view>
+      </view>
+
+      <!-- 搜索 -->
+      <view class="user-search-bar">
+        <van-search value="{{userSearchValue}}" placeholder="搜索人员姓名" bind:change="onUserSearch" />
+      </view>
+
+      <scroll-view scroll-y class="user-scroll-view" scroll-with-animation>
+        <van-checkbox-group value="{{selectedUserIds}}" bind:change="onUserSelectChange">
+          <van-cell-group>
+            <van-cell wx:for="{{filteredUserOptions}}" wx:key="user_id" clickable>
+              <view slot="title" class="user-cell-title">
+                <text class="user-name">{{item.nickname || '未知用户'}}</text>
+                <text class="user-dept"> - {{item.dept_names || '未分配部门'}}</text>
+              </view>
+              <van-checkbox slot="right-icon" name="{{item.user_id}}" />
+            </van-cell>
+          </van-cell-group>
+        </van-checkbox-group>
+      </scroll-view>
+
+      <view class="user-picker-footer">
+        <van-button type="default" block bind:click="hideUserPicker">取消</van-button>
+        <van-button type="primary" block bind:click="confirmUserSelect" disabled="{{selectedUserIds.length === 0}}">
+          确定({{selectedUserIds.length}})
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+</view>

@@ -1,0 +1,917 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 18,
+  "filesSkipped": [
+    "app/admin/common.php",
+    "app/admin/controller/check/Check.php",
+    "app/admin/controller/content/Category.php",
+    "app/admin/controller/content/Content.php",
+    "app/admin/controller/content/Setting.php",
+    "app/admin/controller/content/Tag.php",
+    "app/admin/controller/DailyReport.php"
+  ],
+  "results": [
+    {
+      "path": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 83,
+      "nonEmptyLines": 57,
+      "sections": [
+        {
+          "heading": "GitNexus CLI Commands",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "Commands",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "analyze — Build or refresh the index",
+          "level": 3,
+          "line": 12
+        },
+        {
+          "heading": "status — Check index freshness",
+          "level": 3,
+          "line": 28
+        },
+        {
+          "heading": "clean — Delete the index",
+          "level": 3,
+          "line": 36
+        },
+        {
+          "heading": "wiki — Generate documentation from the graph",
+          "level": 3,
+          "line": 49
+        },
+        {
+          "heading": "list — Show all indexed repos",
+          "level": 3,
+          "line": 66
+        },
+        {
+          "heading": "After Indexing",
+          "level": 2,
+          "line": 74
+        },
+        {
+          "heading": "Troubleshooting",
+          "level": 2,
+          "line": 79
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 89,
+      "nonEmptyLines": 67,
+      "sections": [
+        {
+          "heading": "Debugging with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Checklist",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "Debugging Patterns",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "Example: \"Payment endpoint returns 500 intermittently\"",
+          "level": 2,
+          "line": 75
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 78,
+      "nonEmptyLines": 61,
+      "sections": [
+        {
+          "heading": "Exploring Codebases with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Checklist",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "Resources",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 48
+        },
+        {
+          "heading": "Example: \"How does payment processing work?\"",
+          "level": 2,
+          "line": 67
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 64,
+      "nonEmptyLines": 48,
+      "sections": [
+        {
+          "heading": "GitNexus Guide",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "Always Start Here",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "Skills",
+          "level": 2,
+          "line": 20
+        },
+        {
+          "heading": "Tools Reference",
+          "level": 2,
+          "line": 31
+        },
+        {
+          "heading": "Resources Reference",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Graph Schema",
+          "level": 2,
+          "line": 56
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 97,
+      "nonEmptyLines": 73,
+      "sections": [
+        {
+          "heading": "Impact Analysis with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Checklist",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "Understanding Output",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "Risk Assessment",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 56
+        },
+        {
+          "heading": "Example: \"What breaks if I change validateUser?\"",
+          "level": 2,
+          "line": 86
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 121,
+      "nonEmptyLines": 92,
+      "sections": [
+        {
+          "heading": "Refactoring with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Checklists",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "Rename Symbol",
+          "level": 3,
+          "line": 29
+        },
+        {
+          "heading": "Extract Module",
+          "level": 3,
+          "line": 39
+        },
+        {
+          "heading": "Split Function/Service",
+          "level": 3,
+          "line": 50
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 62
+        },
+        {
+          "heading": "Risk Rules",
+          "level": 2,
+          "line": 97
+        },
+        {
+          "heading": "Example: Rename `validateUser` to `authenticateUser`",
+          "level": 2,
+          "line": 106
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 83,
+      "nonEmptyLines": 57,
+      "sections": [
+        {
+          "heading": "GitNexus CLI Commands",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "Commands",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "analyze — Build or refresh the index",
+          "level": 3,
+          "line": 12
+        },
+        {
+          "heading": "status — Check index freshness",
+          "level": 3,
+          "line": 28
+        },
+        {
+          "heading": "clean — Delete the index",
+          "level": 3,
+          "line": 36
+        },
+        {
+          "heading": "wiki — Generate documentation from the graph",
+          "level": 3,
+          "line": 49
+        },
+        {
+          "heading": "list — Show all indexed repos",
+          "level": 3,
+          "line": 66
+        },
+        {
+          "heading": "After Indexing",
+          "level": 2,
+          "line": 74
+        },
+        {
+          "heading": "Troubleshooting",
+          "level": 2,
+          "line": 79
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 89,
+      "nonEmptyLines": 67,
+      "sections": [
+        {
+          "heading": "Debugging with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Checklist",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "Debugging Patterns",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "Example: \"Payment endpoint returns 500 intermittently\"",
+          "level": 2,
+          "line": 75
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 78,
+      "nonEmptyLines": 61,
+      "sections": [
+        {
+          "heading": "Exploring Codebases with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Checklist",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "Resources",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 48
+        },
+        {
+          "heading": "Example: \"How does payment processing work?\"",
+          "level": 2,
+          "line": 67
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 64,
+      "nonEmptyLines": 48,
+      "sections": [
+        {
+          "heading": "GitNexus Guide",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "Always Start Here",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "Skills",
+          "level": 2,
+          "line": 20
+        },
+        {
+          "heading": "Tools Reference",
+          "level": 2,
+          "line": 31
+        },
+        {
+          "heading": "Resources Reference",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Graph Schema",
+          "level": 2,
+          "line": 56
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 97,
+      "nonEmptyLines": 73,
+      "sections": [
+        {
+          "heading": "Impact Analysis with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Checklist",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "Understanding Output",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "Risk Assessment",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 56
+        },
+        {
+          "heading": "Example: \"What breaks if I change validateUser?\"",
+          "level": 2,
+          "line": 86
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 121,
+      "nonEmptyLines": 92,
+      "sections": [
+        {
+          "heading": "Refactoring with GitNexus",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "When to Use",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Workflow",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Checklists",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "Rename Symbol",
+          "level": 3,
+          "line": 29
+        },
+        {
+          "heading": "Extract Module",
+          "level": 3,
+          "line": 39
+        },
+        {
+          "heading": "Split Function/Service",
+          "level": 3,
+          "line": 50
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 62
+        },
+        {
+          "heading": "Risk Rules",
+          "level": 2,
+          "line": 97
+        },
+        {
+          "heading": "Example: Rename `validateUser` to `authenticateUser`",
+          "level": 2,
+          "line": 106
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": ".codex/config.toml",
+      "language": "toml",
+      "fileCategory": "config",
+      "totalLines": 9,
+      "nonEmptyLines": 8,
+      "sections": [
+        {
+          "heading": "mcp_servers.chrome-devtools",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "mcp_servers.chrome-devtools.env",
+          "level": 3,
+          "line": 8
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": ".cursorrules",
+      "language": "unknown",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 18,
+      "metrics": {}
+    },
+    {
+      "path": ".php-cs-fixer.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 27,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 104,
+      "nonEmptyLines": 74,
+      "sections": [
+        {
+          "heading": "报工纠错与盘点推算 — 会话记忆（2026-05）",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "一、核心结论（给后续 AI / 开发）",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "1. 报工删改必须联动，不能只改 `ya_product_report` 一行",
+          "level": 3,
+          "line": 5
+        },
+        {
+          "heading": "2. 12 点归属规则（不可乱）",
+          "level": 3,
+          "line": 18
+        },
+        {
+          "heading": "3. 盘点智能推算 — 关键公式与坑",
+          "level": 3,
+          "line": 29
+        },
+        {
+          "heading": "圆钢（溯源｜巨能｜50 等）",
+          "level": 4,
+          "line": 31
+        },
+        {
+          "heading": "断钢（凯亚｜20#｜50 等，如 50*1.5）",
+          "level": 4,
+          "line": 38
+        },
+        {
+          "heading": "数字核对例（断钢 凯亚｜20#｜50）",
+          "level": 4,
+          "line": 46
+        },
+        {
+          "heading": "4. 用户要的流程（已对齐）",
+          "level": 3,
+          "line": 54
+        },
+        {
+          "heading": "二、改动文件清单（部署用）",
+          "level": 2,
+          "line": 62
+        },
+        {
+          "heading": "三、数据关联速查",
+          "level": 2,
+          "line": 74
+        },
+        {
+          "heading": "四、智能盘点操作顺序",
+          "level": 2,
+          "line": 88
+        },
+        {
+          "heading": "五、未做 / 注意",
+          "level": 2,
+          "line": 96
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 13
+      }
+    },
+    {
+      "path": ".planning/intel/STOCKTAKE-CALC.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 115,
+      "nonEmptyLines": 84,
+      "sections": [
+        {
+          "heading": "盘点 / 智能推算 — 上下文记忆（压缩版）",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 核心业务规则（必须一致）",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "2. 关键代码位置",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "3. 已修复问题（需部署后端 + 发版小程序）",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "4. 典型数据问题（非公式错）",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "5. 已核对样例（calc_date=2026-05-20）",
+          "level": 2,
+          "line": 60
+        },
+        {
+          "heading": "6. 审计工具",
+          "level": 2,
+          "line": 70
+        },
+        {
+          "heading": "7. 数据库备忘",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "8. 待办 / 未改",
+          "level": 2,
+          "line": 100
+        },
+        {
+          "heading": "9. 部署检查清单",
+          "level": 2,
+          "line": 110
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "sections": [
+        {
+          "heading": "knowledge_relations",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "wiki_catalogs",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "wiki_items",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "wiki_overview",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "wiki_readme",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "wiki_repo",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    }
+  ]
+}

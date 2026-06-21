@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/js/edit.CcVvaMXo.js",
+    "public/js/el-avatar.CeefnVQc.js",
+    "public/js/el-card.CElYb5VJ.js",
+    "public/js/el-checkbox.D3CC3AMO.js",
+    "public/js/el-col.DTr3BmC3.js",
+    "public/js/el-color-picker.DdjbskZf.js",
+    "public/js/el-date-picker.Bib_J3yU.js",
+    "public/js/el-descriptions-item.CoEMvkHb.js",
+    "public/js/el-dialog.c2Fl5Wgl.js",
+    "public/js/el-empty.B3umQ7no.js",
+    "public/js/el-form-item.8ymlGnDW.js",
+    "public/js/el-image-viewer.KzYipyIf.js",
+    "public/js/el-link.C3dIImRp.js",
+    "public/js/el-loading.DhvXGJWa.js",
+    "public/js/el-popconfirm.CmgfFrIs.js",
+    "public/js/el-popper.BXdIYEoT.js",
+    "public/js/el-progress.YAezFX3i.js",
+    "public/js/el-radio.cri5msrV.js",
+    "public/js/el-result.-QuXyPlL.js",
+    "public/js/el-row.dXU22lKY.js",
+    "public/js/el-scrollbar.DAmtYv6U.js",
+    "public/js/el-select.Dg71i9cx.js",
+    "public/js/el-statistic.CNv5pxxI.js",
+    "public/js/el-switch.C9MiF0DL.js",
+    "public/js/el-tab-pane.Cbd_E7a9.js"
+  ],
+  "results": []
+}

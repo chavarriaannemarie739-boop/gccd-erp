@@ -1,0 +1,94 @@
+.page { min-height: 100vh; background: #f0f2f5; }
+.custom-navbar {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  background: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+.navbar-left { width: 44px; text-align: center; font-size: 28px; color: #0d9488; }
+.navbar-title { flex: 1; text-align: center; font-weight: 600; }
+.navbar-right { width: 44px; }
+.device-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.device-label {
+  font-size: 12px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.device-name {
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 500;
+}
+.filter-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fff;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.filter-input {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.filter-clear {
+  flex-shrink: 0;
+  color: #0d9488;
+  font-size: 14px;
+  padding: 0 4px;
+}
+.list-scroll {
+  height: calc(100vh - 152px);
+  padding: 12px;
+  box-sizing: border-box;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 10px;
+}
+.spec-grid {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.spec-row {
+  display: flex;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.spec-row:last-child { margin-bottom: 0; }
+.spec-label { width: 72px; color: #64748b; flex-shrink: 0; }
+.spec-value { flex: 1; color: #0f172a; word-break: break-all; }
+.card-row { font-size: 14px; color: #64748b; line-height: 1.6; }
+.highlight { color: #0d9488; font-weight: 600; }
+.empty { text-align: center; color: #94a3b8; padding: 40px 0; }

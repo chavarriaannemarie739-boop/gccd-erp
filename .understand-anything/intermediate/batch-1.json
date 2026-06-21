@@ -1,0 +1,350 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 3,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": ".planning/ARCHITECTURE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 344,
+      "nonEmptyLines": 310,
+      "sections": [
+        {
+          "heading": "高齿传动项目 - 技术架构",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "架构图",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "技术栈详情",
+          "level": 2,
+          "line": 34
+        },
+        {
+          "heading": "后端技术栈",
+          "level": 3,
+          "line": 36
+        },
+        {
+          "heading": "前端技术栈",
+          "level": 3,
+          "line": 47
+        },
+        {
+          "heading": "小程序技术栈",
+          "level": 3,
+          "line": 56
+        },
+        {
+          "heading": "模块划分",
+          "level": 2,
+          "line": 64
+        },
+        {
+          "heading": "1. 后台管理模块 (admin/)",
+          "level": 3,
+          "line": 66
+        },
+        {
+          "heading": "2. 数据模型 (common/model/admin/)",
+          "level": 3,
+          "line": 149
+        },
+        {
+          "heading": "3. 业务服务 (common/service/admin/)",
+          "level": 3,
+          "line": 191
+        },
+        {
+          "heading": "数据流图",
+          "level": 2,
+          "line": 225
+        },
+        {
+          "heading": "目录权限",
+          "level": 2,
+          "line": 275
+        },
+        {
+          "heading": "配置文件",
+          "level": 2,
+          "line": 283
+        },
+        {
+          "heading": "主配置文件 (config/app.php)",
+          "level": 3,
+          "line": 285
+        },
+        {
+          "heading": "数据库配置 (config/database.php)",
+          "level": 3,
+          "line": 292
+        },
+        {
+          "heading": "路由配置 (config/route.php)",
+          "level": 3,
+          "line": 299
+        },
+        {
+          "heading": "安全设计",
+          "level": 2,
+          "line": 306
+        },
+        {
+          "heading": "1. 认证机制",
+          "level": 3,
+          "line": 308
+        },
+        {
+          "heading": "2. 权限控制",
+          "level": 3,
+          "line": 313
+        },
+        {
+          "heading": "3. 数据安全",
+          "level": 3,
+          "line": 318
+        },
+        {
+          "heading": "性能优化",
+          "level": 2,
+          "line": 324
+        },
+        {
+          "heading": "1. 数据库优化",
+          "level": 3,
+          "line": 326
+        },
+        {
+          "heading": "2. 缓存优化",
+          "level": 3,
+          "line": 331
+        },
+        {
+          "heading": "3. 代码优化",
+          "level": 3,
+          "line": 336
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 24
+      }
+    },
+    {
+      "path": ".planning/MEMORY.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 29,
+      "nonEmptyLines": 23,
+      "sections": [
+        {
+          "heading": "高齿传动项目 - 记忆索引",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "项目概览",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "业务模块",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "开发配置",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "决策记录",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "问题追踪",
+          "level": 2,
+          "line": 25
+        },
+        {
+          "heading": "会话记忆（压缩）",
+          "level": 2,
+          "line": 28
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".planning/PROJECT.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 208,
+      "nonEmptyLines": 173,
+      "sections": [
+        {
+          "heading": "高齿传动项目 - 项目概览",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "基本信息",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "项目结构",
+          "level": 2,
+          "line": 14
+        },
+        {
+          "heading": "核心功能模块",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "1. 生产管理 (production/)",
+          "level": 3,
+          "line": 49
+        },
+        {
+          "heading": "2. 工资管理 (wage/)",
+          "level": 3,
+          "line": 57
+        },
+        {
+          "heading": "3. 设备管理 (repair/)",
+          "level": 3,
+          "line": 63
+        },
+        {
+          "heading": "4. 库存管理 (stock/, material/)",
+          "level": 3,
+          "line": 69
+        },
+        {
+          "heading": "5. 质量管理 (check/)",
+          "level": 3,
+          "line": 76
+        },
+        {
+          "heading": "6. 系统管理 (system/)",
+          "level": 3,
+          "line": 81
+        },
+        {
+          "heading": "数据模型",
+          "level": 2,
+          "line": 88
+        },
+        {
+          "heading": "核心表 (37 个 admin 模型)",
+          "level": 3,
+          "line": 90
+        },
+        {
+          "heading": "环境配置",
+          "level": 2,
+          "line": 109
+        },
+        {
+          "heading": "本地开发环境",
+          "level": 3,
+          "line": 111
+        },
+        {
+          "heading": "线上环境",
+          "level": 3,
+          "line": 124
+        },
+        {
+          "heading": "用户账号",
+          "level": 2,
+          "line": 132
+        },
+        {
+          "heading": "开发规范",
+          "level": 2,
+          "line": 140
+        },
+        {
+          "heading": "代码规范",
+          "level": 3,
+          "line": 142
+        },
+        {
+          "heading": "命名规范",
+          "level": 3,
+          "line": 148
+        },
+        {
+          "heading": "API 规范",
+          "level": 3,
+          "line": 155
+        },
+        {
+          "heading": "部署说明",
+          "level": 2,
+          "line": 161
+        },
+        {
+          "heading": "后端部署",
+          "level": 3,
+          "line": 163
+        },
+        {
+          "heading": "前端部署",
+          "level": 3,
+          "line": 171
+        },
+        {
+          "heading": "小程序部署",
+          "level": 3,
+          "line": 178
+        },
+        {
+          "heading": "已知问题",
+          "level": 2,
+          "line": 183
+        },
+        {
+          "heading": "相关资源",
+          "level": 2,
+          "line": 190
+        },
+        {
+          "heading": "更新日志",
+          "level": 2,
+          "line": 198
+        },
+        {
+          "heading": "2026-04-28",
+          "level": 3,
+          "line": 200
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 28
+      }
+    }
+  ]
+}

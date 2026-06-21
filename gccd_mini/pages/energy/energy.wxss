@@ -1,0 +1,252 @@
+/* 整页 flex：中间 scroll-view + 文档流底栏 */
+page {
+  height: 100%;
+  background-color: #f0f2f5;
+}
+
+.energy-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.energy-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #f0f2f5;
+}
+
+.energy-scroll {
+  flex: 1;
+  min-height: 0;
+  height: 0;
+}
+
+/* 页面内容 */
+.page-content {
+  padding: 24rpx;
+  box-sizing: border-box;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.page-content.energy-scroll-inner {
+  min-height: 100%;
+}
+
+/* 能源卡片优化 */
+.energy-item {
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  background-color: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+  transition: all 0.3s ease;
+  border: 1rpx solid #e5e7eb;
+}
+
+.energy-item:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.energy-item .text {
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.energy-item .text:first-child {
+  font-weight: 600;
+  font-size: 34rpx;
+  color: #1f2937;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx dashed #e5e7eb;
+}
+
+/* 消耗数据区域优化 */
+.energy-consumption {
+  margin: 24rpx 0;
+  padding: 24rpx;
+  background-color: #f0fdfa;
+  border-radius: 16rpx;
+  border-left: 6rpx solid #0d9488;
+}
+
+.consumption-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.consumption-item .label {
+  width: 70px;
+  color: #666;
+  font-weight: 500;
+}
+
+.consumption-item .value {
+  width: 120px;
+  font-weight: bold;
+  color: #4a4a4a;
+  font-size: 13px;
+}
+
+.consumption-item .detail {
+  flex: 1;
+  color: #999;
+  font-size: 13px;
+  text-align: right;
+}
+
+/* 页脚信息优化 */
+.footer-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #999;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 加载更多样式优化 */
+.load-more {
+  text-align: center;
+  padding: 16px;
+  color: #999;
+  font-size: 14px;
+}
+
+.load-more-btn {
+  color: #0f766e;
+  cursor: pointer;
+  padding: 12rpx 40rpx;
+  border-radius: 999rpx;
+  background-color: #ccfbf1;
+  display: inline-block;
+  transition: all 0.3s;
+}
+
+.load-more-btn:active {
+  background-color: #99f6e4;
+}
+
+.no-more {
+  color: #ccc;
+  font-size: 13px;
+}
+
+/* 空状态优化 */
+.empty {
+  padding-top: 120px;
+}
+
+/* 表单样式（保持不变） */
+.form-container {
+  width: 100%;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-item {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-input {
+  /* width: 100%; */
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* 浮动按钮样式 */
+.float-buttons-container {
+  position: fixed;
+  z-index: 999;
+}
+
+.float-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #0d9488;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8rpx 24rpx rgba(13, 148, 136, 0.35);
+  transition: all 0.3s ease;
+}
+
+.float-button:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+
+.button-image {
+  width: 28px;
+  height: 28px;
+}
+
+/* 班次信息样式 */
+.shift-info {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.shift-info .label {
+  width: 60px;
+  color: #666;
+  font-weight: 500;
+}
+
+.text .value {
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.day-shift {
+  background-color: #f0f9eb;
+  color: #67c23a;
+  border: 1px solid #e1f3d8;
+}
+
+.night-shift {
+  background-color: #fdf6ec;
+  color: #e6a23c;
+  border: 1px solid #faecd8;
+}

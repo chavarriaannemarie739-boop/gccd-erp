@@ -1,0 +1,15 @@
+<!-- 文档流底栏：由页面用 flex + scroll-view 撑满中间区域；勿用 fixed/root-portal（glass-easel 下易不显示） -->
+<view class="main-tab-bar" style="padding-bottom: {{safeBottom}}px">
+  <view class="main-tab-bar__inner">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="path"
+      class="main-tab-bar__item"
+      bindtap="onSwitch"
+      data-path="{{item.path}}"
+    >
+      <image class="main-tab-bar__icon" src="{{item.icon}}" mode="aspectFit" />
+      <text class="main-tab-bar__text">{{item.text}}</text>
+    </view>
+  </view>
+</view>

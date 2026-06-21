@@ -1,0 +1,23 @@
+<!-- 登录 -->
+<view class="container-t">
+    <!-- <image src="/images/login-bk.jpg" mode="" class="all-bk" /> 
+    <view class="headers">
+       <image src="https://qyzj.xnssoft.com/qyzj_logo.png" mode="" /> 
+    </view>-->
+    <view class="login-box">
+        <view class="login-title">账号登录</view>
+        <!-- <image src="/images/login-allow.png" mode="" class="login-image" /> -->
+        <view class="form-item">
+            <van-cell-group>
+                <!-- 手机号 -->
+                <van-field value="{{ phone }}" placeholder="请输入您的账号" border="{{ false }}" left-icon="/images/login-phone.png" input-class="login-text" bind:change="onChange1" />
+                <!-- 验证码 -->
+                <van-field value="{{ verify_code }}" center clearable placeholder="请输入您的密码" border="{{ false }}" use-button-slot left-icon="/images/login-code.png" input-class="login-text" bind:change="onChange2" type="password">
+                </van-field>
+            </van-cell-group>
+        </view>
+        <van-button round custom-class="custom-login" color="#0d9488" size="large" custom-class="loginType" bind:tap="loginFun">登录</van-button>
+        <!-- <view class="registrationType" bind:tap="goRegistration">没有账号?立即注册</view> -->
+    </view>
+    <van-toast id="van-toast" />
+</view>

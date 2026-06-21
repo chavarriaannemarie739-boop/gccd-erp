@@ -1,0 +1,67 @@
+/**
+ * 列表页检索区统一风格（对齐 出库列表 OutboundList）
+ * 结构：<el-card class="filter-card-compact" shadow="never"><el-form class="filter-form-flex" @submit.prevent>...</el-form></el-card>
+ */
+
+.filter-card-compact {
+  margin-top: 10px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: var(--el-border-radius-base);
+}
+
+.filter-card-compact .el-card__body {
+  padding: 10px 12px 10px;
+}
+
+.filter-form-flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.filter-form-flex .el-form-item {
+  margin-bottom: 0;
+  margin-right: 0;
+}
+
+.filter-form-item--field .el-form-item__content {
+  line-height: 1;
+}
+
+.filter-input {
+  width: 118px;
+}
+
+.filter-select {
+  width: 118px;
+}
+
+.filter-form-item--date .filter-date {
+  width: 218px;
+}
+
+.filter-form-item--date-wide .filter-date {
+  width: 280px;
+}
+
+.filter-form-item--actions .el-button + .el-button {
+  margin-left: 6px;
+}
+
+/* 系统/会员等：复杂查询条外包一层卡片时，内层横向排布 */
+.filter-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+/* 列表主体与检索条间距（与出库列表一致） */
+.app-container > .contenter {
+  margin-top: 10px;
+}
+
+.app-container > .filter-card-compact + .el-row {
+  margin-top: 10px;
+}

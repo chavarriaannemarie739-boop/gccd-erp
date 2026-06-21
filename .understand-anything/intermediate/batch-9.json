@@ -1,0 +1,27 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/css/el-popper.DG5wR-qi.css",
+    "public/css/el-progress.DBWeHy1f.css",
+    "public/css/el-radio-group.BzMpJalG.css",
+    "public/css/el-radio.B-_gQLkL.css",
+    "public/css/el-result.CLFeE-IU.css",
+    "public/css/el-row.C6BJsxyy.css",
+    "public/css/el-scrollbar.BWxh-h6K.css",
+    "public/css/el-select.CGGIFk-1.css",
+    "public/css/el-statistic.Bt0nnCWz.css",
+    "public/css/el-switch.B5lTGWdM.css",
+    "public/css/el-tab-pane.BihFZC1O.css",
+    "public/css/el-table-column.CKoPG0Y8.css",
+    "public/css/el-table-v2.Djurru0Q.css",
+    "public/css/el-text.3XkjT9nK.css",
+    "public/css/el-tree.C2sTlbKd.css",
+    "public/css/examine.45R4TExx.css",
+    "public/css/index.11ZCvSOX.css",
+    "public/css/index.BXEdNRP6.css",
+    "public/css/index.CSkroacn.css",
+    "public/css/index.CVh4XYAs.css"
+  ],
+  "results": []
+}

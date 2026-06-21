@@ -1,0 +1,197 @@
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+  <view class="navbar-title">{{processName}} · 质量检验</view>
+  <view class="navbar-right"></view>
+</view>
+
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+
+  <!-- 日期 -->
+  <view class="date-bar date-bar--qc">
+    <van-icon name="calendar-o" size="28rpx" color="#6366f1" />
+    <text class="date-bar-text">质检日期：{{checkDate}}</text>
+  </view>
+
+  <!-- 第一步：选择物料 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot section-dot--qc"></view>
+      <text>选择物料</text>
+    </view>
+    <view class="form-card">
+      <view class="form-row" hover-class="form-row--hover" bind:tap="showModelPicker">
+        <text class="form-label">成品选择</text>
+        <view class="form-value-wrap">
+          <text class="form-value {{selectedModel ? '' : 'form-value--placeholder'}}">{{selectedModel.label || '请选择成品名称/规格/型号'}}</text>
+          <van-icon name="arrow-down" size="28rpx" color="#9ca3af" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 第二步：选择不良品 + 白班/夜班数量 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot section-dot--qc"></view>
+      <text>不良品登记</text>
+      <text class="section-hint">按支数填写，区分班次</text>
+    </view>
+
+    <view class="form-card">
+      <view class="form-row" hover-class="form-row--hover" bind:tap="showDefectPicker">
+        <text class="form-label">不良品项目</text>
+        <view class="form-value-wrap">
+          <text class="form-value {{defectItems.length > 0 ? '' : 'form-value--placeholder'}}">
+            {{defectItems.length > 0 ? '已选 ' + defectItems.length + ' 项' : '点击多选不良品类型'}}
+          </text>
+          <van-icon name="arrow-down" size="28rpx" color="#9ca3af" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 已选不良品明细：每项输入白班/夜班数量 -->
+    <view wx:if="{{defectItems.length > 0}}" class="defect-list">
+      <view wx:for="{{defectItems}}" wx:key="type" class="defect-card">
+        <view class="defect-header">
+          <text class="defect-name">{{item.typeText}}</text>
+          <view class="defect-remove" data-index="{{index}}" bind:tap="removeDefectItem">
+            <van-icon name="cross" size="28rpx" color="#ee0a24" />
+          </view>
+        </view>
+        <view class="defect-inputs">
+          <view class="defect-input-group">
+            <text class="defect-shift-label defect-shift--day">☀ 白班</text>
+            <input class="defect-input" type="number" placeholder="0" value="{{item.day_qty}}" data-index="{{index}}" bindinput="onDefectDayInput" />
+            <text class="defect-unit">支</text>
+          </view>
+          <view class="defect-input-group">
+            <text class="defect-shift-label defect-shift--night">☾ 夜班</text>
+            <input class="defect-input" type="number" placeholder="0" value="{{item.night_qty}}" data-index="{{index}}" bindinput="onDefectNightInput" />
+            <text class="defect-unit">支</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="add-btn-wrap">
+    <view class="add-btn add-btn--qc" hover-class="add-btn--hover-qc" bind:tap="addRecord">
+      <van-icon name="plus" size="28rpx" color="#6366f1" />
+      <text class="add-btn-text add-btn-text--qc">添加到列表</text>
+    </view>
+  </view>
+
+  <!-- 已添加记录 -->
+  <view class="section" wx:if="{{addedRecords.length > 0}}">
+    <view class="section-title">
+      <view class="section-dot section-dot--qc"></view>
+      <text>已添加记录</text>
+      <text class="section-count">{{addedRecords.length}} 条</text>
+    </view>
+
+    <view wx:for="{{addedRecords}}" wx:key="index" class="record-card">
+      <view class="record-header">
+        <view class="record-material">
+          <text class="record-mat-label">{{item.c_material_name}}</text>
+          <text class="record-mat-sub">{{item.c_material_spec}} / {{item.c_material_model}}</text>
+        </view>
+        <view class="record-remove" data-index="{{index}}" bind:tap="removeRecord">
+          <van-icon name="delete-o" size="36rpx" color="#ee0a24" />
+        </view>
+      </view>
+      <view class="record-defects">
+        <view wx:for="{{item.defective_items}}" wx:for-item="d" wx:key="type" class="record-defect-row">
+          <text class="record-defect-name">{{d.typeText}}</text>
+          <view class="record-defect-qty">
+            <text class="qc-shift-tag qc-shift--day" wx:if="{{d.day_qty !== '0' && d.day_qty}}">白 {{d.day_qty}}支</text>
+            <text class="qc-shift-tag qc-shift--night" wx:if="{{d.night_qty !== '0' && d.night_qty}}">夜 {{d.night_qty}}支</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot section-dot--qc"></view>
+      <text>备注信息</text>
+    </view>
+    <view class="form-card remark-card">
+      <textarea class="remark-input" placeholder="请输入其他质检说明或备注信息..." value="{{remark}}" bindinput="onRemarkInput" maxlength="200" />
+    </view>
+  </view>
+
+  <!-- 提交 -->
+  <view class="submit-wrap">
+    <van-button color="#6366f1" block round bind:click="onSubmitTap" loading="{{loading}}" disabled="{{submitting}}">
+      提交质检
+    </van-button>
+  </view>
+
+</view>
+
+
+<!-- ===== 成品型号搜索弹窗 ===== -->
+<van-popup show="{{showModelPopup}}" position="bottom" round bind:close="hideModelPicker" custom-style="height: 60vh">
+  <view class="search-popup">
+    <view class="search-popup-header">
+      <text class="search-popup-title">选择成品型号</text>
+      <text class="search-popup-count">共 {{filteredModels.length}} 条</text>
+    </view>
+    <view class="search-bar">
+      <van-icon name="search" size="32rpx" color="#9ca3af" />
+      <input class="search-input" placeholder="搜索成品型号" value="{{modelSearch}}" bindinput="onModelSearchInput" focus="{{showModelPopup}}" />
+      <van-icon wx:if="{{modelSearch}}" name="clear" size="32rpx" color="#9ca3af" bind:click="onModelSearchClear" />
+    </view>
+    <scroll-view scroll-y class="search-list search-list--short">
+      <view wx:if="{{filteredModels.length === 0}}" class="search-empty"><text class="search-empty-text">没有匹配的成品型号</text></view>
+      <view wx:for="{{filteredModels}}" wx:key="label" class="search-item" hover-class="search-item--hover" data-idx="{{index}}" bind:tap="onModelSelect">
+        <text class="search-item-label">{{item.label}}</text>
+      </view>
+    </scroll-view>
+    <view class="search-popup-footer"><van-button type="default" block bind:click="hideModelPicker">取消</van-button></view>
+  </view>
+</van-popup>
+
+<!-- ===== 不良品多选弹窗 ===== -->
+<van-popup show="{{showDefectPopup}}" position="bottom" round bind:close="hideDefectPicker" custom-style="height: 70vh">
+  <view class="search-popup">
+    <view class="search-popup-header">
+      <text class="search-popup-title">选择不良品项目</text>
+      <text class="search-popup-count">已选 {{selectedDefectIds.length}} 项</text>
+    </view>
+    <view class="search-bar">
+      <van-icon name="search" size="32rpx" color="#9ca3af" />
+      <input class="search-input" placeholder="搜索不良品名称" value="{{defectSearch}}" bindinput="onDefectSearchInput" focus="{{showDefectPopup}}" />
+      <van-icon wx:if="{{defectSearch}}" name="clear" size="32rpx" color="#9ca3af" bind:click="onDefectSearchClear" />
+    </view>
+    <scroll-view scroll-y class="search-list">
+      <view wx:if="{{filteredDefects.length === 0}}" class="search-empty"><text class="search-empty-text">没有匹配的不良品类型</text></view>
+      <view
+        wx:for="{{filteredDefects}}"
+        wx:key="id"
+        class="search-item search-item--check {{selectedDefectMap[item.id] ? 'search-item--selected' : ''}}"
+        data-id="{{item.id}}"
+        bind:tap="onDefectToggle"
+      >
+        <text class="search-item-label">{{item.name}}</text>
+        <van-icon wx:if="{{selectedDefectMap[item.id]}}" name="success" size="36rpx" color="#6366f1" />
+        <view wx:else class="check-circle"></view>
+      </view>
+    </scroll-view>
+    <view class="search-popup-footer">
+      <van-button type="default" block bind:click="hideDefectPicker">取消</van-button>
+      <van-button color="#6366f1" block bind:click="confirmDefectSelect">确定 ({{selectedDefectIds.length}})</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<!-- 提交确认 -->
+<van-dialog show="{{showConfirmDialog}}" title="确认提交" message="确认提交 {{processName}} 工序的质检数据？\n共 {{addedRecords.length}} 条记录" show-cancel-button confirm-button-text="提交" cancel-button-text="再看看" bind:confirm="onConfirmDialogConfirm" bind:cancel="onConfirmDialogCancel" bind:close="onConfirmDialogCancel" />
+
+<!-- 提交成功 -->
+<van-dialog show="{{showSubmitSuccessDialog}}" title="提交成功" message="{{processName}} 工序质检已成功提交。" show-cancel-button="{{false}}" confirm-button-text="返回列表" close-on-click-overlay="{{false}}" bind:confirm="onSubmitSuccessConfirm" bind:close="onSubmitSuccessDialogClose" />
+
+<van-toast id="van-toast" />

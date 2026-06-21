@@ -1,0 +1,1 @@
+System.register(["./index-legacy.CMl66a2O.js"],function(e,t){"use strict";var n,u,r;return{setters:[function(e){n=e.B,u=e.C,r=e.bY}],execute:function(){e("default",{__name:"index",setup:function(e){return function(e,t){return u(),n(r)}}})}}});

@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/apidoc/assets/index.e9239a3d.js",
+    "public/apidoc/assets/ini.a565700d.js",
+    "public/apidoc/assets/java.b5b4e25c.js",
+    "public/apidoc/assets/javascript.603908df.js",
+    "public/apidoc/assets/jsonMode.1b64171e.js",
+    "public/apidoc/assets/julia.4b9526f0.js",
+    "public/apidoc/assets/kotlin.16b1631b.js",
+    "public/apidoc/assets/less.dfb20244.js",
+    "public/apidoc/assets/lexon.2174f6b1.js",
+    "public/apidoc/assets/liquid.96723395.js",
+    "public/apidoc/assets/lua.1b53f8d4.js",
+    "public/apidoc/assets/m3.467f962e.js",
+    "public/apidoc/assets/markdown.559a7ab3.js",
+    "public/apidoc/assets/mips.d8754138.js",
+    "public/apidoc/assets/msdax.6f267d6f.js",
+    "public/apidoc/assets/mysql.af01dff1.js",
+    "public/apidoc/assets/objective-c.b75ffb36.js",
+    "public/apidoc/assets/pascal.44875784.js",
+    "public/apidoc/assets/pascaligo.0522f100.js",
+    "public/apidoc/assets/perl.a7f16129.js",
+    "public/apidoc/assets/pgsql.e49c480b.js",
+    "public/apidoc/assets/php.9456e17c.js",
+    "public/apidoc/assets/pla.e446910d.js",
+    "public/apidoc/assets/postiats.51572fcb.js",
+    "public/apidoc/assets/powerquery.c06fb3d4.js"
+  ],
+  "results": []
+}

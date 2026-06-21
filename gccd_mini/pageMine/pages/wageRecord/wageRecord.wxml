@@ -1,0 +1,42 @@
+<!-- // 使用日历，josn引入 "calendar": "../../components/calendar/calendar" -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">工资记录</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+
+    <!-- <calendar title="" spotMap="{{spotMap}}" bindgetDateList="getDateList" bindselectDay="selectDay" bindopenChange="openChange" disabledDate="{{disabledDate}}" changeTime="{{changeTime}}"></calendar> -->
+    
+    <!-- <view class="operation-wrap">
+        <button bindtap="changetime" size="mini">点击跳转至22年1月1日</button>
+    </view> -->
+
+    <!-- 工资列表 -->
+    <view class="y-container">
+        <view wx:for="{{list}}" wx:key="id" class="wage-item">
+            <view class="wage-header">
+                <text class="wage-name">{{item.name}}</text>
+                <text class="wage-date">{{item.year}}年{{item.month}}月</text>
+            </view>
+            <view class="wage-body">
+                <view class="wage-amount">
+                    工资金额：<text class="actual-salary">¥{{item.wage}}</text>
+                </view>
+                <!-- <view class="wage-info">
+                <text>记录ID：{{item.id}}</text>
+                <text>用户ID：{{item.user_id}}</text>
+            </view> -->
+            </view>
+            <!-- <view class="wage-footer">
+            最后更新：{{item.update_time || '无'}}
+        </view> -->
+        </view>
+    </view>
+
+    <!-- 空状态提示 -->
+    <view wx:if="{{list.length === 0}}" class="empty-tip">
+        <van-empty description="暂无工资记录" />
+    </view>
+</view>

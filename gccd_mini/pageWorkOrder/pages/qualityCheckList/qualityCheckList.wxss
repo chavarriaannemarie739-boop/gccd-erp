@@ -1,0 +1,149 @@
+.page-shell {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--gcc-bg);
+  box-sizing: border-box;
+}
+
+.tab-scroll { height: calc(100vh - 140px); }
+.tab-inner { padding: 24rpx; box-sizing: border-box; padding-bottom: 48rpx; }
+
+/* 日期横幅（紫色主题） */
+.date-banner--qc {
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+  border: 1rpx solid #c7d2fe;
+  border-radius: var(--gcc-radius);
+  padding: 28rpx 28rpx 24rpx;
+  margin-bottom: 32rpx;
+  box-shadow: var(--gcc-shadow-sm);
+}
+
+.date-banner-row { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }
+.date-label { font-size: 26rpx; color: var(--gcc-text-secondary); }
+.date-value--qc { font-size: 32rpx; font-weight: 700; color: #4338ca; }
+.date-hint { font-size: 24rpx; color: var(--gcc-text-muted); padding-left: 44rpx; }
+
+/* 工序列表 */
+.process-list { display: flex; flex-direction: column; gap: 20rpx; }
+
+.process-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 30rpx 28rpx;
+  background-color: var(--gcc-surface);
+  border-radius: var(--gcc-radius);
+  border: 1rpx solid var(--gcc-border);
+  box-shadow: var(--gcc-shadow-card);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.process-card--hover { transform: translateY(2rpx); box-shadow: 0 4rpx 16rpx rgba(15,23,42,0.1); }
+
+.process-card-left { display: flex; align-items: center; gap: 24rpx; flex: 1; min-width: 0; }
+
+.process-index--qc {
+  width: 64rpx; height: 64rpx; border-radius: 16rpx;
+  background-color: #f3f4f6; color: var(--gcc-text-muted);
+  font-size: 30rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.process-index--done-qc {
+  background: linear-gradient(145deg, #6366f1, #818cf8);
+  color: #fff; box-shadow: 0 6rpx 16rpx rgba(99,102,241,0.3);
+}
+
+.process-info { display: flex; flex-direction: column; gap: 10rpx; min-width: 0; }
+.process-name { font-size: 32rpx; font-weight: 600; color: var(--gcc-text); }
+
+.shift-tag {
+  font-size: 22rpx; color: var(--gcc-text-muted);
+  padding: 4rpx 14rpx; border-radius: 8rpx; background-color: #f3f4f6;
+  display: inline-block;
+}
+.shift-tag--done-qc { color: #4338ca; background-color: #e0e7ff; }
+
+.process-card-right { flex-shrink: 0; margin-left: 16rpx; }
+
+.go-btn--qc {
+  font-size: 26rpx; font-weight: 600; color: #6366f1;
+  padding: 12rpx 24rpx; border-radius: 999rpx;
+  background-color: rgba(99,102,241,0.1);
+}
+
+/* ====== Tab2：质检记录 ====== */
+.history-empty { display: flex; flex-direction: column; align-items: center; padding: 120rpx 0 80rpx; gap: 16rpx; }
+.history-empty-text { font-size: 32rpx; font-weight: 600; color: var(--gcc-text-secondary); margin-top: 16rpx; }
+.history-empty-hint { font-size: 24rpx; color: var(--gcc-text-muted); }
+.history-list { display: flex; flex-direction: column; gap: 24rpx; }
+
+.day-card--qc {
+  background-color: var(--gcc-surface);
+  border-radius: var(--gcc-radius);
+  border: 1rpx solid var(--gcc-border);
+  box-shadow: var(--gcc-shadow-card);
+  overflow: hidden;
+}
+
+.day-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28rpx; gap: 16rpx;
+}
+.day-header-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10rpx; }
+.day-date-wrap { display: flex; align-items: baseline; gap: 12rpx; }
+.day-date { font-size: 32rpx; font-weight: 700; color: var(--gcc-text); }
+.day-weekday--qc { font-size: 24rpx; font-weight: 500; color: #6366f1; padding: 2rpx 12rpx; border-radius: 6rpx; background-color: #eef2ff; }
+.day-summary-text { font-size: 24rpx; color: var(--gcc-text-muted); }
+
+.day-body { border-top: 1rpx solid var(--gcc-border); }
+.proc-group { border-bottom: 1rpx solid #f3f4f6; }
+.proc-group:last-child { border-bottom: none; }
+
+.proc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22rpx 28rpx; background-color: #fafbfc;
+}
+.proc-header-left { display: flex; align-items: center; gap: 12rpx; }
+.proc-dot--qc { width: 8rpx; height: 28rpx; border-radius: 4rpx; background-color: #6366f1; }
+.proc-name { font-size: 28rpx; font-weight: 600; color: var(--gcc-text); }
+.proc-count { font-size: 22rpx; color: var(--gcc-text-muted); }
+
+.proc-detail { padding: 0 28rpx 16rpx; }
+
+/* 备注展示框 */
+.qc-remark-box {
+  margin-top: 12rpx; padding: 16rpx 20rpx;
+  background-color: #f8fafc; border-radius: 12rpx;
+  border-left: 6rpx solid #cbd5e1;
+}
+.qc-remark-label { font-size: 24rpx; font-weight: 700; color: #64748b; }
+.qc-remark-text { font-size: 24rpx; color: #475569; line-height: 1.4; }
+
+/* 质检记录卡片 */
+.qc-record-card {
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f9fafb;
+}
+.qc-record-card:last-child { border-bottom: none; }
+
+.qc-record-material {
+  margin-bottom: 12rpx;
+}
+.qc-record-label {
+  font-size: 28rpx; font-weight: 600; color: var(--gcc-text);
+}
+.qc-record-sub {
+  font-size: 24rpx; color: var(--gcc-text-muted); margin-top: 4rpx;
+}
+
+.qc-defect-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8rpx 0 8rpx 16rpx;
+}
+.qc-defect-name { font-size: 24rpx; color: var(--gcc-text-secondary); flex: 1; }
+.qc-defect-shifts { display: flex; gap: 12rpx; flex-shrink: 0; }
+
+.qc-shift-tag {
+  font-size: 22rpx; font-weight: 600; padding: 4rpx 14rpx; border-radius: 8rpx;
+}
+.qc-shift--day { color: #92400e; background-color: #fef3c7; }
+.qc-shift--night { color: #3730a3; background-color: #e0e7ff; }

@@ -1,0 +1,65 @@
+/**
+ * 大业/仓库等业务：侧拉抽屉表单统一布局（宽屏 + 小屏不裁切按钮）
+ * 用法：
+ * 1. 父页用 <AppFormDrawer v-model="visible" title="标题">...</AppFormDrawer>
+ * 2. 表单根节点加 class="app-drawer-form-panel"，不要再用 app-container（避免双层 padding）
+ * 3. 宽表格外包一层 <div class="app-drawer-table-scroll"><el-table>...</el-table></div>
+ * 4. 底部按钮区 class="app-drawer-form-footer"
+ * 5. el-form 可加 class="app-drawer-form"，需要「标签行 + 单独一行宽表」时用下方 row 修饰类
+ */
+
+.app-form-drawer.el-drawer {
+  .el-drawer__header {
+    margin-bottom: 0;
+    padding: 10px 14px 8px;
+  }
+
+  .el-drawer__body {
+    padding: 6px 14px 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-width: 0;
+  }
+}
+
+.app-drawer-form-panel {
+  padding: 0;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.app-drawer-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-drawer-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+/* 与出库新增一致：第一行只有按钮时允许换行，避免小屏把主按钮挤出视口 */
+.app-drawer-form .app-drawer-form-row--actions .el-form-item__content {
+  flex-wrap: wrap;
+}
+
+/* 单独一行放宽表：保留 label 宽度占位、文字隐藏，与上行 label 对齐 */
+.app-drawer-form .app-drawer-form-row--table {
+  margin-bottom: 8px !important;
+}
+
+.app-drawer-form .app-drawer-form-row--table .el-form-item__label {
+  visibility: hidden;
+}
+
+.app-drawer-form .app-drawer-form-row--tight {
+  margin-bottom: 8px !important;
+}

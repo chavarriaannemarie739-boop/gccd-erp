@@ -1,0 +1,133 @@
+/* 页面内容样式 */
+.page-content {
+    padding: 24rpx;
+    padding-bottom: 200rpx;
+    box-sizing: border-box;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+.section-title {
+    margin: 32rpx 0 16rpx 24rpx;
+    font-size: 30rpx;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* 优化后的表格布局 */
+.table-container {
+    background: #fff;
+    border-radius: 16rpx;
+    margin: 0 24rpx 24rpx;
+    box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex;
+    align-items: center;
+    padding: 16rpx;
+    background-color: #f8f9fa;
+    border-bottom: 2rpx solid #edf2f7;
+}
+
+.th {
+    font-size: 22rpx;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.table-row {
+    display: flex;
+    align-items: center;
+    padding: 24rpx 16rpx;
+    border-bottom: 2rpx solid #f3f4f6;
+    transition: background-color 0.2s;
+}
+
+.table-row:active {
+    background-color: #f9fafb;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.td {
+    font-size: 22rpx;
+    color: #374151;
+}
+
+/* 统一列宽分配 */
+.name-col { flex: 2; word-break: break-all; padding-right: 8rpx; }
+.spec-col { flex: 1.5; word-break: break-all; padding-right: 8rpx; }
+.model-col { flex: 1.5; word-break: break-all; padding-right: 8rpx; }
+.stock-col { flex: 1.2; text-align: center; padding-right: 8rpx; font-weight: 500; color: #0d9488;}
+.check-col { flex: 0 0 60rpx; display: flex; justify-content: flex-end; }
+
+.submit-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
+    z-index: 100;
+}
+
+/* 添加的 popup 样式 */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.popup-header .section-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.close-icon {
+    color: #969799;
+    font-size: 20px;
+}
+
+.popup-content {
+    height: calc(100% - 120px);
+    padding-bottom: 20px;
+}
+
+.popup-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 0;
+    background-color: #fff;
+    border-top: 1px solid #f0f0f0;
+}
+
+.field-right {
+    display: flex;
+    align-items: center;
+}
+
+.delete-icon {
+    color: #ee0a24;
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+
+.loading-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-more {
+    color: #c8c9cc;
+    text-align: center;
+}

@@ -1,0 +1,145 @@
+
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+  <view class="navbar-title">生产盘点</view>
+  <view class="navbar-right"></view>
+</view>
+
+<view class="page-shell" style="padding-top: {{statusBarHeight + 44}}px">
+  <van-tabs active="{{activeTab}}" bind:change="onTabChange" color="#0d9488" line-width="60rpx" animated swipeable>
+
+    <!-- ========== Tab 1：今日填报 ========== -->
+    <van-tab title="今日填报">
+      <scroll-view scroll-y class="tab-scroll">
+        <view class="tab-inner">
+
+          <view class="date-banner">
+            <view class="date-banner-row">
+              <van-icon name="calendar-o" size="32rpx" color="#0d9488" />
+              <text class="date-label">盘点日期</text>
+              <text class="date-value">{{stocktakeDate}}</text>
+            </view>
+            <text class="date-hint">统计周期：昨日 07:00 ~ 今日 07:00</text>
+          </view>
+
+          <view class="auto-calc-bar">
+            <van-button type="info" size="small" icon="search" loading="{{calcLoading}}" bind:tap="onAutoCalc" plain hairline round>
+              智能推算
+            </van-button>
+            <text class="auto-calc-hint" wx:if="{{calcTime}}">已推算 · {{calcTime}}（流水至昨日）</text>
+          </view>
+
+          <view class="process-list">
+            <view
+              wx:for="{{processes}}"
+              wx:key="key"
+              class="process-card"
+              hover-class="process-card--hover"
+              data-key="{{item.key}}"
+              bind:tap="goAdd"
+            >
+              <view class="process-card-left">
+                <view class="process-index {{item.count > 0 ? 'process-index--done' : ''}}">
+                  {{item.index}}
+                </view>
+                <view class="process-info">
+                  <text class="process-name">{{item.key}}</text>
+                  <view class="shift-status">
+                    <text class="shift-tag {{item.count > 0 ? 'shift-tag--done' : ''}}">已填 {{item.count > 0 ? item.count + ' 条' : '未填'}}</text>
+                  </view>
+                </view>
+              </view>
+              <view class="process-card-right">
+                <text class="go-btn" wx:if="{{item.count === 0}}">去填报</text>
+                <van-icon wx:else name="passed" size="40rpx" color="#0d9488" />
+              </view>
+            </view>
+          </view>
+
+        </view>
+      </scroll-view>
+    </van-tab>
+
+    <!-- ========== Tab 2：盘点记录 ========== -->
+    <van-tab title="盘点记录">
+      <scroll-view scroll-y class="tab-scroll">
+        <view class="tab-inner">
+
+          <!-- 空状态 -->
+          <view wx:if="{{historyEmpty}}" class="history-empty">
+            <van-icon name="orders-o" size="120rpx" color="#d1d5db" />
+            <text class="history-empty-text">暂无盘点记录</text>
+            <text class="history-empty-hint">完成填报后，记录会出现在这里</text>
+          </view>
+
+          <!-- 按天合并的卡片列表 -->
+          <view wx:else class="history-list">
+            <view wx:for="{{historyDays}}" wx:key="date" class="day-card">
+
+              <!-- 天卡片头部 -->
+              <view class="day-header" bind:tap="toggleDay" data-idx="{{index}}">
+                <view class="day-header-left">
+                  <view class="day-date-wrap">
+                    <text class="day-date">{{item.date}}</text>
+                    <text class="day-weekday">{{item.weekday}}</text>
+                  </view>
+                  <view class="day-summary">
+                    <text class="day-summary-text">{{item.processCount}} 道工序 · {{item.itemCount}} 条明细</text>
+                  </view>
+                </view>
+                <view class="day-header-right">
+                  <view class="day-totals">
+                    <text class="day-total-item day-total--single">合计 {{item.totalQty}}</text>
+                  </view>
+                  <van-icon name="{{item.expanded ? 'arrow-up' : 'arrow-down'}}" size="28rpx" color="#9ca3af" />
+                </view>
+              </view>
+
+              <!-- 展开后的工序分组 -->
+              <view wx:if="{{item.expanded}}" class="day-body">
+                <view wx:for="{{item.groups}}" wx:for-item="group" wx:for-index="gIdx" wx:key="name" class="proc-group">
+
+                  <!-- 工序标题行 -->
+                  <view class="proc-header" bind:tap="toggleProcess" data-day-idx="{{index}}" data-proc-idx="{{gIdx}}">
+                    <view class="proc-header-left">
+                      <view class="proc-dot"></view>
+                      <text class="proc-name">{{group.name}}</text>
+                      <text class="proc-count">{{group.items.length}} 条</text>
+                    </view>
+                    <view class="proc-header-right">
+                      <text class="proc-subtotal">小计 {{group.subtotalQty}}</text>
+                      <van-icon name="{{group.expanded ? 'arrow-up' : 'arrow-down'}}" size="24rpx" color="#9ca3af" />
+                    </view>
+                  </view>
+
+                  <!-- 工序下的明细：只展示6个物料字段 -->
+                  <view wx:if="{{group.expanded}}" class="proc-detail">
+                    <view class="detail-head-row">
+                      <text class="dh dh-mat">物料</text>
+                      <text class="dh dh-qty">数量(吨)</text>
+                    </view>
+                    <view wx:for="{{group.items}}" wx:for-item="row" wx:key="index" class="detail-row">
+                      <view class="dr dr-mat">
+                        <!-- 圆钢名称（必显示） -->
+                        <text class="dr-name">{{row.material_name || '-'}}</text>
+                        <!-- 圆钢规格 + 圆钢型号 + 工序规格（同一行） -->
+                        <text class="dr-spec" wx:if="{{row.y_material_spec || row.y_material_model || row.c_material_spec || row.c_product_spec}}">
+                          圆钢: {{row.y_material_spec || ''}}{{row.y_material_model ? ' / ' + row.y_material_model : ''}}{{row.c_material_spec || row.c_product_spec ? ' | 工序规格: ' + (row.c_material_spec || row.c_product_spec) : ''}}
+                        </text>
+                      </view>
+                      <text class="dr dr-qty">{{row.qty || '-'}}</text>
+                    </view>
+                  </view>
+
+                </view>
+              </view>
+
+            </view>
+          </view>
+
+        </view>
+      </scroll-view>
+    </van-tab>
+
+  </van-tabs>
+</view>

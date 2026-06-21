@@ -1,0 +1,566 @@
+.page-content {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* ========== 通用卡片 ========== */
+.section-card {
+    margin: 15px;
+    padding: 24rpx;
+    background: #fff;
+    border-radius: 24rpx;
+    box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+    border: 1rpx solid #e5e7eb;
+}
+
+.card-title {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20rpx;
+}
+
+.empty-hint {
+    font-size: 26rpx;
+    color: #9ca3af;
+    text-align: center;
+    padding: 32rpx 0;
+}
+
+/* ========== 1. 设备状态卡片 ========== */
+.status-card {
+    margin: 15px;
+    padding: 16rpx 20rpx;
+    background: #fff;
+    border-radius: 24rpx;
+    box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+    border: 1rpx solid #e5e7eb;
+}
+
+.status-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.status-item {
+    width: 48%;
+    text-align: center;
+    margin-bottom: 8rpx;
+    padding: 14rpx 0;
+    background: #f9f9f9;
+    border-radius: 8rpx;
+    border: 2rpx solid transparent;
+    box-sizing: border-box;
+}
+
+.status-item--hover {
+    opacity: 0.92;
+}
+
+.status-item--active {
+    background: #ecfdf5;
+    border-color: #0d9488;
+}
+
+.status-value {
+    font-size: 30rpx;
+    font-weight: bold;
+    color: #0d9488;
+}
+
+.status-label {
+    font-size: 22rpx;
+    color: #666;
+    margin-top: 4rpx;
+}
+
+/* ========== 2. 设备状态明细 ========== */
+.device-table-card {
+    margin: 15px;
+    padding: 24rpx;
+    background: #fff;
+    border-radius: 24rpx;
+    box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+    border: 1rpx solid #e5e7eb;
+}
+
+.device-table-tip {
+    font-size: 22rpx;
+    color: #9ca3af;
+    margin-bottom: 16rpx;
+    line-height: 1.4;
+}
+
+.device-table-hint {
+    font-size: 26rpx;
+    color: #9ca3af;
+    padding: 32rpx 0;
+    text-align: center;
+}
+
+.device-accordion-hd {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8rpx 0 20rpx;
+    margin-bottom: 4rpx;
+}
+
+.device-accordion-hd--tap {
+    padding: 16rpx 12rpx;
+    margin: -8rpx -12rpx 12rpx;
+    border-radius: 16rpx;
+}
+
+.device-accordion-hd--hover {
+    background-color: #f0fdfa;
+}
+
+.device-table-section-accent {
+    width: 8rpx;
+    align-self: stretch;
+    min-height: 72rpx;
+    border-radius: 8rpx;
+    background: linear-gradient(180deg, #0d9488, #5eead4);
+    margin-right: 20rpx;
+    flex-shrink: 0;
+}
+
+.device-table-section-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6rpx;
+}
+
+.device-table-section-title {
+    font-size: 32rpx;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.device-table-section-sub {
+    font-size: 24rpx;
+    color: #6b7280;
+    line-height: 1.35;
+}
+
+.device-accordion-chevron-wrap {
+    flex-shrink: 0;
+    padding: 8rpx 12rpx;
+}
+
+.device-accordion-chevron {
+    font-size: 22rpx;
+    color: #0d9488;
+    display: block;
+    transition: transform 0.25s ease;
+    transform: rotate(0deg);
+}
+
+.device-accordion-chevron--up {
+    transform: rotate(180deg);
+}
+
+.device-accordion-bd {
+    margin-top: 0;
+}
+
+.device-table-scroll-fold {
+    max-height: 55vh;
+    min-height: 200rpx;
+}
+
+.device-accordion-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8rpx;
+    margin-top: 16rpx;
+    padding: 20rpx;
+    border-radius: 12rpx;
+    background: #f8fafc;
+    border: 1rpx solid #e2e8f0;
+}
+
+.device-accordion-footer--hover {
+    background: #f1f5f9;
+}
+
+.device-accordion-footer-text {
+    font-size: 26rpx;
+    font-weight: 600;
+    color: #475569;
+}
+
+.device-accordion-footer-icon {
+    font-size: 22rpx;
+    color: #64748b;
+}
+
+.device-table {
+    border: 1rpx solid #e2e8f0;
+    border-radius: 16rpx;
+    overflow: hidden;
+    background: #fff;
+}
+
+.device-table-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: 88rpx;
+    padding: 0 24rpx;
+    box-sizing: border-box;
+}
+
+.device-table-head {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    font-weight: 600;
+    font-size: 26rpx;
+    color: #475569;
+    border-bottom: 1rpx solid #e2e8f0;
+}
+
+.device-table-row--body {
+    font-size: 26rpx;
+    color: #1f2937;
+    border-bottom: 1rpx solid #f1f5f9;
+    background-color: #ffffff;
+}
+
+.device-table-row--body:last-child {
+    border-bottom: none;
+}
+
+.device-table-row--stripe {
+    background-color: #f8fafc !important;
+}
+
+.device-table-col {
+    box-sizing: border-box;
+}
+
+.device-table-col--name {
+    flex: 1;
+    min-width: 0;
+    padding-right: 16rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.device-table-col--status {
+    flex: 0 0 144rpx;
+    text-align: right;
+}
+
+.device-table-status--ok {
+    color: #0d9488;
+    font-weight: 600;
+}
+
+.device-table-status--warn {
+    color: #ea580c;
+    font-weight: 600;
+}
+
+/* ========== 3. 昨日产量总览 ========== */
+.output-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 20rpx;
+}
+
+.output-total {
+    text-align: center;
+    padding: 24rpx;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-radius: 16rpx;
+    border: 1rpx solid #a7f3d0;
+}
+
+.output-total-val {
+    font-size: 64rpx;
+    font-weight: 800;
+    color: #0d9488;
+}
+
+.output-total-unit {
+    font-size: 28rpx;
+    color: #6b7280;
+    margin-left: 8rpx;
+}
+
+.output-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12rpx;
+}
+
+.output-item {
+    flex: 1 1 auto;
+    min-width: calc(50% - 6rpx);
+    text-align: center;
+    padding: 18rpx 12rpx;
+    background: #f9fafb;
+    border-radius: 12rpx;
+    border: 1rpx solid #e5e7eb;
+}
+
+.output-item-name {
+    font-size: 24rpx;
+    color: #6b7280;
+    margin-bottom: 6rpx;
+}
+
+.output-item-val {
+    font-size: 32rpx;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.output-item-unit {
+    font-size: 22rpx;
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+/* ========== 4. 生产计划进度 ========== */
+.plan-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16rpx;
+}
+
+.plan-item {
+    padding: 20rpx;
+    background: #f9fafb;
+    border-radius: 12rpx;
+    border: 1rpx solid #e5e7eb;
+}
+
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10rpx;
+}
+
+.plan-name {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #1f2937;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.plan-status {
+    font-size: 22rpx;
+    padding: 4rpx 16rpx;
+    border-radius: 20rpx;
+    flex-shrink: 0;
+    margin-left: 12rpx;
+}
+
+.plan-status--active {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.plan-status--done {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.plan-status--wait {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.plan-meta {
+    margin-bottom: 10rpx;
+}
+
+.plan-meta-text {
+    font-size: 24rpx;
+    color: #6b7280;
+}
+
+.plan-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+}
+
+.plan-progress-bar {
+    flex: 1;
+    height: 12rpx;
+    background: #e5e7eb;
+    border-radius: 6rpx;
+    overflow: hidden;
+}
+
+.plan-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0d9488, #5eead4);
+    border-radius: 6rpx;
+    transition: width 0.6s ease;
+}
+
+.plan-progress-text {
+    font-size: 24rpx;
+    font-weight: 600;
+    color: #0d9488;
+    width: 72rpx;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.plan-materials {
+    margin-top: 10rpx;
+    padding-top: 10rpx;
+    border-top: 1rpx solid #e5e7eb;
+}
+
+.plan-materials-label {
+    font-size: 22rpx;
+    color: #9ca3af;
+}
+
+.plan-materials-text {
+    font-size: 22rpx;
+    color: #6b7280;
+}
+
+.plan-materials-arrow {
+    font-size: 22rpx;
+    color: #0d9488;
+    margin: 0 4rpx;
+}
+
+/* ========== 5. 质量概况 ========== */
+.quality-summary {
+    display: flex;
+    gap: 16rpx;
+    margin-bottom: 16rpx;
+}
+
+.quality-item {
+    flex: 1;
+    text-align: center;
+    padding: 20rpx 0;
+    border-radius: 12rpx;
+}
+
+.quality-item--report {
+    background: #fef2f2;
+    border: 1rpx solid #fecaca;
+}
+
+.quality-item--qc {
+    background: #fffbeb;
+    border: 1rpx solid #fde68a;
+}
+
+.quality-item--total {
+    background: #f0f9ff;
+    border: 1rpx solid #bae6fd;
+}
+
+.quality-val {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.quality-label {
+    font-size: 22rpx;
+    color: #6b7280;
+    margin-top: 4rpx;
+}
+
+.echarts-wrap {
+    width: 100%;
+    height: 480rpx;
+}
+
+/* ========== 6. 能耗成本 ========== */
+.energy-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12rpx;
+}
+
+.energy-item {
+    flex: 1 1 calc(50% - 6rpx);
+    min-width: calc(50% - 6rpx);
+    text-align: center;
+    padding: 20rpx 12rpx;
+    background: #f9fafb;
+    border-radius: 12rpx;
+    border: 1rpx solid #e5e7eb;
+}
+
+.energy-item-hd {
+    font-size: 24rpx;
+    color: #6b7280;
+    margin-bottom: 8rpx;
+}
+
+.energy-item-val {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.energy-item-sub {
+    font-size: 22rpx;
+    color: #9ca3af;
+    margin-top: 4rpx;
+}
+
+/* ========== 根容器 ========== */
+.wage-eff-root {
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+/* ========== 顶部导航 ========== */
+.custom-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    background: #fff;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border-bottom: 1rpx solid #e5e7eb;
+}
+
+.back-icon {
+    font-size: 20px;
+    color: #333;
+}
+
+.navbar-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+}
+
+.navbar-right {
+    width: 40rpx;
+}

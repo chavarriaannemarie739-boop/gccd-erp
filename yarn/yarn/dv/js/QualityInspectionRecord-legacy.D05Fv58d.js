@@ -1,0 +1,1 @@
+System.register(["./request-legacy.Bgch1WoW.js"],function(t,e){"use strict";var r;return{setters:[function(t){r=t.s}],execute:function(){t("l",function(t){return r({url:e+"list",method:"post",data:t})});var e="/admin/production.QualityCheckRecord/"}}});

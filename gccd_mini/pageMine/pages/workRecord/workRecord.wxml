@@ -1,0 +1,155 @@
+<!-- pageMine/pages/wordRecord/wordRecord.wxml -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">报工记录</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 高级检索模块 -->
+    <view class="filter-container">
+        <!-- 第一行: 圆钢型号, 成品规格 -->
+        <view class="filter-row">
+            <view class="filter-input-wrap">
+                <van-icon name="orders-o" color="#999" size="14px" style="margin-right: 6px;"/>
+                <input placeholder="圆钢型号" placeholder-style="color:#999;" model:value="{{y_material_model}}" />
+            </view>
+            <view class="filter-input-wrap">
+                <van-icon name="label-o" color="#999" size="14px" style="margin-right: 6px;"/>
+                <input placeholder="成品规格" placeholder-style="color:#999;" model:value="{{c_material_spec}}" />
+            </view>
+        </view>
+        <!-- 第二行: 成品型号, 时间, 按钮 -->
+        <view class="filter-row">
+            <view class="filter-input-wrap" style="flex: 1.2; padding: 0 10rpx;">
+                <input placeholder="成品型号" placeholder-style="color:#999; font-size: 24rpx;" model:value="{{c_material_model}}" />
+            </view>
+            <view class="time-wrap">
+                <picker mode="date" value="{{create_start_date}}" bindchange="bindStartDateChange" style="flex: 1;">
+                    <view class="t-picker {{create_start_date ? '' : 'placeholder'}}">{{create_start_date ? create_start_date : '开始'}}</view>
+                </picker>
+                <text class="t-sep">-</text>
+                <picker mode="date" value="{{create_end_date}}" bindchange="bindEndDateChange" style="flex: 1;">
+                    <view class="t-picker {{create_end_date ? '' : 'placeholder'}}">{{create_end_date ? create_end_date : '结束'}}</view>
+                </picker>
+            </view>
+            <view class="btn-search" bindtap="onSearch"><van-icon name="search" size="14px" style="margin-right:4px;"/>搜索</view>
+            <view class="btn-reset" bindtap="onReset"><van-icon name="replay" size="16px" /></view>
+        </view>
+    </view>
+
+    <!-- 报工列表 -->
+    <view wx:for="{{list}}" wx:key="id" class="report-item">
+        <view class="report-header">
+            <text class="report-code">{{item.production_plan_name}}</text>
+        </view>
+        <view class="report-body">
+            <view class="info-body1">
+                <view class="info-group-row">
+                    <view class="info-row-half">
+                        <text class="info-label">圆钢规格：</text>
+                        <text class="info-value">{{item.y_material_spec}}</text>
+                    </view>
+                    <view class="info-row-half">
+                        <text class="info-label">圆钢型号：</text>
+                        <text class="info-value">{{item.y_material_model}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row">
+                    <view class="info-row-half">
+                        <text class="info-label">成品名称：</text>
+                        <text class="info-value">{{item.c_material_name}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row">
+                    <view class="info-row-half">
+                        <text class="info-label">成品规格：</text>
+                        <text class="info-value">{{item.c_material_spec}}</text>
+                    </view>
+                    <view class="info-row-half">
+                        <text class="info-label">成品型号：</text>
+                        <text class="info-value">{{item.c_material_model}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row">
+                    <view class="info-row-half">
+                        <text class="info-label">工序名称：</text>
+                        <text class="info-value">{{item.processes_name}}</text>
+                    </view>
+                    <view class="info-row-half">
+                        <text class="info-label">设备名称：</text>
+                        <text class="info-value">{{item.device_name || '无'}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row">
+                    <view class="info-row-half">
+                        <text class="info-label">工资：</text>
+                        <text class="info-value">{{item.wage || '无'}}</text>
+                    </view>
+                    <view class="info-row-half">
+                        <text class="info-label">报工吨数：</text>
+                        <text class="info-value">{{item.report_num || 0}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row" wx:if="{{item.yarn_count || item.card_user}}">
+                    <view class="info-row-half" wx:if="{{item.yarn_count}}">
+                        <text class="info-label">报工支数：</text>
+                        <text class="info-value">{{item.yarn_count || 0}}</text>
+                    </view>
+                    <view class="info-row-half" wx:if="{{item.card_user}}">
+                        <text class="info-label">开车人员：</text>
+                        <text class="info-value">{{item.card_user}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row" wx:if="{{item.product_user}}">
+                    <view class="info-row-half" style="width: 100%;">
+                        <text class="info-label">生产人员：</text>
+                        <text class="info-value">{{item.product_user}}</text>
+                    </view>
+                </view>
+            </view>
+            <!-- <view class="info-row" wx:if="{{item.defective && item.defective.length > 0}}">
+                <text class="info-label">不良品：</text>
+                <view class="defective-list">
+                    <view wx:for="{{item.defective}}" wx:key="name" class="defective-item">
+                        <text class="info-value">{{itemDefective.name}} ({{itemDefective.num}})</text>
+                    </view>
+                </view>
+            </view> -->
+            <!-- <view class="info-group">
+                <view class="info-item">
+                    <text class="info-label">电表：</text>
+                    <text class="info-value">{{item.power_num}} kWh</text>
+                </view>
+                <view class="info-item">
+                    <text class="info-label">电力消耗：</text>
+                    <text class="info-value">{{item.power_consume}} kWh</text>
+                </view>
+            </view>
+            <view class="info-group">
+                <view class="info-item">
+                    <text class="info-label">气表：</text>
+                    <text class="info-value">{{item.gas_num}} m³</text>
+                </view>
+                <view class="info-item">
+                    <text class="info-label">气体消耗：</text>
+                    <text class="info-value">{{item.gas_consume}} m³</text>
+                </view>
+            </view> -->
+            <view class="info-footer">
+                <text class="info-label">备注：</text>
+                <text class="info-value">{{item.remark}}</text>
+            </view>
+            <view class="info-footer">
+                <text class="info-label">创建人：</text>
+                <text class="info-value">{{item.create_name}}</text>
+                <text class="info-time">{{item.create_time}}</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 空状态提示 -->
+    <view wx:if="{{list.length === 0}}" class="empty-tip">
+        <van-empty description="暂无报工记录" />
+    </view>
+</view>

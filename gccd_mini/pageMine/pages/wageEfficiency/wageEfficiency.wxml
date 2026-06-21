@@ -1,0 +1,202 @@
+<view class="wage-eff-root">
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">经营看板</view>
+    <view class="navbar-right"></view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 1. 设备运行状态 -->
+    <view class="status-card">
+        <view class="card-title">设备运行状态</view>
+        <view class="status-grid">
+            <view
+                class="status-item {{deviceStatusFilter === 'total' ? 'status-item--active' : ''}}"
+                data-key="total"
+                hover-class="status-item--hover"
+                bindtap="onDeviceStatusTap"
+            >
+                <view class="status-value">{{deviceStatus.device_count}}</view>
+                <view class="status-label">设备总数</view>
+            </view>
+            <view
+                class="status-item {{deviceStatusFilter === 'normal' ? 'status-item--active' : ''}}"
+                data-key="normal"
+                hover-class="status-item--hover"
+                bindtap="onDeviceStatusTap"
+            >
+                <view class="status-value">{{deviceStatus.normal}}</view>
+                <view class="status-label">正常</view>
+            </view>
+            <view
+                class="status-item {{deviceStatusFilter === 'work' ? 'status-item--active' : ''}}"
+                data-key="work"
+                hover-class="status-item--hover"
+                bindtap="onDeviceStatusTap"
+            >
+                <view class="status-value">{{deviceStatus.work}}</view>
+                <view class="status-label">运行中</view>
+            </view>
+            <view
+                class="status-item {{deviceStatusFilter === 'no_start' ? 'status-item--active' : ''}}"
+                data-key="no_start"
+                hover-class="status-item--hover"
+                bindtap="onDeviceStatusTap"
+            >
+                <view class="status-value">{{deviceStatus.no_start}}</view>
+                <view class="status-label">未启动</view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 2. 设备状态明细 -->
+    <view class="device-table-card">
+        <view wx:if="{{deviceTableLoading}}" class="device-table-hint">加载中…</view>
+        <block wx:elif="{{deviceTableListAll.length}}">
+            <view wx:if="{{deviceTableListAll.length > 500}}" class="device-table-tip">接口单次最多拉取 500 条，列表为前 500 台</view>
+            <view
+                class="device-accordion-hd {{deviceTableShowMore ? 'device-accordion-hd--tap' : ''}}"
+                hover-class="{{deviceTableShowMore ? 'device-accordion-hd--hover' : ''}}"
+                catchtap="toggleDeviceTableExpand"
+            >
+                <view class="device-table-section-accent"></view>
+                <view class="device-table-section-text">
+                    <text class="device-table-section-title">设备状态明细</text>
+                    <text class="device-table-section-sub">{{deviceTableSectionSub}}</text>
+                </view>
+                <view wx:if="{{deviceTableShowMore}}" class="device-accordion-chevron-wrap">
+                    <text class="device-accordion-chevron {{deviceTableExpanded ? 'device-accordion-chevron--up' : ''}}">▼</text>
+                </view>
+            </view>
+            <view class="device-accordion-bd">
+                <view class="device-table">
+                    <view class="device-table-row device-table-head">
+                        <text class="device-table-col device-table-col--name">设备名称</text>
+                        <text class="device-table-col device-table-col--status">设备状态</text>
+                    </view>
+                    <scroll-view wx:if="{{deviceTableExpanded && deviceTableShowMore}}" scroll-y class="device-table-scroll-fold" show-scrollbar="{{true}}">
+                        <view wx:for="{{deviceTableList}}" wx:for-index="rowIdx" wx:key="id" class="device-table-row device-table-row--body {{rowIdx % 2 === 0 ? 'device-table-row--stripe' : ''}}">
+                            <text class="device-table-col device-table-col--name">{{item.device_name}}</text>
+                            <text class="device-table-col device-table-col--status {{item.status === '0' || item.status === 0 ? 'device-table-status--ok' : 'device-table-status--warn'}}">{{item.statusText}}</text>
+                        </view>
+                    </scroll-view>
+                    <block wx:else>
+                        <view wx:for="{{deviceTableShowMore ? deviceTablePreview : deviceTableList}}" wx:for-index="rowIdx" wx:key="id" class="device-table-row device-table-row--body {{rowIdx % 2 === 0 ? 'device-table-row--stripe' : ''}}">
+                            <text class="device-table-col device-table-col--name">{{item.device_name}}</text>
+                            <text class="device-table-col device-table-col--status {{item.status === '0' || item.status === 0 ? 'device-table-status--ok' : 'device-table-status--warn'}}">{{item.statusText}}</text>
+                        </view>
+                    </block>
+                </view>
+                <view wx:if="{{deviceTableShowMore && deviceTableExpanded}}" class="device-accordion-footer" hover-class="device-accordion-footer--hover" catchtap="toggleDeviceTableExpand">
+                    <text class="device-accordion-footer-text">收起列表</text>
+                    <text class="device-accordion-footer-icon">▲</text>
+                </view>
+            </view>
+        </block>
+        <view wx:else class="device-table-hint">暂无设备数据或未加载成功</view>
+    </view>
+
+    <!-- 3. 昨日产量总览 -->
+    <view class="section-card">
+        <view class="card-title">昨日产量总览（{{yesterdayLabel}}）</view>
+        <view wx:if="{{yesterdayOutputs.items.length}}" class="output-summary">
+            <view class="output-total">
+                <text class="output-total-val">{{yesterdayOutputs.total}}</text>
+                <text class="output-total-unit">吨</text>
+            </view>
+            <view class="output-grid">
+                <view wx:for="{{yesterdayOutputs.items}}" wx:key="processes_code" class="output-item">
+                    <view class="output-item-name">{{item.processes_name}}</view>
+                    <view class="output-item-val">{{item.qty}}<text class="output-item-unit"> 吨</text></view>
+                </view>
+            </view>
+        </view>
+        <view wx:else class="empty-hint">暂无昨日产量数据</view>
+    </view>
+
+    <!-- 4. 生产计划进度 -->
+    <view class="section-card">
+        <view class="card-title">生产计划进度</view>
+        <view wx:if="{{plans.length}}" class="plan-list">
+            <view wx:for="{{plans}}" wx:key="production_plan_code" class="plan-item">
+                <view class="plan-header">
+                    <text class="plan-name">{{item.production_plan_name}}</text>
+                    <text class="plan-status {{item.status === 1 ? 'plan-status--active' : item.status === 2 ? 'plan-status--done' : 'plan-status--wait'}}">{{item.status_label}}</text>
+                </view>
+                <view class="plan-meta">
+                    <text class="plan-meta-text">计划 {{item.plan_qty}} 吨 · 完成 {{item.done_qty}} 吨</text>
+                </view>
+                <view class="plan-progress-wrap">
+                    <view class="plan-progress-bar">
+                        <view class="plan-progress-fill" style="width: {{item.progress_percent}}%"></view>
+                    </view>
+                    <text class="plan-progress-text">{{item.progress_percent}}%</text>
+                </view>
+                <view wx:if="{{item.steel_spec || item.steel_model || item.product_spec || item.product_model}}" class="plan-materials">
+                    <text class="plan-materials-label">圆钢</text>
+                    <text wx:if="{{item.steel_spec || item.steel_model}}" class="plan-materials-text">{{item.steel_spec}}<text wx:if="{{item.steel_spec && item.steel_model}}"> | </text>{{item.steel_model}}</text>
+                    <text wx:if="{{item.steel_spec || item.steel_model}}" class="plan-materials-arrow"> → </text>
+                    <text class="plan-materials-label">成品</text>
+                    <text wx:if="{{item.product_spec || item.product_model}}" class="plan-materials-text">{{item.product_spec}}<text wx:if="{{item.product_spec && item.product_model}}"> | </text>{{item.product_model}}</text>
+                </view>
+            </view>
+        </view>
+        <view wx:else class="empty-hint">暂无进行中的计划</view>
+    </view>
+
+    <!-- 5. 质量概况 -->
+    <view class="section-card">
+        <view class="card-title">质量概况（本月）</view>
+        <view class="quality-summary">
+            <view class="quality-item quality-item--report">
+                <view class="quality-val">{{defectMonthMeta.report_defective_sum}}</view>
+                <view class="quality-label">报工不良</view>
+            </view>
+            <view class="quality-item quality-item--qc">
+                <view class="quality-val">{{defectMonthMeta.qc_defective_sum}}</view>
+                <view class="quality-label">质检不良</view>
+            </view>
+            <view class="quality-item quality-item--total">
+                <view class="quality-val">{{defectTotalMonth}}</view>
+                <view class="quality-label">合计不良</view>
+            </view>
+        </view>
+        <view wx:if="{{defectPie.length && defectHasData}}" class="echarts-wrap">
+            <ec-canvas id="defectChart" canvas-id="defectChart" ec="{{defectEc}}" style="width: 100%; height: 400rpx;"></ec-canvas>
+        </view>
+        <view wx:elif="{{!defectHasData}}" class="empty-hint">本月暂无不良品记录</view>
+    </view>
+
+    <!-- 6. 能耗成本 -->
+    <view class="section-card">
+        <view class="card-title">能耗成本</view>
+        <view class="energy-grid">
+            <view class="energy-item">
+                <view class="energy-item-hd">昨日燃气</view>
+                <view class="energy-item-val">{{energy.yesterday.gas_consume}}</view>
+                <view class="energy-item-sub">m³ · {{energy.yesterday_label}}</view>
+            </view>
+            <view class="energy-item">
+                <view class="energy-item-hd">昨日电力</view>
+                <view class="energy-item-val">{{energy.yesterday.power_consume}}</view>
+                <view class="energy-item-sub">kW·h · {{energy.yesterday_label}}</view>
+            </view>
+            <view class="energy-item">
+                <view class="energy-item-hd">本月燃气</view>
+                <view class="energy-item-val">{{energy.month.gas_consume}}</view>
+                <view class="energy-item-sub">m³ · {{energy.month_label}}</view>
+            </view>
+            <view class="energy-item">
+                <view class="energy-item-hd">本月电力</view>
+                <view class="energy-item-val">{{energy.month.power_consume}}</view>
+                <view class="energy-item-sub">kW·h · {{energy.month_label}}</view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view style="height: 40rpx"></view>
+</view>
+</view>

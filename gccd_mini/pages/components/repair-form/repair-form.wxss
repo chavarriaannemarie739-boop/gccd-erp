@@ -1,0 +1,36 @@
+/* pages/components/repair-form/repair-form、.wxss */
+.form-container {
+  width: 100%;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-item {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-input {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}

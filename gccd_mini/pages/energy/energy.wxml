@@ -1,0 +1,117 @@
+<!--pages/energy/energy.wxml-->
+<!-- 自定义导航栏 -->
+<view class="energy-shell">
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left">
+        <scan-code bind:scanSuccess="onScanSuccess" />
+    </view>
+    <view class="navbar-title">能源列表</view>
+    <view class="navbar-right"></view>
+</view>
+
+<!-- 扫码报修表单弹窗 -->
+<!-- <van-popup show="{{show}}" round position="center" custom-style="width: 80%; padding: 20px; border-radius: 8px;" bind:close="onClose">
+    <view class="form-container">
+        <view class="form-title">设备报修</view>
+
+        <view class="form-item">
+            <text class="form-label">设备编码：</text>
+            <input value="{{device_code}}" disabled class="form-input" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">报修原因：</text>
+            <van-field value="{{reason}}" placeholder="请输入报修原因" border="true" type="textarea" autosize bind:input="onReasonChange" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">上传图片：</text>
+            <van-uploader file-list="{{fileList}}" bind:after-read="afterRead" bind:delete="deleteImage" max-count="9" multiple preview-image="{{true}}" />
+        </view>
+
+        <view class="form-actions">
+            <van-button type="primary" size="small" bindtap="submitRepair" loading="{{loading}}">
+                提交
+            </van-button>
+            <van-button type="default" size="small" bindtap="onClose">
+                取消
+            </van-button>
+        </view>
+    </view>
+</van-popup> -->
+
+<repair-form show="{{showRepairForm}}" device_code="{{repairData.device_code}}" bind:close="closeRepairForm" bind:success="onRepairSuccess" />
+<van-toast id="van-toast" />
+<van-toast id="van-toast" />
+
+<!-- 页面内容：中间 scroll-view + 底栏文档流 -->
+  <view class="energy-body" style="padding-top: {{statusBarHeight + 44}}px">
+    <scroll-view class="energy-scroll" scroll-y enhanced="{{true}}" show-scrollbar="{{true}}">
+      <view class="page-content page-content--sub-tab energy-scroll-inner">
+    <view wx:for="{{list}}" wx:key="id">
+        <view class="energy-item">
+            <view>
+                <view class="text" style="display: flex;justify-content: space-between;">
+                    <text> {{item.device_name}}</text>
+                    <text class="value {{item.class == '0' ? 'day-shift' : 'night-shift'}}">{{item.class == '0' ? '白班' : '夜班'}}</text>
+                </view>
+                <!-- <view class="text">工序名称: {{item.processes_name}}</view> -->
+                <!-- <view class="text">关联编号: {{item.relation_code}}</view> -->
+                <!-- <view class="text">设备名称: {{item.routing_code}}</view> -->
+                <!-- <view class="text">报工数量: {{item.report_num}}</view> -->
+                <!-- <view class="text">不良品名称: {{item.report_num}}</view> -->
+                <!-- <view class="text">不良品数量: {{item.report_num}}</view> -->
+
+                <view class="energy-consumption">
+                    <view class="consumption-item">
+                        <text class="label">电力消耗:</text>
+                        <text class="value">{{item.power_consume}} kWh</text>
+                        <text class="detail">(电表读数: {{item.power_num}})</text>
+                    </view>
+                    <view class="consumption-item">
+                        <text class="label">气体消耗:</text>
+                        <text class="value">{{item.gas_consume}} m³</text>
+                        <text class="detail">(气表读数: {{item.gas_num}})</text>
+                    </view>
+                </view>
+
+                <view class="text footer-info">
+                    <text>备注: {{item.remark}}</text>
+                    <!-- <text>记录时间: </text> -->
+                </view>
+                <view class="text">
+                    <text>记录人: {{item.create_name}}（{{item.create_time}}）</text>
+                    <!-- <text>记录时间: </text> -->
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{list.length > 0}}">
+        <block wx:if="{{!loadingMore}}">
+            <view wx:if="{{currentPage < pages}}" class="load-more-btn" bindtap="loadMore">加载更多</view>
+            <view wx:else class="no-more">没有更多数据了</view>
+        </block>
+        <block wx:else>
+            <van-loading size="24px">加载中...</van-loading>
+        </block>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{list.length === 0 && !loading}}">
+        <van-empty description="暂无能源数据" />
+    </view>
+      </view>
+    </scroll-view>
+    <main-tab-bar />
+  </view>
+
+<!-- 可拖动的添加按钮 -->
+<view class="float-buttons-container" style="top: {{btnPosition.top}}px; left: {{btnPosition.left}}px;" bindtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd">
+    <view class="float-button add-button" bindtap="showAddMaterialForm">
+        <image src="/images/add.png" mode="aspectFit" class="button-image" />
+    </view>
+</view>
+
+</view>

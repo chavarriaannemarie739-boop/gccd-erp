@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/js/setting.BSzMoWSu.js",
+    "public/js/setting.CEuntU4S.js",
+    "public/js/setting.DG15BtaM.js",
+    "public/js/setting.dgWn1TFd.js",
+    "public/js/setting.DnfTfFYk.js",
+    "public/js/setting.HbmIbmli.js",
+    "public/js/SettingApi.CByNnew2.js",
+    "public/js/SettingApis.CFokmEQR.js",
+    "public/js/SettingBase.QbrgPGP5.js",
+    "public/js/SettingCaches.Dqc9WRYy.js",
+    "public/js/SettingCaptcha.kS7hzEyb.js",
+    "public/js/SettingCaptchas.CQdHOA_2.js",
+    "public/js/SettingContact.CCHxk8UL.js",
+    "public/js/SettingEmail.Dcv877BO.js",
+    "public/js/SettingEmailTest.BPFOWpTw.js",
+    "public/js/SettingLog.DWRHqIRZ.js",
+    "public/js/SettingLogreg.DAdfbMuy.js",
+    "public/js/SettingLogs.BGthagwJ.js",
+    "public/js/SettingMember.DCitwrSd.js",
+    "public/js/settings.DgXRU7rI.js",
+    "public/js/SettingServers.BNmWxiA1.js",
+    "public/js/SettingSystems.DNhf-2g_.js",
+    "public/js/SettingThird.WRlSp_2A.js",
+    "public/js/SettingToken.s3Pgi6Lc.js",
+    "public/js/SettingTokens.BRKYIBhl.js"
+  ],
+  "results": []
+}

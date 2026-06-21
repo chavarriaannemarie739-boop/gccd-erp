@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vod/VodClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpc/VpcClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpn/model/Billing.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpn/model/IkeConfig.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpn/model/IpsecConfig.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpn/model/Reservation.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpn/util/CheckUtils.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Vpn/VpnClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/DateUtils.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/GenerateMimeTypes.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/HashUtils.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/HttpUtils.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/mime.types.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/MimeTypes.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Util/StringUtils.php",
+    "extend/esdk-obs-php-3.23.11/obs-autoloader.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/CheckoutStream.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/ITransform.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/Model.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/ObsTransform.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/SchemaFormatter.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/SdkCurlFactory.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/SdkStreamHandler.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/ToArrayInterface.php",
+    "extend/esdk-obs-php-3.23.11/Obs/Internal/Common/V2Transform.php"
+  ],
+  "results": []
+}

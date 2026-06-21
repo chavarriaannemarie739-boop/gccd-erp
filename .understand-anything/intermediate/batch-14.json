@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/admin/controller/system/Setting.php",
+    "app/admin/controller/system/User.php",
+    "app/admin/controller/system/UserCenter.php",
+    "app/admin/controller/system/UserLog.php",
+    "app/admin/controller/wage/ProcessWage.php",
+    "app/admin/controller/wage/UserWage.php",
+    "app/admin/controller/wage/Wage.php",
+    "app/admin/controller/wechat/WeChat.php",
+    "app/admin/controller/wechat/WeChatUser.php",
+    "app/admin/event.php",
+    "app/admin/middleware.php",
+    "app/admin/middleware/ApiTokenMiddleware.php",
+    "app/admin/middleware/ApiVerifyMiddleware.php",
+    "app/admin/middleware/UserLogMiddleware.php",
+    "app/api/common.php",
+    "app/api/controller/content/Content.php",
+    "app/api/controller/file/File.php",
+    "app/api/controller/Index.php",
+    "app/api/controller/member/Login.php",
+    "app/api/controller/member/Logout.php",
+    "app/api/controller/member/Member.php",
+    "app/api/controller/member/Register.php",
+    "app/api/controller/setting/Accord.php",
+    "app/api/controller/setting/Carousel.php",
+    "app/api/controller/setting/Feedback.php"
+  ],
+  "results": []
+}

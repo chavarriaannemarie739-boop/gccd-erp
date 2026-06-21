@@ -1,0 +1,44 @@
+.custom-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 24rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f2f5;
+}
+
+.back-icon {
+  font-size: 40rpx;
+  color: #333;
+  padding: 16rpx 24rpx 16rpx 0;
+}
+
+.navbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #111;
+  margin-right: 64rpx;
+}
+
+.page-content {
+  padding: 24rpx;
+  box-sizing: border-box;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.placeholder {
+  padding: 48rpx 32rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  color: #6b7280;
+  font-size: 28rpx;
+  line-height: 1.6;
+}

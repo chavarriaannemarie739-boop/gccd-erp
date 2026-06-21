@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/postcard.B86ZM4r1.js",
+    "public/admin/js/pouring.BERyxD8l.js",
+    "public/admin/js/present.jHK5-Rs1.js",
+    "public/admin/js/price-tag.HCc4KHIo.js",
+    "public/admin/js/printer.VIC6pRdj.js",
+    "public/admin/js/promotion.CEUMDZPY.js",
+    "public/admin/js/quartz-watch.GbNDiAHx.js",
+    "public/admin/js/question-filled.BKkOSUsP.js",
+    "public/admin/js/raf.CI4Jqxsy.js",
+    "public/admin/js/rank.CGiBhoM6.js",
+    "public/admin/js/reading-lamp.D3kTPQO4.js",
+    "public/admin/js/reading.BIyenxeT.js",
+    "public/admin/js/records.CB8Yh4Rt.js",
+    "public/admin/js/refresh-left.BHIWDSPg.js",
+    "public/admin/js/refresh-right.gxFHbwn-.js",
+    "public/admin/js/refresh.CWAjIoZs.js",
+    "public/admin/js/refrigerator.DZsAaaVp.js",
+    "public/admin/js/refs.CY69Avlt.js",
+    "public/admin/js/region.DRlQWcxC.js",
+    "public/admin/js/remove-filled.DzgNTTjU.js",
+    "public/admin/js/remove.Cixisreq.js",
+    "public/admin/js/right.CM89enTK.js",
+    "public/admin/js/role.De8Rn6HQ.js",
+    "public/admin/js/scale-to-original.D91Pc1Vs.js",
+    "public/admin/js/school.BOxiX1no.js"
+  ],
+  "results": []
+}

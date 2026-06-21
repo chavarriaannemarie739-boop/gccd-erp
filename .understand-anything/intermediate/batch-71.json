@@ -1,0 +1,26 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/js/view.B-DQln2o.js",
+    "public/js/wallet-filled.Bf9gi_5n.js",
+    "public/js/wallet.8CBhfYfi.js",
+    "public/js/warn-triangle-filled.CJltYv-5.js",
+    "public/js/warning-filled.mtmd8-F5.js",
+    "public/js/warning.4h88DpEH.js",
+    "public/js/watch.CvczA9I4.js",
+    "public/js/watermelon.qGBXCLku.js",
+    "public/js/wind-power.DuqR8-0P.js",
+    "public/js/zoom-in.CNXYGQwb.js",
+    "public/js/zoom-out.D_iPaG_4.js",
+    "public/robots.txt",
+    "public/router.php",
+    "reference/ProductReportPowerPicklingExample.php",
+    "route/app.php",
+    "test_db.php",
+    "test_having.php",
+    "test_pdo.php",
+    "think"
+  ],
+  "results": []
+}

@@ -1,0 +1,39 @@
+<van-popup show="{{show}}" round position="center" custom-style="width: 80%; padding: 20px; border-radius: 8px;" bind:close="onClose">
+    <view class="form-container">
+        <view class="form-title">{{title}}</view>
+
+        <view class="form-item">
+            <text class="form-label">设备编码：</text>
+            <input value="{{device_code}}" disabled class="form-input" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">报修原因：</text>
+            <van-field value="{{selectedReasonsText}}" placeholder="请选择报修原因（可多选）" border="true" readonly bindtap="showReasonPicker" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">报修详情：</text>
+            <van-field value="{{reason}}" placeholder="请输入报修详情（选填）" border="true" type="textarea" autosize bind:input="onReasonChange" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">上传图片：</text>
+            <van-uploader file-list="{{fileList}}" bind:after-read="afterRead" bind:delete="deleteImage" max-count="9" multiple preview-image="{{true}}" />
+        </view>
+
+        <view class="form-actions">
+            <van-button type="primary" size="small" bindtap="submitRepair" loading="{{loading}}">
+                提交
+            </van-button>
+            <van-button type="default" size="small" bindtap="onClose">
+                取消
+            </van-button>
+        </view>
+    </view>
+
+    <!-- 报修原因选择弹窗 -->
+    <van-popup show="{{showReasonPopup}}" round position="bottom" custom-style="height: 60%;">
+        <van-picker title="选择报修原因" show-toolbar columns="{{reasonColumns}}" bind:confirm="onReasonConfirm" bind:cancel="onReasonCancel" />
+    </van-popup>
+</van-popup>

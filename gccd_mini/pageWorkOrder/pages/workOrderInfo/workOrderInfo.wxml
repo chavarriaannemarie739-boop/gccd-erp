@@ -1,0 +1,45 @@
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">工单详情</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 1. 工单核心信息（最关键信息） -->
+    <view class="section-title">工单信息</view>
+    <van-cell-group>
+        <van-field label="计划名称" value="{{production_plan_name}}" readonly />
+        <van-field label="任务编号" value="{{task_code}}" readonly />
+        <van-field label="关联编号" value="{{relation_code}}" readonly />
+        <van-field label="工单状态" value="{{statusText}}" readonly />
+        <van-field label="创建时间" value="{{create_time}}" readonly />
+    </van-cell-group>
+
+    <!-- 3. 工序信息（生产相关核心数据） -->
+    <view class="section-title">工序信息</view>
+    <view class="process-item">
+        <van-cell-group>
+            <van-field label="圆钢型号" value="{{y_material_spec}}" readonly />
+            <van-field label="断钢型号" value="{{c_material_spec}}" readonly />
+            <van-field label="成品型号" value="{{c_material_model}}" readonly />
+            <van-field label="工序名称" value="{{processes_name}}({{process_code}})" readonly />
+            <van-field label="工艺名称" value="{{routing_name}}({{routing_code}})" readonly />
+            <!-- <van-field label="物料名称" value="{{materialName}}" readonly /> -->
+            <van-field label="计划数量" value="{{task_num}}" readonly />
+            <van-field label="已报工吨数" value="{{report_num || 0}}" readonly />
+            <van-field label="已报工支数" value="{{yarn_count || 0}}" readonly />
+            <van-field label="不良品数量" value="{{defective_num || 0}}" readonly />
+        </van-cell-group>
+    </view>
+
+</view>
+
+
+<!-- 可拖动的添加按钮 -->
+<view class="float-buttons-container" style="top: {{btnPosition.top}}px; left: {{btnPosition.left}}px;" bindtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd">
+    <!-- 新增按钮 -->
+    <!-- <view class="float-button add-button" bindtap="goWorkOrderAdd" data-id="{{id}}" data-material_id="{{material_id}}">
+        <image src="/images/add.png" mode="aspectFit" class="button-image" />
+    </view> -->
+</view>

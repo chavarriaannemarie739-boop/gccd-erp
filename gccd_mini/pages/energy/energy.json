@@ -1,0 +1,14 @@
+{
+    "disableScroll": true,
+    "usingComponents": {
+        "van-button": "@vant/weapp/button/index",
+        "scan-code": "/pages/components/scan-code/scan-code",
+        "repair-form": "/pages/components/repair-form/repair-form",
+        "van-toast": "@vant/weapp/toast/index",
+        "van-popup": "@vant/weapp/popup/index",
+        "van-field": "@vant/weapp/field/index",
+        "van-dialog": "@vant/weapp/dialog/index",
+        "van-uploader": "@vant/weapp/uploader/index",
+        "main-tab-bar": "/pages/components/main-tab-bar/main-tab-bar"
+    }
+}

@@ -1,0 +1,398 @@
+/* 工单卡片样式 - 增强可读性 */
+.work-order-item {
+  padding: 16px;
+  margin-bottom: 12px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #1e88e5;
+  /* 左侧状态条 */
+  transition: transform 0.2s;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.work-order-item:active {
+  transform: scale(0.98);
+  background-color: #f5f9ff;
+}
+
+.work-order-item .text {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #555;
+}
+
+.work-order-item .text:first-child {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.work-order-item .button {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+/* 表单样式 */
+.form-container {
+  width: 100%;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-item {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-input {
+  /* width: 100%; */
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* 按钮样式优化 */
+/* .van-button--primary {
+    background: linear-gradient(135deg, #1e88e5, #0d47a1) !important;
+    border: none !important;
+}
+
+.van-button--warning {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+    border: none !important;
+} */
+
+/* 加载更多提示 */
+.load-more {
+  text-align: center;
+  padding: 16px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* 空状态样式 */
+.van-empty {
+  padding-top: 100px;
+}
+
+.van-empty__description {
+  color: #999 !important;
+}
+
+/* 整页 flex：中间 scroll-view + 底部栏在文档流（glass-easel 下避免 fixed 不显示） */
+page {
+  height: 100%;
+  background-color: #f0f2f5;
+}
+
+.workorder-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.workorder-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #f0f2f5;
+}
+
+/* van-tabs 撑满剩余高度 */
+.workorder-body van-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.workorder-scroll {
+  height: calc(100vh - 200px);
+}
+
+.workorder-scroll-inner {
+  box-sizing: border-box;
+  padding-bottom: 16rpx;
+}
+
+.workorder-tabbar {
+  flex-shrink: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1rpx solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+.workorder-tabbar__inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  min-height: 50px;
+  padding-top: 6px;
+  padding-bottom: 2px;
+  box-sizing: border-box;
+}
+
+.workorder-tabbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+.workorder-tabbar__icon {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 2px;
+}
+
+.workorder-tabbar__text {
+  font-size: 10px;
+  line-height: 13px;
+  color: #9ca3af;
+}
+
+/* 检索条件栏 */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  background-color: #fff;
+  gap: 12rpx;
+  border-bottom: 1rpx solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.filter-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-input {
+  width: 100%;
+  height: 56rpx;
+  font-size: 24rpx;
+  padding: 0 16rpx;
+  background-color: #f3f4f6;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+}
+
+.filter-reset {
+  font-size: 24rpx;
+  color: #0d9488;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 0 8rpx;
+}
+
+.content-container {
+  padding: 24rpx;
+}
+
+/* 工单卡片样式 - 全新设计 */
+.work-order-card {
+  background-color: #fff;
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  border: 1rpx solid #e5e7eb;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  background-color: #f9fafb;
+  border-bottom: 1rpx solid #e5e7eb;
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.task-code {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.plan-code {
+  font-size: 24rpx;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.card-body {
+  padding: 12px 16px;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-row-group {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 13px;
+  gap: 12px;
+}
+
+.info-row-group:last-child {
+  margin-bottom: 0;
+}
+
+.info-row-half {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
+.info-label {
+  color: #6b7280;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.info-value {
+  color: #374151;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-footer {
+  padding: 0 16px 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 加载更多和空状态样式保持不变 */
+.load-more {
+  text-align: center;
+  padding: 24rpx;
+  color: #9ca3af;
+  font-size: 28rpx;
+}
+
+.van-empty {
+  background-color: #fff;
+  border-radius: 24rpx;
+  padding: 48rpx 0;
+  box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+  border: 1rpx solid #e5e7eb;
+}
+
+.van-empty__description {
+  color: #999 !important;
+}
+
+.task-status {
+  font-size: 24rpx;
+  margin-left: 16rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  font-weight: 500;
+}
+
+.task-status.status-processing {
+  color: #1976d2;
+  background-color: #e3f2fd;
+}
+
+.task-status.status-completed {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+}
+
+/* 工序报工汇总表 */
+.process-report-table {
+  margin-top: 12px;
+  border: 1px solid #0d9488;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.process-report-row {
+  display: flex;
+}
+
+.process-report-header {
+  background-color: #0d9488;
+}
+
+.process-report-header .process-report-cell {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.process-report-body {
+  background-color: #fff;
+}
+
+.process-report-body .process-report-cell {
+  color: #374151;
+  font-size: 12px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.process-report-cell {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  min-width: 0;
+  word-break: break-all;
+}
+
+.process-report-cell:last-child {
+  border-right: none;
+}

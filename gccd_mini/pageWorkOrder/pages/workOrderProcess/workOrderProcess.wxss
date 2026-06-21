@@ -1,0 +1,86 @@
+/* 页面内容样式 */
+.page-content {
+    padding: 24rpx;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+.section-title {
+    font-size: 30rpx;
+    font-weight: 600;
+    margin: 32rpx 0 24rpx;
+    color: #1f2937;
+    padding-left: 16rpx;
+    border-left: 6rpx solid #0d9488;
+}
+
+.process-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.process-item {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+}
+
+.process-item:active {
+    box-shadow: 0 4px 12px rgba(74, 107, 253, 0.2);
+    transform: translateY(-2px);
+}
+
+.process-info-row {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.process-code, .routing-code {
+    font-size: 14px;
+    color: #555;
+    flex: 1;
+    min-width: 150px;
+}
+
+.process-code {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 10rpx;
+}
+
+.routing-code {
+    /* text-align: right; */
+    color: #666;
+}
+
+.process-action {
+    display: flex;
+    margin-top: 8px;
+}
+
+.report-btn {
+    flex: 1;
+    margin: 0;
+    height: 32px;
+    line-height: 32px;
+    font-size: 13px;
+    background: linear-gradient(135deg, #d4a3f7, #8c7ae6);
+    border: none;
+    border-radius: 16px;
+    transition: all 0.3s;
+}
+.report-btn:last-child {
+    background: linear-gradient(135deg, #4facfe, #4a6bfd);
+    margin-left: 40rpx;
+}
+
+.report-btn:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+}

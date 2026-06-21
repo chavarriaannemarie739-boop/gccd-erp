@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/el-popconfirm.CmgfFrIs.js",
+    "public/admin/js/el-popper.BXdIYEoT.js",
+    "public/admin/js/el-progress.YAezFX3i.js",
+    "public/admin/js/el-radio.cri5msrV.js",
+    "public/admin/js/el-result.-QuXyPlL.js",
+    "public/admin/js/el-row.dXU22lKY.js",
+    "public/admin/js/el-scrollbar.DAmtYv6U.js",
+    "public/admin/js/el-select.Dg71i9cx.js",
+    "public/admin/js/el-statistic.CNv5pxxI.js",
+    "public/admin/js/el-switch.C9MiF0DL.js",
+    "public/admin/js/el-tab-pane.Cbd_E7a9.js",
+    "public/admin/js/el-table-column.BFO2L5QB.js",
+    "public/admin/js/el-table-v2.DD8WCO5B.js",
+    "public/admin/js/el-text.BLTrY2Vf.js",
+    "public/admin/js/el-tooltip.l0sNRNKZ.js",
+    "public/admin/js/el-tree.CAUWKM3O.js",
+    "public/admin/js/eleme-filled.C1PlsRzR.js",
+    "public/admin/js/eleme.Bp6ggjDS.js",
+    "public/admin/js/element-plus.BtcNWcSQ.js",
+    "public/admin/js/examine.CO0FlCXs.js",
+    "public/admin/js/expand.CZns1CMb.js",
+    "public/admin/js/export.umPcl-9w.js",
+    "public/admin/js/failed.CVekAUTH.js",
+    "public/admin/js/feedback.CJKRu6wS.js",
+    "public/admin/js/female.DbFvQ9FY.js"
+  ],
+  "results": []
+}

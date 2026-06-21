@@ -1,0 +1,7 @@
+parameters:
+    level: 3
+    paths:
+        - gccd_server/app
+    excludePaths:
+        - gccd_server/app/*/vendor/*
+    tmpDir: /tmp/phpstan-cache

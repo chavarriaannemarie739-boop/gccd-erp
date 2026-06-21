@@ -1,0 +1,219 @@
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <van-icon name="arrow-left" class="back-icon" bindtap="navigateBack" />
+  <view class="navbar-title">{{title}}</view>
+  <view class="navbar-right"></view>
+</view>
+
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+
+  <!-- 第一步：选择设备 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot"></view>
+      <text>选择设备</text>
+    </view>
+    <view class="form-card">
+      <view class="form-row" hover-class="form-row--hover" bind:tap="showDevicePicker">
+        <text class="form-label">设备名称</text>
+        <view class="form-value-wrap">
+          <text class="form-value {{selectedDevice ? '' : 'form-value--placeholder'}}">{{selectedDevice.device_name || '请选择设备'}}</text>
+          <van-icon name="arrow-down" size="28rpx" color="#9ca3af" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 第二步：选择维修项目 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot"></view>
+      <text>维修内容登记</text>
+      <text class="section-hint">可多选维修项并填写数量</text>
+    </view>
+    <view class="form-card">
+      <view class="form-row" hover-class="form-row--hover" bind:tap="showMaintenancePicker">
+        <text class="form-label">维修项目</text>
+        <view class="form-value-wrap">
+          <text class="form-value {{maintenanceItems.length > 0 ? '' : 'form-value--placeholder'}}">
+            {{maintenanceItems.length > 0 ? '已选 ' + maintenanceItems.length + ' 项' : '点击选择维修项目 (多选)'}}
+          </text>
+          <van-icon name="arrow-down" size="28rpx" color="#9ca3af" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 已选维修项明细 -->
+    <view wx:if="{{maintenanceItems.length}}" class="item-list-compact">
+      <view wx:for="{{maintenanceItems}}" wx:key="id" class="item-row-card">
+        <view class="item-row-top">
+          <text class="item-name">{{item.repair_name}}</text>
+          <view class="item-row-remove" data-index="{{index}}" bind:tap="removeMaintenanceItem">
+            <van-icon name="clear" size="36rpx" color="#d1d5db" />
+          </view>
+        </view>
+        <textarea class="item-content-textarea" placeholder="请输入维修内容..." value="{{item.repair_content}}" data-index="{{index}}" bindinput="onRepairContentInput" maxlength="500" auto-height />
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="add-btn-wrap">
+    <view class="add-btn" hover-class="add-btn--hover" bind:tap="addRecord">
+      <van-icon name="plus" size="28rpx" color="#0f766e" />
+      <text class="add-btn-text">添加到列表</text>
+    </view>
+  </view>
+
+  <!-- 已添加列表（紧凑布局） -->
+  <view class="section" wx:if="{{addedRecords.length}}">
+    <view class="section-title">
+      <view class="section-dot"></view>
+      <text>已添加报工</text>
+      <text class="section-count">{{addedRecords.length}} 条</text>
+    </view>
+
+    <view wx:for="{{addedRecords}}" wx:key="index" class="record-row-card">
+      <view class="record-row-main">
+        <text class="record-row-device">{{item.device_name}}</text>
+        <block wx:for="{{item.items}}" wx:for-item="sub" wx:key="id">
+          <view class="record-item-tag">
+            <text class="record-item-name">{{sub.repair_name}}</text>
+            <text wx:if="{{sub.repair_content}}" class="record-item-qty">{{sub.repair_content}}</text>
+          </view>
+        </block>
+      </view>
+      <view class="record-row-action" data-index="{{index}}" bind:tap="removeRecord">
+        <van-icon name="delete-o" size="36rpx" color="#ee0a24" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 第三步：作业人员 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot"></view>
+      <text>作业人员</text>
+      <text class="section-hint" wx:if="{{selectedUsers.length}}">已选 {{selectedUsers.length}} 人</text>
+    </view>
+    <view class="form-card">
+      <view class="form-row" hover-class="form-row--hover" bind:tap="showUserPicker">
+        <text class="form-label">人员姓名</text>
+        <view class="form-value-wrap">
+          <text class="form-value {{selectedUsers.length > 0 ? '' : 'form-value--placeholder'}}">
+            {{selectedUsers.length > 0 ? selectedUsersText : '请选择人员 (多选)'}}
+          </text>
+          <van-icon name="arrow-down" size="28rpx" color="#9ca3af" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="section">
+    <view class="section-title">
+      <view class="section-dot"></view>
+      <text>备注信息</text>
+    </view>
+    <view class="form-card remark-card">
+      <textarea class="remark-input-short" placeholder="请输入其他说明或备注信息..." value="{{remark}}" bindinput="onRemarkInput" maxlength="200" />
+    </view>
+  </view>
+
+  <!-- 提交 -->
+  <view class="submit-wrap">
+    <van-button type="primary" block round bind:click="onSubmitTap" loading="{{loading}}" disabled="{{submitting}}">
+      提交报工
+    </van-button>
+  </view>
+
+</view>
+
+<!-- 设备选择弹窗 -->
+<van-popup show="{{showDevicePopup}}" position="bottom" round bind:close="hideDevicePicker" custom-style="height: 60vh">
+  <view class="search-popup">
+    <view class="search-popup-header">
+      <text class="search-popup-title">选择设备</text>
+      <text class="search-popup-count">共 {{filteredDevices.length}} 台</text>
+    </view>
+    <view class="search-bar">
+      <van-icon name="search" size="32rpx" color="#9ca3af" />
+      <input class="search-input" placeholder="搜索设备名称或编码" value="{{deviceSearch}}" bindinput="onDeviceSearchInput" focus="{{showDevicePopup}}" />
+    </view>
+    <scroll-view scroll-y class="search-list">
+      <view wx:for="{{filteredDevices}}" wx:key="id" class="search-item" hover-class="search-item--hover" data-idx="{{index}}" bind:tap="onDeviceSelect">
+        <view class="device-info">
+          <text class="device-name">{{item.device_name}}</text>
+          <text class="device-code">{{item.device_code}}</text>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="search-popup-footer">
+      <van-button type="default" block bind:click="hideDevicePicker">取消</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<!-- 人员选择弹窗 -->
+<van-popup show="{{showUserPopup}}" position="bottom" round bind:close="hideUserPicker" custom-style="height: 60vh">
+  <view class="search-popup">
+    <view class="search-popup-header">
+      <text class="search-popup-title">选择人员 (机修电工)</text>
+      <text class="search-popup-count">已选 {{selectedUserIds.length}} 人</text>
+    </view>
+    <view class="search-bar">
+      <van-icon name="search" size="32rpx" color="#9ca3af" />
+      <input class="search-input" placeholder="搜索姓名" value="{{userSearch}}" bindinput="onUserSearchInput" focus="{{showUserPopup}}" />
+    </view>
+    <scroll-view scroll-y class="search-list">
+      <view
+        wx:for="{{filteredUsers}}"
+        wx:key="user_id"
+        class="search-item search-item--check {{selectedUserMap[item.user_id] ? 'search-item--selected' : ''}}"
+        data-id="{{item.user_id}}"
+        bind:tap="onUserToggle"
+      >
+        <text class="search-item-label">{{item.nickname}}</text>
+        <van-icon wx:if="{{selectedUserMap[item.user_id]}}" name="success" size="36rpx" color="#0f766e" />
+        <view wx:else class="check-circle"></view>
+      </view>
+    </scroll-view>
+    <view class="search-popup-footer">
+      <van-button type="default" block bind:click="hideUserPicker">取消</van-button>
+      <van-button color="#0f766e" block bind:click="confirmUserSelect">确定 ({{selectedUserIds.length}})</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<!-- 维修项目多选弹窗 -->
+<van-popup show="{{showMaintenancePopup}}" position="bottom" round bind:close="hideMaintenancePicker" custom-style="height: 70vh">
+  <view class="search-popup">
+    <view class="search-popup-header">
+      <text class="search-popup-title">选择维修项目</text>
+      <text class="search-popup-count">已选 {{selectedMaintenanceIds.length}} 项</text>
+    </view>
+    <view class="search-bar">
+      <van-icon name="search" size="32rpx" color="#9ca3af" />
+      <input class="search-input" placeholder="搜索项目名称" value="{{maintenanceSearch}}" bindinput="onMaintenanceSearchInput" focus="{{showMaintenancePopup}}" />
+    </view>
+    <scroll-view scroll-y class="search-list">
+      <view
+        wx:for="{{filteredMaintenance}}"
+        wx:key="id"
+        class="search-item search-item--check {{selectedMaintenanceMap[item.id] ? 'search-item--selected' : ''}}"
+        data-id="{{item.id}}"
+        bind:tap="onMaintenanceToggle"
+      >
+        <text class="search-item-label">{{item.repair_name}}</text>
+        <van-icon wx:if="{{selectedMaintenanceMap[item.id]}}" name="success" size="36rpx" color="#0f766e" />
+        <view wx:else class="check-circle"></view>
+      </view>
+    </scroll-view>
+    <view class="search-popup-footer">
+      <van-button type="default" block bind:click="hideMaintenancePicker">取消</van-button>
+      <van-button color="#0f766e" block bind:click="confirmMaintenanceSelect">确定 ({{selectedMaintenanceIds.length}})</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" />

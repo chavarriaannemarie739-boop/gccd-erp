@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/dish.qj2FYTYm.js",
+    "public/admin/js/document-add.MYcbeCFi.js",
+    "public/admin/js/document-checked.C-fA6Z7F.js",
+    "public/admin/js/document-copy.Dtan0VU2.js",
+    "public/admin/js/document-delete.DLHf-8yc.js",
+    "public/admin/js/document-remove.CLzOUSUl.js",
+    "public/admin/js/document.B5myCrIm.js",
+    "public/admin/js/download.D1RpwxsK.js",
+    "public/admin/js/drizzling.BG4ilCDW.js",
+    "public/admin/js/dropdown.C6MXujiZ.js",
+    "public/admin/js/edit-pen.CX7VH2RK.js",
+    "public/admin/js/edit.CcVvaMXo.js",
+    "public/admin/js/el-avatar.CeefnVQc.js",
+    "public/admin/js/el-card.CElYb5VJ.js",
+    "public/admin/js/el-checkbox.D3CC3AMO.js",
+    "public/admin/js/el-col.DTr3BmC3.js",
+    "public/admin/js/el-color-picker.DdjbskZf.js",
+    "public/admin/js/el-date-picker.Bib_J3yU.js",
+    "public/admin/js/el-descriptions-item.CoEMvkHb.js",
+    "public/admin/js/el-dialog.c2Fl5Wgl.js",
+    "public/admin/js/el-empty.B3umQ7no.js",
+    "public/admin/js/el-form-item.8ymlGnDW.js",
+    "public/admin/js/el-image-viewer.KzYipyIf.js",
+    "public/admin/js/el-link.C3dIImRp.js",
+    "public/admin/js/el-loading.DhvXGJWa.js"
+  ],
+  "results": []
+}

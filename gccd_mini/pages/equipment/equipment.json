@@ -1,0 +1,18 @@
+{
+    "usingComponents": {
+        "van-button": "@vant/weapp/button/index",
+        "van-icon": "@vant/weapp/icon/index",
+        "scan-code": "/pages/components/scan-code/scan-code",
+        "repair-form": "/pages/components/repair-form/repair-form",
+        "van-toast": "@vant/weapp/toast/index",
+        "van-popup": "@vant/weapp/popup/index",
+        "van-field": "@vant/weapp/field/index",
+        "van-dialog": "@vant/weapp/dialog/index",
+        "van-tab": "@vant/weapp/tab/index",
+        "van-tabs": "@vant/weapp/tabs/index",
+        "van-uploader": "@vant/weapp/uploader/index",
+        "van-empty": "@vant/weapp/empty/index",
+        "van-picker": "@vant/weapp/picker/index"
+        
+    }
+}

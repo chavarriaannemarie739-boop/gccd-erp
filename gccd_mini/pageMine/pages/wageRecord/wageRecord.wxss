@@ -1,0 +1,89 @@
+/* 页面内容样式 */
+.page-content {
+    padding-bottom: 20px;
+    background-color: #f0f2f5;
+}
+
+.y-container {
+    padding: 15px;
+}
+
+/* 工资列表项 */
+.wage-item {
+    background: #fff;
+    margin-bottom: 20rpx;
+    padding: 24rpx;
+    border-radius: 16rpx;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.wage-item:first-child {
+    margin-top: 15rpx;
+}
+
+.wage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24rpx;
+    padding-bottom: 16rpx;
+    border-bottom: 1rpx solid #f5f5f5;
+}
+
+.wage-name {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+}
+
+.wage-date {
+    font-size: 26rpx;
+    color: #666;
+    background-color: #f0f7ff;
+    padding: 4rpx 12rpx;
+    border-radius: 20rpx;
+}
+
+.wage-body {
+    margin-bottom: 20rpx;
+}
+
+.wage-amount {
+    font-size: 28rpx;
+    color: #666;
+    margin-bottom: 16rpx;
+}
+
+.actual-salary {
+    color: #ee0a24;
+    font-weight: bold;
+    font-size: 36rpx;
+    margin-left: 8rpx;
+}
+
+.wage-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 24rpx;
+    color: #999;
+}
+
+.wage-info text {
+    flex: 1;
+}
+
+.wage-footer {
+    font-size: 22rpx;
+    color: #ccc;
+    text-align: right;
+    border-top: 1rpx dashed #eee;
+    padding-top: 16rpx;
+}
+
+.empty-tip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+}

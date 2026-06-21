@@ -1,0 +1,24 @@
+/* pageEnergy/pages/addEnergy/addEnergy.wxss */
+/* 页面内容样式 */
+.page-content {
+    padding: 24rpx;
+    padding-bottom: 200rpx;
+    box-sizing: border-box;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+.section-title {
+    margin: 32rpx 0 16rpx 24rpx;
+    font-size: 30rpx;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.submit-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
+    z-index: 100;
+}

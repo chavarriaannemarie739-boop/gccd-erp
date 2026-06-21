@@ -1,0 +1,12 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "private/database/db_init_sql.txt",
+    "private/database/menu_repair_report.sql",
+    "private/database/migration_add_maintenance_report.sql",
+    "private/database/migration_add_report_date.sql",
+    "private/database/yyladmin.sql"
+  ],
+  "results": []
+}

@@ -1,0 +1,106 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/workbench/workbench",
+    "pages/dailyWork/dailyWork",
+    "pages/workOrder/workOrder",
+    "pages/material/material",
+    "pages/equipment/equipment",
+    "pages/energy/energy",
+    "pages/stocktake/stocktake",
+    "pages/mine/mine",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "高齿传动",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f0f2f5",
+    "navigationStyle": "custom"
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "tabBar": {
+    "color": "#9ca3af",
+    "selectedColor": "#0f766e",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/workbench/workbench",
+        "text": "工作台",
+        "iconPath": "/images/zhuye.png",
+        "selectedIconPath": "/images/zhuye1.png"
+      },
+      {
+        "pagePath": "pages/equipment/equipment",
+        "text": "设备",
+        "iconPath": "/images/fabu1.png",
+        "selectedIconPath": "/images/fabu.png"
+      },
+      {
+        "pagePath": "pages/stocktake/stocktake",
+        "text": "盘点",
+        "iconPath": "/images/ziyuan1.png",
+        "selectedIconPath": "/images/ziyuan.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "/images/wode1.png",
+        "selectedIconPath": "/images/wode.png"
+      }
+    ]
+  },
+  "subPackages": [
+    {
+      "root": "pageEquipment",
+      "pages": [
+        "pages/maintenanceRecord/maintenanceRecord",
+        "pages/repairRecords/repairRecords"
+      ]
+    },
+    {
+      "root": "pageMine",
+      "pages": [
+        "pages/workRecord/workRecord",
+        "pages/wageRecord/wageRecord",
+        "pages/wageEfficiency/wageEfficiency",
+        "pages/qualityInspection/qualityInspection",
+        "pages/attendance/attendance"
+      ]
+    },
+    {
+      "root": "pageWorkOrder",
+      "pages": [
+        "pages/workOrderInfo/workOrderInfo",
+        "pages/workOrderAdd/workOrderAdd",
+        "pages/energyAdd/energyAdd",
+        "pages/workOrderProcess/workOrderProcess",
+        "pages/stocktakeList/stocktakeList",
+        "pages/stocktakeAdd/stocktakeAdd",
+        "pages/qualityCheckList/qualityCheckList",
+        "pages/qualityCheckAdd/qualityCheckAdd",
+        "pages/maintenanceReport/maintenanceReport",
+        "pages/duangangList/duangangList",
+        "pages/duangangAdd/duangangAdd",
+        "pages/punchDevice/punchDevice",
+        "pages/processTaskList/processTaskList"
+      ]
+    },
+    {
+      "root": "pageMaterial",
+      "pages": [
+        "pages/receiveMaterial/receiveMaterial"
+      ]
+    },
+    {
+      "root": "pageEnergy",
+      "pages": [
+        "pages/addEnergy/addEnergy"
+      ]
+    }
+  ]
+}

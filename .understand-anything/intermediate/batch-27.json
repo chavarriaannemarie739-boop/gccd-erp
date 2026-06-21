@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Exception/BceServiceException.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Http/BceHttpClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Http/GuzzleLogAdapter.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Http/HttpContentTypes.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Http/HttpHeaders.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Http/HttpMethod.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Log/LogFactory.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Log/LogFactoryInterface.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Log/MonoLogFactory.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Log/NullLogFactory.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Acl/AclClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Acl/model/AclRule.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bcc/BccClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bcc/model/Billing.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bcc/model/EphemeralDisk.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bcc/model/Reservation.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bcc/model/SecurityGroupRuleModel.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Blb/BlbClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Blb/model/BackendServer.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bos/BosClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bos/BosOptions.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bos/CannedAcl.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Bos/StorageClass.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Cdn/CdnClient.php",
+    "extend/bce-php-sdk-0.9.23/src/BaiduBce/Services/Dcc/DccClient.php"
+  ],
+  "results": []
+}

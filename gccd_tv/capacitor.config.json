@@ -1,0 +1,14 @@
+{
+  "appId": "com.gccd.dashboard",
+  "appName": "生产车间数据大屏",
+  "webDir": "www",
+  "server": {
+    "url": "https://gccd.xnssoft.com/dv/?v=103",
+    "androidScheme": "https",
+    "allowNavigation": ["gccd.xnssoft.com", "*.xnssoft.com"]
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {}
+}

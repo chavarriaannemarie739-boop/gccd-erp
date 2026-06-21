@@ -1,0 +1,222 @@
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+  <view class="navbar-title">创建报工</view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+  <view class="section-title">报工信息</view>
+
+  <van-cell-group>
+    <van-field label="关联单号" placeholder="无" value="{{relation_code}}" disabled required />
+    <van-field label="工序名称" placeholder="无" value="{{processes_name}}（{{process_code}}）" readonly required />
+    <van-field label="工艺名称" placeholder="无" value="{{routing_name}}（{{routing_code}}）" readonly required />
+    <!-- <van-field label="物料名称" type="text" value="{{materialName}}({{materialSpec}})" readonly required /> -->
+    <van-field label="圆钢型号" type="text" value="{{y_material_name}}({{y_material_spec}})" readonly required />
+    <van-field label="断钢型号" type="text" value="{{c_material_spec}}" readonly required />
+    <van-field label="成品型号" type="text" value="{{c_material_model}}" readonly required />
+    <van-field label="已报工吨数" type="text" value="{{reportNum}}" readonly required />
+  </van-cell-group>
+
+  <view class="section-title">工序报工</view>
+  <view class="process-item">
+    <van-cell-group>
+      <!-- 班次选择 (白/夜班) -->
+      <van-cell title="生产班次" required border="{{false}}" title-class="label-title">
+        <view class="shift-selector">
+          <view class="shift-btn {{class === 0 ? 'active' : ''}}" bindtap="onClassSelect" data-value="0">
+            <van-icon name="sun-o" wx:if="{{class === 0}}" color="#fff" />
+            <text>白班</text>
+          </view>
+          <view class="shift-btn {{class === 1 ? 'active' : ''}}" bindtap="onClassSelect" data-value="1">
+            <van-icon name="more-o" wx:if="{{class === 1}}" color="#fff" />
+            <text>夜班</text>
+          </view>
+        </view>
+      </van-cell>
+
+      <!-- 报工支数 - 穿孔、球化、矫直工序显示 -->
+      <van-field wx:if="{{showYarnCountField}}" label="报工支数" placeholder="请输入报工支数" value="{{yarn_count}}" bind:input="onYarnCountInput" data-field="yarn_count" required error-message="{{invalidYarnCount ? '请输入有效的数字' : ''}}">
+        <van-button slot="button" size="small" type="primary" bind:tap="calculateWeightByYarnCount">
+          计算
+        </van-button>
+      </van-field>
+
+      <!-- 报工吨量 - 通用字段 -->
+      <van-field wx:if="{{showCommonFields}}" label="报工吨数" placeholder="请输入报工吨数" value="{{report_num}}" bind:input="onInputChange" data-field="report_num" required error-message="{{invalidInput ? '请输入有效的数字（如 10 或 10.5）' : ''}}"/>
+
+      <!-- 断钢工序 -->
+      <block wx:if="{{processes_name === '断钢'}}">
+        <van-field label="设备名称" type="text" placeholder="请选择设备名称" value="{{device_name}}" readonly required bind:tap="showDevicePicker" />
+      </block>
+
+      <!-- 穿孔工序 -->
+      <block wx:if="{{processes_name === '穿孔'}}">
+        <van-field wx:if="{{deviceLocked}}" label="设备名称" type="text" value="{{device_name}}" readonly disabled />
+        <van-field wx:else label="设备名称" type="text" placeholder="请选择设备名称" value="{{device_name}}" readonly required bind:tap="showDevicePicker" />
+        <van-field label="生产人员" type="text" placeholder="请选择生产人员" value="{{product_user_display}}" readonly required bind:tap="showProductUserPicker" />
+        <van-field label="开车人员" type="text" placeholder="请选择开车人员" value="{{card_user_display}}" readonly required bind:tap="showCardUserPicker" />
+      </block>
+
+      <!-- 球化 -->
+      <block wx:if="{{processes_name === '球化'}}">
+        <van-field label="设备名称" type="text" placeholder="请选择设备名称" value="{{device_name}}" readonly required bind:tap="showDevicePicker" />
+        <van-field label="生产人员" type="text" placeholder="请选择生产人员" value="{{product_user_display}}" readonly required bind:tap="showProductUserPicker" />
+      </block>
+
+      <!-- 矫直 -->
+      <block wx:if="{{processes_name === '矫直'}}">
+        <van-field label="设备名称" type="text" placeholder="请选择设备名称" value="{{device_name}}" readonly required bind:tap="showDevicePicker" />
+        <van-cell title="是否代理班长" required>
+          <van-radio-group slot="right-icon" value="{{is_replace}}" bind:change="onReplaceChange">
+            <van-radio name="0" shape="square" style="margin-right: 15px;">否</van-radio>
+            <van-radio name="1" shape="square">是</van-radio>
+          </van-radio-group>
+        </van-cell>
+      </block>
+
+      <!-- 酸洗工序 -->
+      <block wx:if="{{processes_name === '酸洗'}}">
+        <van-field label="生产人员" type="text" placeholder="请选择生产人员" value="{{product_user_display}}" readonly required bind:tap="showProductUserPicker" />
+      </block>
+
+      <block wx:if="{{processes_name === '穿孔' || processes_name === '球化' || processes_name === '酸洗'}}">
+        <van-field label="不满勤" type="text" placeholder="请选择不满勤人员" value="{{notFullAttendDisplay || ''}}" readonly bind:tap="showNotFullAttendUserPicker" />
+        <view class="defective-table" wx:if="{{notFullAttendItems.length > 0}}">
+          <view class="table-header">
+            <view class="table-row">
+              <view class="table-cell header-cell" style="width: 45%">人员</view>
+              <view class="table-cell header-cell" style="width: 35%">上班时长</view>
+              <view class="table-cell header-cell" style="width: 20%">操作</view>
+            </view>
+          </view>
+          <view class="table-body">
+            <view class="table-row" wx:for="{{notFullAttendItems}}" wx:key="user_id">
+              <view class="table-cell" style="width: 45%">{{item.nickname}}</view>
+              <view class="table-cell" style="width: 35%">
+                <input type="digit" value="{{item.work_hours}}" data-index="{{index}}" bindinput="onNotFullAttendHoursChange" placeholder="请输入时长" />
+              </view>
+              <view class="table-cell" style="width: 20%">
+                <van-icon name="delete" class="delete-icon" data-index="{{index}}" bind:click="removeNotFullAttendItem" />
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <van-field label="不良品" type="text" placeholder="请选择不良品类型" value="{{defective_display || ''}}" readonly bind:tap="showDefectivePicker" />
+      <!-- 不良品明细表格 -->
+      <view class="defective-table" wx:if="{{defectiveItems.length > 0}}">
+        <view class="table-header">
+          <view class="table-row">
+            <view class="table-cell header-cell" style="width: 50%">不良品类型</view>
+            <view class="table-cell header-cell" style="width: 30%">数量</view>
+            <view class="table-cell header-cell" style="width: 20%">操作</view>
+          </view>
+        </view>
+        <view class="table-body">
+          <view class="table-row" wx:for="{{defectiveItems}}" wx:key="index">
+            <view class="table-cell" style="width: 50%">{{item.typeText}}</view>
+            <view class="table-cell" style="width: 30%">
+              <input type="number" value="{{item.quantity}}" data-index="{{index}}" bindinput="onDefectiveQuantityChange" placeholder="数量" />
+            </view>
+            <view class="table-cell" style="width: 20%">
+              <van-icon name="delete" class="delete-icon" data-index="{{index}}" bind:click="removeDefectiveItem" />
+            </view>
+          </view>
+        </view>
+      </view>
+
+
+      <!-- 断钢、穿孔 - 型号选项 -->
+      <!-- <block wx:if="{{processes_name === '断钢' || processes_name === '穿孔'}}">
+                <van-field label="型号选择" type="text" placeholder="请选择型号" value="{{wage_display}}" readonly required bind:tap="showWagePicker" />
+            </block> -->
+      <!-- 添加型号选择弹窗 -->
+      <van-popup show="{{showWagePopup}}" position="bottom" round bind:close="hideWagePicker">
+        <van-picker title="选择型号选项" show-toolbar columns="{{wageOptions}}" value-key="material_spec" bind:confirm="onWageConfirm" bind:cancel="hideWagePicker" />
+      </van-popup>
+
+      <van-field label="备注" placeholder="请输入备注" value="{{remark}}" bind:input="onInputChange" data-field="remark" />
+    </van-cell-group>
+  </view>
+
+  <view class="submit-btn">
+    <van-button type="primary" block bind:click="submitForm" loading="{{loading}}" disabled="{{submitting}}">提交报工</van-button>
+  </view>
+
+  <!-- 不良品选择弹窗 -->
+  <van-popup show="{{showDefectivePopup}}" position="bottom" round bind:close="hideDefectivePicker">
+    <van-picker title="选择不良品类型" show-toolbar columns="{{defectiveOptions}}" bind:confirm="onDefectiveConfirm" bind:cancel="hideDefectivePicker" />
+  </van-popup>
+
+  <!-- 设备选择弹窗 -->
+  <van-popup show="{{showDevicePopup}}" position="bottom" round bind:close="hideDevicePicker">
+    <van-picker title="选择设备" show-toolbar columns="{{deviceOptions}}" value-key="device_name" bind:confirm="onDeviceConfirm" bind:cancel="hideDevicePicker" />
+  </van-popup>
+
+  <!-- 人员选择弹窗  -->
+  <van-popup show="{{showUserPopup}}" position="bottom" round bind:close="hideUserPicker" custom-style="height: 70vh">
+    <view class="user-picker-container">
+      <view class="user-picker-header">
+        <view class="user-picker-title">{{userPickerTitle}}</view>
+        <view class="user-search-box">
+          <input
+            class="user-search-input"
+            placeholder="输入姓名查找"
+            value="{{userSearchValue}}"
+            bindinput="onUserSearchInput"
+            confirm-type="search"
+          />
+          <view wx:if="{{userSearchValue}}" class="user-search-clear" bindtap="clearUserSearch">清除</view>
+        </view>
+        <view class="user-count">已选 {{selectedUserIds.length}} 人</view>
+        <view class="selected-tags" wx:if="{{selectedUserNames.length > 0}}">
+          <view class="selected-tag" wx:for="{{selectedUserNames}}" wx:key="*this">{{item}}</view>
+        </view>
+        <view wx:if="{{filteredUserOptions.length === 0 && userSearchValue}}" class="user-search-empty">没找到这个人，换个字试试</view>
+      </view>
+
+      <scroll-view scroll-y class="user-scroll-view" style="max-height: 50vh;" scroll-with-animation>
+        <van-checkbox-group value="{{selectedUserIds}}" bind:change="onUserSelectChange">
+          <van-cell-group>
+            <van-cell
+              wx:for="{{filteredUserOptions}}"
+              wx:key="user_id"
+              clickable
+              data-user-id="{{item.user_id}}"
+              bind:click="onUserCellTap"
+              title-class="user-cell-title"
+              label-class="user-cell-label"
+            >
+              <view slot="title">
+                <text class="user-name">{{item.nickname || '未知用户'}}</text>
+                <text class="user-dept">-{{item.dept_names || '未分配部门'}}</text>
+              </view>
+              <van-checkbox slot="right-icon" name="{{item.user_id}}" checked="{{selectedUserIds.indexOf(item.user_id) !== -1}}" catch:tap="noop" />
+            </van-cell>
+          </van-cell-group>
+        </van-checkbox-group>
+      </scroll-view>
+
+      <view class="user-picker-footer">
+        <van-button type="default" block bind:click="hideUserPicker">取消</van-button>
+        <van-button type="primary" block bind:click="confirmUserSelect" disabled="{{selectedUserIds.length === 0}}">
+          确定({{selectedUserIds.length}})
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+</view>
+<van-dialog
+  show="{{ showSubmitSuccessDialog }}"
+  title="提交成功"
+  message="报工已成功提交。若刚才网络较慢，请勿重复点击提交；可到上一页列表核对是否已有记录。"
+  show-cancel-button="{{ false }}"
+  confirm-button-text="确定"
+  close-on-click-overlay="{{ false }}"
+  bind:confirm="onSubmitSuccessConfirm"
+  bind:close="onSubmitSuccessDialogClose"
+/>
+<van-toast id="van-toast" />

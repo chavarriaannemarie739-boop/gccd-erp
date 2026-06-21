@@ -1,0 +1,34 @@
+// 暗黑 css
+
+html.dark {
+  --menuBg: var(--el-bg-color-overlay);
+  --menuText: #fff;
+  --menuHover: rgb(0 0 0 / 20%);
+  --menuActiveText: var(--el-menu-active-color);
+  --subMenuBg: var(--el-menu-bg-color);
+  --subMenuHover: rgb(0 0 0 / 20%);
+  --subMenuActiveText: var(--el-menu-active-color);
+
+  // wangEditor
+  --w-e-textarea-bg-color: var(--el-bg-color-overlay);
+  --w-e-toolbar-bg-color: var(--el-bg-color-overlay);
+  --w-e-modal-button-bg-color: var(--el-bg-color-overlay);
+  --w-e-toolbar-border-color: var(--el-button-border-color);
+
+  .navbar {
+    background-color: var(--el-bg-color);
+    .setting-container .setting-item:hover {
+      background: var(--el-fill-color-light);
+    }
+  }
+
+  .right-panel-btn {
+    background-color: var(--el-color-primary-dark);
+  }
+
+  .sidebar-container {
+    .getInspectionRecordAPI.is-active .svg-icon {
+      fill: var(--el-color-primary);
+    }
+  }
+}

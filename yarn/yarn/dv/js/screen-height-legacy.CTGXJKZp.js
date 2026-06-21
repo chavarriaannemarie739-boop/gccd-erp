@@ -1,0 +1,1 @@
+System.register(["./tagsView-legacy.DpthYsfP.js"],function(e,t){"use strict";var n;return{setters:[function(e){n=e.u}],execute:function(){e("s",function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:300;n.tagsView||(e-=37);var t=document.documentElement.clientHeight||document.body.clientHeight;return t?t-e:880-e})}}});

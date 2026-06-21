@@ -1,0 +1,6 @@
+<!--pages/components/scan-code/1.wxml-->
+<!-- <text>pages/components/scan-code/1.wxml</text> -->
+<view class="scan-btn" bindtap="handleScan">
+    <van-icon name="scan" size="20px" color="#0f766e" />
+    <text class="scan-text">扫码</text>
+</view>

@@ -1,0 +1,1 @@
+import{s as t}from"./request.DiJWZ6DK.js";const o="/admin/production.Inventory/";function r(r){return t({url:o+"autoCalc",method:"post",data:r})}function n(r){return t({url:o+"list",method:"post",data:r})}function a(r){return t({url:o+"monthlyLedger",method:"post",data:r})}export{r as a,n as l,a as m};

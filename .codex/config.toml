@@ -1,0 +1,9 @@
+[mcp_servers.chrome-devtools]
+args = [
+    "-y",
+    "chrome-devtools-mcp@latest",
+]
+command = "/usr/local/bin/npx"
+
+[mcp_servers.chrome-devtools.env]
+PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"

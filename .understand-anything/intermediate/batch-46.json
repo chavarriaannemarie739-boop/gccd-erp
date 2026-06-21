@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/SettingEmailTest.BPFOWpTw.js",
+    "public/admin/js/SettingLog.DWRHqIRZ.js",
+    "public/admin/js/SettingLogreg.DAdfbMuy.js",
+    "public/admin/js/SettingLogs.BGthagwJ.js",
+    "public/admin/js/SettingMember.DCitwrSd.js",
+    "public/admin/js/settings.DgXRU7rI.js",
+    "public/admin/js/SettingServers.BNmWxiA1.js",
+    "public/admin/js/SettingSystems.DNhf-2g_.js",
+    "public/admin/js/SettingThird.WRlSp_2A.js",
+    "public/admin/js/SettingToken.s3Pgi6Lc.js",
+    "public/admin/js/SettingTokens.BRKYIBhl.js",
+    "public/admin/js/settlement-user.DEcGqyvH.js",
+    "public/admin/js/settlement.C9CO4rMo.js",
+    "public/admin/js/share.C3XpUTzs.js",
+    "public/admin/js/ship.BdfUYBh_.js",
+    "public/admin/js/shop.BT7mDpyv.js",
+    "public/admin/js/shopping-bag.EH9-n452.js",
+    "public/admin/js/shopping-cart-full.C-Nu2LgG.js",
+    "public/admin/js/shopping-cart.Sk0JdbNy.js",
+    "public/admin/js/shopping-trolley.ClOR7Qr3.js",
+    "public/admin/js/smoking.Czyez8s5.js",
+    "public/admin/js/soccer.DFoJSPnA.js",
+    "public/admin/js/sold-out.DGmexIFd.js",
+    "public/admin/js/sort-down.DRPnqq_f.js",
+    "public/admin/js/sort-up.B3PvetPG.js"
+  ],
+  "results": []
+}

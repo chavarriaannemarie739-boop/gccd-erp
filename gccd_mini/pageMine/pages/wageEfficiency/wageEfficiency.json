@@ -1,0 +1,6 @@
+{
+    "usingComponents": {
+        "ec-canvas": "../../components/ec-canvas/ec-canvas",
+        "van-icon": "@vant/weapp/icon/index"
+    }
+}

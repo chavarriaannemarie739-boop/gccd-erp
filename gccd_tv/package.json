@@ -1,0 +1,24 @@
+{
+  "name": "gccd-tv",
+  "version": "1.0.0",
+  "description": "高齿传动生产车间数据大屏 — Android TV",
+  "private": true,
+  "scripts": {
+    "sync:web": "node scripts/sync-web.mjs",
+    "build:web": "cd ../yarn/yarn && npm run build:dv",
+    "prepare:www": "npm run build:web && npm run sync:web",
+    "cap:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build": "npm run prepare:www && npx cap sync android && cd android && ./gradlew assembleRelease",
+    "android:apk": "npm run android:build"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/splash-screen": "^6.0.3",
+    "@capacitor/status-bar": "^6.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}

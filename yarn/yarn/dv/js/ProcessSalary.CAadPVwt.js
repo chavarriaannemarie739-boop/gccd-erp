@@ -1,0 +1,1 @@
+import{s as t}from"./request.DiJWZ6DK.js";const a="/admin/wage.ProcessWage/";function e(e){return t({url:a+"list",method:"post",data:e})}function o(e){return t({url:a+"add",method:"post",data:e})}function r(e){return t({url:a+"edit",method:"post",data:e})}function s(e){return t({url:a+"dele",method:"post",data:e})}export{o as a,s as d,r as e,e as l};

@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/index.html",
+    "public/admin/js/_plugin-vue_export-helper.BCo6x5W8.js",
+    "public/admin/js/_Uint8Array.BWWvHkHv.js",
+    "public/admin/js/accord.DDTdy_fs.js",
+    "public/admin/js/add-location.Cl2rAszD.js",
+    "public/admin/js/aim.BqK42vXG.js",
+    "public/admin/js/alarm-clock.DcRoxKMi.js",
+    "public/admin/js/api.JPo9LjhY.js",
+    "public/admin/js/apidoc.BZFr85jh.js",
+    "public/admin/js/apple.DnlKUUOs.js",
+    "public/admin/js/arrow-down-bold.BE_jpmAq.js",
+    "public/admin/js/arrow-down.CM7CF8Hr.js",
+    "public/admin/js/arrow-left-bold.CAVTl9Gt.js",
+    "public/admin/js/arrow-left.CoN-h_4o.js",
+    "public/admin/js/arrow-right-bold.8_kJIwQy.js",
+    "public/admin/js/arrow-right.OOExBkud.js",
+    "public/admin/js/arrow-up-bold.lJ35YcFi.js",
+    "public/admin/js/arrow-up.B52apUMK.js",
+    "public/admin/js/article.D3Cjts8_.js",
+    "public/admin/js/avatar.Fkwswqvm.js",
+    "public/admin/js/back.BwmciBBi.js",
+    "public/admin/js/backfill.GwPMi1QA.js",
+    "public/admin/js/baseball.Db8pgl1u.js",
+    "public/admin/js/basketball.BNTk5O9Z.js",
+    "public/admin/js/bell-filled.BQyd8xj6.js"
+  ],
+  "results": []
+}

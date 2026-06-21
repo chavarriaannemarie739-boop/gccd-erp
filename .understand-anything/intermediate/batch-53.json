@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/apidoc/assets/tcl.66c7f2d0.js",
+    "public/apidoc/assets/tsMode.d6a40307.js",
+    "public/apidoc/assets/twig.dc81619a.js",
+    "public/apidoc/assets/typescript.3bb1d1e7.js",
+    "public/apidoc/assets/vb.e859ab61.js",
+    "public/apidoc/assets/xml.0cc8d6ec.js",
+    "public/apidoc/assets/yaml.3fb67a35.js",
+    "public/apidoc/config.js",
+    "public/apidoc/index.html",
+    "public/apidoc/monacoeditorwork/editor.worker.bundle.js",
+    "public/apidoc/monacoeditorwork/json.worker.bundle.js",
+    "public/apidoc/monacoeditorwork/ts.worker.bundle.js",
+    "public/apidoc/style.css",
+    "public/apidoc/utils/md5.js",
+    "public/index.php",
+    "public/js/_plugin-vue_export-helper.BCo6x5W8.js",
+    "public/js/_Uint8Array.BWWvHkHv.js",
+    "public/js/accord.DDTdy_fs.js",
+    "public/js/add-location.Cl2rAszD.js",
+    "public/js/aim.BqK42vXG.js",
+    "public/js/alarm-clock.DcRoxKMi.js",
+    "public/js/api.JPo9LjhY.js",
+    "public/js/apidoc.BZFr85jh.js",
+    "public/js/apple.DnlKUUOs.js",
+    "public/js/arrow-down-bold.BE_jpmAq.js"
+  ],
+  "results": []
+}

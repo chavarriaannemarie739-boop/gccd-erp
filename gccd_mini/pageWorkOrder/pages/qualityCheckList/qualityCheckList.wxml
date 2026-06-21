@@ -1,0 +1,125 @@
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+  <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+  <view class="navbar-title">质量检验</view>
+  <view class="navbar-right"></view>
+</view>
+
+<view class="page-shell" style="padding-top: {{statusBarHeight + 44}}px">
+  <van-tabs active="{{activeTab}}" bind:change="onTabChange" color="#6366f1" line-width="60rpx" animated swipeable>
+
+    <!-- Tab1：每日质检 -->
+    <van-tab title="每日质检">
+      <scroll-view scroll-y class="tab-scroll">
+        <view class="tab-inner">
+
+          <view class="date-banner date-banner--qc">
+            <view class="date-banner-row">
+              <van-icon name="calendar-o" size="32rpx" color="#6366f1" />
+              <text class="date-label">质检日期</text>
+              <text class="date-value date-value--qc">{{checkDate}}</text>
+            </view>
+            <text class="date-hint">统计周期：昨日 07:00 ~ 今日 07:00</text>
+          </view>
+
+          <view class="process-list">
+            <view
+              wx:for="{{processes}}"
+              wx:key="key"
+              class="process-card"
+              hover-class="process-card--hover"
+              data-key="{{item.key}}"
+              bind:tap="goAdd"
+            >
+              <view class="process-card-left">
+                <view class="process-index process-index--qc {{item.count > 0 ? 'process-index--done-qc' : ''}}">
+                  {{item.index}}
+                </view>
+                <view class="process-info">
+                  <text class="process-name">{{item.key}}</text>
+                  <text class="shift-tag {{item.count > 0 ? 'shift-tag--done-qc' : ''}}">
+                    {{item.count > 0 ? '已提交 ' + item.count + ' 条' : '未填报'}}
+                  </text>
+                </view>
+              </view>
+              <view class="process-card-right">
+                <text class="go-btn go-btn--qc" wx:if="{{item.count === 0}}">去质检</text>
+                <van-icon wx:else name="passed" size="40rpx" color="#6366f1" />
+              </view>
+            </view>
+          </view>
+
+        </view>
+      </scroll-view>
+    </van-tab>
+
+    <!-- Tab2：质检记录 -->
+    <van-tab title="质检记录">
+      <scroll-view scroll-y class="tab-scroll">
+        <view class="tab-inner">
+
+          <view wx:if="{{historyEmpty}}" class="history-empty">
+            <van-icon name="search" size="120rpx" color="#d1d5db" />
+            <text class="history-empty-text">暂无质检记录</text>
+            <text class="history-empty-hint">完成质检填报后，记录会出现在这里</text>
+          </view>
+
+          <view wx:else class="history-list">
+            <view wx:for="{{historyDays}}" wx:key="date" class="day-card day-card--qc">
+
+              <view class="day-header" bind:tap="toggleDay" data-idx="{{index}}">
+                <view class="day-header-left">
+                  <view class="day-date-wrap">
+                    <text class="day-date">{{item.date}}</text>
+                    <text class="day-weekday day-weekday--qc">{{item.weekday}}</text>
+                  </view>
+                  <text class="day-summary-text">{{item.processCount}} 道工序 · {{item.itemCount}} 条 · 不良品 {{item.totalDefects}} 支</text>
+                </view>
+                <van-icon name="{{item.expanded ? 'arrow-up' : 'arrow-down'}}" size="28rpx" color="#9ca3af" />
+              </view>
+
+              <view wx:if="{{item.expanded}}" class="day-body">
+                <view wx:for="{{item.groups}}" wx:for-item="group" wx:for-index="gIdx" wx:key="name" class="proc-group">
+
+                  <view class="proc-header" bind:tap="toggleProcess" data-day-idx="{{index}}" data-proc-idx="{{gIdx}}">
+                    <view class="proc-header-left">
+                      <view class="proc-dot proc-dot--qc"></view>
+                      <text class="proc-name">{{group.name}}</text>
+                      <text class="proc-count">{{group.items.length}} 条 · {{group.defectCount}} 支不良品</text>
+                    </view>
+                    <van-icon name="{{group.expanded ? 'arrow-up' : 'arrow-down'}}" size="24rpx" color="#9ca3af" />
+                  </view>
+
+                  <view wx:if="{{group.expanded}}" class="proc-detail">
+                    <view wx:for="{{group.items}}" wx:for-item="row" wx:key="index" class="qc-record-card">
+                      <view class="qc-record-material">
+                        <view class="qc-record-label">{{row.c_material_name || '-'}}</view>
+                        <view class="qc-record-sub">{{row.c_material_spec || '-'}} / {{row.c_material_model || '-'}}</view>
+                      </view>
+                      <view wx:for="{{row.defective_items}}" wx:for-item="defect" wx:key="type" class="qc-defect-row">
+                        <text class="qc-defect-name">{{defect.typeText}}</text>
+                        <view class="qc-defect-shifts">
+                          <text class="qc-shift-tag qc-shift--day" wx:if="{{defect.day_qty && defect.day_qty !== '0'}}">白 {{defect.day_qty}}支</text>
+                          <text class="qc-shift-tag qc-shift--night" wx:if="{{defect.night_qty && defect.night_qty !== '0'}}">夜 {{defect.night_qty}}支</text>
+                          <text class="qc-shift-tag" wx:if="{{(!defect.day_qty || defect.day_qty === '0') && (!defect.night_qty || defect.night_qty === '0')}}">-</text>
+                        </view>
+                      </view>
+                    </view>
+                    <!-- 备注展示 -->
+                    <view wx:if="{{group.remark}}" class="qc-remark-box">
+                      <text class="qc-remark-label">备注：</text>
+                      <text class="qc-remark-text">{{group.remark}}</text>
+                    </view>
+                  </view>
+
+                </view>
+              </view>
+
+            </view>
+          </view>
+
+        </view>
+      </scroll-view>
+    </van-tab>
+
+  </van-tabs>
+</view>

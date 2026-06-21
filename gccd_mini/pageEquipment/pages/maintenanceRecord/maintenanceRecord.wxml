@@ -1,0 +1,108 @@
+<!-- 自定义导航栏 -->
+<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left">
+        <view class="navbar-back-btn" bindtap="navigateBack">
+            <van-icon name="arrow-left" size="20px" color="#333" />
+            <text class="back-text">返回</text>
+        </view>
+    </view>
+    <view class="navbar-title">维修记录详情</view>
+    <view class="navbar-right"></view>
+</view>
+
+<!-- 页面内容 -->
+<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+    <!-- 维修基本信息卡片 -->
+    <view class="device-card">
+        <view class="device-info">
+            <view class="info-item">
+                <text class="info-label">设备编码：</text>
+                <text class="info-value">{{repairInfo.device_code}}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">维修单号：</text>
+                <text class="info-value">{{repairInfo.repair_code}}</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 报修信息 -->
+    <view class="device-card">
+        <view class="card-title">报修信息</view>
+        <view class="device-info">
+            <view class="info-item">
+                <text class="info-label">报修人：</text>
+                <text class="info-value">{{repairInfo.create_name}}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">报修项：</text>
+                <text class="info-value">{{repairInfo.repair_list}}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">报修详情：</text>
+                <text class="info-value">{{repairInfo.reason}}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">报修时间：</text>
+                <text class="info-value">{{repairInfo.create_time}}</text>
+            </view>
+        </view>
+        <view class="image-container" wx:if="{{repairInfo.imgs && repairInfo.imgs.length > 0}}">
+            <view class="card-title">报修图片</view>
+            <scroll-view class="image-scroll" scroll-x="true">
+                <view class="image-list">
+                    <image wx:for="{{repairInfo.imgs}}" wx:key="*this" src="{{item}}" mode="aspectFill" class="repair-image" bindtap="previewImage" data-imgs="{{repairInfo.imgs}}" data-index="{{index}}" />
+                </view>
+            </scroll-view>
+        </view>
+    </view>
+
+    <!-- 维修信息 -->
+    <view class="device-card">
+        <view class="card-title">维修信息</view>
+        <view class="device-info">
+            <view class="info-item">
+                <text class="info-label">维修人：</text>
+                <text class="info-value">{{repairInfo.user || '无' }}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">维修项：</text>
+                <text class="info-value">{{repairInfo.detail[0].repair_list||'无'}}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">维修详情：</text>
+                <text class="info-value">{{repairInfo.detail[0].detail||'无'}}</text>
+            </view>
+            <view class="info-item">
+                <text class="info-label">维修时间：</text>
+                <text class="info-value">{{repairInfo.detail[0].create_time||'无'}}</text>
+                <text class="repair-status {{repairInfo.status==0?'repairing':(repairInfo.status==1?'waiting':'normal')}}">{{repairInfo.status===0 ? '进行中' : (repairInfo.status===1 ? '待确认' : '已完成')}}</text>
+            </view>
+            <view class="info-item" wx:if="{{repairInfo.status === 2 && repairInfo.create_time && repairInfo.detail[0].create_time}}">
+                <text class="info-label">维修时长：</text>
+                <text class="info-value">{{repairDuration}}</text>
+            </view>
+            <view class="image-container" wx:if="{{repairInfo.detail[0].imgs && repairInfo.detail[0].imgs.length > 0}}">
+                <view class="card-title">维修图片</view>
+                <scroll-view class="image-scroll" scroll-x="true">
+                    <view class="image-list">
+                        <image wx:for="{{repairInfo.detail[0].imgs}}" wx:key="*this" src="{{item}}" mode="aspectFill" class="repair-image" bindtap="previewRepairImage" data-imgs="{{repairInfo.detail[0].imgs}}" data-index="{{index}}" />
+                    </view>
+                </scroll-view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{!repairInfo || Object.keys(repairInfo).length === 0}}">
+        <van-empty description="暂无维修记录详情" />
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading" wx:if="{{loading}}">
+        <van-loading size="24px" />
+        <text class="loading-text">加载中...</text>
+    </view>
+</view>
+
+<van-toast id="van-toast" />

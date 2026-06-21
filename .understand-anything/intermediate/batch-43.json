@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/notice.DRXGmovl.js",
+    "public/admin/js/notification.DcE45ugg.js",
+    "public/admin/js/odometer.BkXyJDej.js",
+    "public/admin/js/office-building.wk7eGLCe.js",
+    "public/admin/js/officialAccount.CYVzPGkm.js",
+    "public/admin/js/open.B0N48o6X.js",
+    "public/admin/js/operation.uxCcSrWu.js",
+    "public/admin/js/opportunity.Bx7L4j7o.js",
+    "public/admin/js/orange.aCHXCFU4.js",
+    "public/admin/js/paperclip.DRr8yI1z.js",
+    "public/admin/js/partly-cloudy.DOlggYcj.js",
+    "public/admin/js/pear.D4HCD5fi.js",
+    "public/admin/js/permission.HLIVEAed.js",
+    "public/admin/js/phone-filled.sAhQWANk.js",
+    "public/admin/js/phone.lydmOFHM.js",
+    "public/admin/js/picture-filled.BIKXfLKp.js",
+    "public/admin/js/picture-rounded.YyzJhzxf.js",
+    "public/admin/js/picture.CXtdBXCg.js",
+    "public/admin/js/pie-chart.CZRXmvLZ.js",
+    "public/admin/js/place.B04IZT22.js",
+    "public/admin/js/platform.Dfuwd87a.js",
+    "public/admin/js/plus.BqfiZ8DS.js",
+    "public/admin/js/pointer.C7AFGdYA.js",
+    "public/admin/js/position.DLvEhfeX.js",
+    "public/admin/js/post.n-7KgbPE.js"
+  ],
+  "results": []
+}

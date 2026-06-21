@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/apidoc/assets/powershell.edac1ff2.js",
+    "public/apidoc/assets/protobuf.9ea19330.js",
+    "public/apidoc/assets/pug.9be1efca.js",
+    "public/apidoc/assets/python.44cb1156.js",
+    "public/apidoc/assets/qsharp.e9c3e37c.js",
+    "public/apidoc/assets/r.000b11e3.js",
+    "public/apidoc/assets/razor.04d2ff3d.js",
+    "public/apidoc/assets/redis.fb351a5f.js",
+    "public/apidoc/assets/redshift.facc4811.js",
+    "public/apidoc/assets/restructuredtext.03b9c8d7.js",
+    "public/apidoc/assets/ruby.ac07c398.js",
+    "public/apidoc/assets/rust.7956447c.js",
+    "public/apidoc/assets/sb.64f7ffe9.js",
+    "public/apidoc/assets/scala.ab6b2e4b.js",
+    "public/apidoc/assets/scheme.0a9f32af.js",
+    "public/apidoc/assets/scss.bb5a3a95.js",
+    "public/apidoc/assets/shell.11589447.js",
+    "public/apidoc/assets/Skeleton.df0bda18.js",
+    "public/apidoc/assets/solidity.731be3c2.js",
+    "public/apidoc/assets/sophia.96bd523a.js",
+    "public/apidoc/assets/sparql.f4d727b3.js",
+    "public/apidoc/assets/sql.ae52386d.js",
+    "public/apidoc/assets/st.b8efae94.js",
+    "public/apidoc/assets/swift.90f88698.js",
+    "public/apidoc/assets/systemverilog.95aaa20b.js"
+  ],
+  "results": []
+}

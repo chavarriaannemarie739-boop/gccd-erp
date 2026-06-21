@@ -1,0 +1,1 @@
+System.register(["./request-legacy.Bgch1WoW.js"],function(t,e){"use strict";var n;return{setters:[function(t){n=t.s}],execute:function(){t({a:function(t){return n({url:e+"autoCalc",method:"post",data:t})},l:function(t){return n({url:e+"list",method:"post",data:t})},m:function(t){return n({url:e+"monthlyLedger",method:"post",data:t})}});var e="/admin/production.Inventory/"}}});

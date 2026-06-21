@@ -1,0 +1,4245 @@
+{
+  "version": "1.0.0",
+  "kind": "codebase",
+  "project": {
+    "name": "高齿传动 ERP 系统",
+    "languages": [
+      "JSON",
+      "JavaScript",
+      "Markdown",
+      "PHP",
+      "Vue",
+      "XML",
+      "neon",
+      "toml"
+    ],
+    "frameworks": [
+      "Vue.js"
+    ],
+    "description": "制造业ERP系统，包含后端PHP ThinkPHP服务、前端Vue/UniApp移动端、微信小程序三端。功能涵盖库存管理、生产工单、采购管理、销售管理、质量管理、设备管理、财务管理等制造业核心模块。",
+    "analyzedAt": "2026-05-26T00:00:00Z",
+    "gitCommitHash": "4a9e7ec83bf958ffd52a3c9cd230d94cee05005a"
+  },
+  "nodes": [
+    {
+      "id": "file:.mcp.json",
+      "type": "file",
+      "name": ".mcp.json",
+      "filePath": ".mcp.json",
+      "language": "JSON",
+      "fileCategory": "config",
+      "totalLines": 15,
+      "summary": "A json config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:AGENTS.md",
+      "type": "file",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 125,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:CLAUDE.md",
+      "type": "file",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 22,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:CONTRIBUTING.md",
+      "type": "file",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 84,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:PRECHECK.md",
+      "type": "file",
+      "name": "PRECHECK.md",
+      "filePath": "PRECHECK.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 34,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:README.md",
+      "type": "file",
+      "name": "README.md",
+      "filePath": "README.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 56,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:package.json",
+      "type": "file",
+      "name": "package.json",
+      "filePath": "package.json",
+      "language": "JSON",
+      "fileCategory": "config",
+      "totalLines": 7,
+      "summary": "A json config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:phpcs.xml",
+      "type": "file",
+      "name": "phpcs.xml",
+      "filePath": "phpcs.xml",
+      "language": "XML",
+      "fileCategory": "config",
+      "totalLines": 32,
+      "summary": "A xml config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:project_gaochi_report_date_rule.md",
+      "type": "file",
+      "name": "project_gaochi_report_date_rule.md",
+      "filePath": "project_gaochi_report_date_rule.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 45,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.planning/ARCHITECTURE.md",
+      "type": "file",
+      "name": "ARCHITECTURE.md",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 344,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:.planning/MEMORY.md",
+      "type": "file",
+      "name": "MEMORY.md",
+      "filePath": ".planning/MEMORY.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 29,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.planning/PROJECT.md",
+      "type": "file",
+      "name": "PROJECT.md",
+      "filePath": ".planning/PROJECT.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 208,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 83,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 89,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 78,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 64,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 97,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 121,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 83,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 89,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 78,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 64,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 97,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "type": "file",
+      "name": "SKILL.md",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 121,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:.codex/config.toml",
+      "type": "file",
+      "name": "config.toml",
+      "filePath": ".codex/config.toml",
+      "language": "toml",
+      "fileCategory": "config",
+      "totalLines": 9,
+      "summary": "A toml config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.cursorrules",
+      "type": "file",
+      "name": ".cursorrules",
+      "filePath": ".cursorrules",
+      "language": "unknown",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "summary": "A unknown code file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.php-cs-fixer.php",
+      "type": "file",
+      "name": ".php-cs-fixer.php",
+      "filePath": ".php-cs-fixer.php",
+      "language": "PHP",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "summary": "A php code file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "type": "file",
+      "name": "REPORT_STOCKTAKE_202605.md",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 104,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "type": "file",
+      "name": "STOCKTAKE-CALC.md",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "language": "Markdown",
+      "fileCategory": "docs",
+      "totalLines": 115,
+      "summary": "A markdown docs file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "type": "file",
+      "name": "repowiki-metadata.json",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "language": "JSON",
+      "fileCategory": "config",
+      "totalLines": 1,
+      "summary": "A json config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:gccd_app/manifest.json",
+      "type": "file",
+      "name": "manifest.json",
+      "filePath": "gccd_app/manifest.json",
+      "language": "JSON",
+      "fileCategory": "config",
+      "totalLines": 51,
+      "summary": "A json config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:gccd_app/package.json",
+      "type": "file",
+      "name": "package.json",
+      "filePath": "gccd_app/package.json",
+      "language": "JSON",
+      "fileCategory": "config",
+      "totalLines": 23,
+      "summary": "A json config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:gccd_app/pages.json",
+      "type": "file",
+      "name": "pages.json",
+      "filePath": "gccd_app/pages.json",
+      "language": "JSON",
+      "fileCategory": "config",
+      "totalLines": 21,
+      "summary": "A json config file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:gccd_app/App.vue",
+      "type": "file",
+      "name": "App.vue",
+      "filePath": "gccd_app/App.vue",
+      "language": "Vue",
+      "fileCategory": "code",
+      "totalLines": 58,
+      "summary": "A vue code file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:gccd_app/main.js",
+      "type": "file",
+      "name": "main.js",
+      "filePath": "gccd_app/main.js",
+      "language": "JavaScript",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "summary": "A javascript code file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "file:gccd_app/pages/index/index.vue",
+      "type": "file",
+      "name": "index.vue",
+      "filePath": "gccd_app/pages/index/index.vue",
+      "language": "Vue",
+      "fileCategory": "code",
+      "totalLines": 441,
+      "summary": "A vue code file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:gccd_app/pages/login/login.vue",
+      "type": "file",
+      "name": "login.vue",
+      "filePath": "gccd_app/pages/login/login.vue",
+      "language": "Vue",
+      "fileCategory": "code",
+      "totalLines": 510,
+      "summary": "A vue code file in the 高齿传动 ERP system",
+      "complexity": "high"
+    },
+    {
+      "id": "file:gccd_app/utils/token-bridge.js",
+      "type": "file",
+      "name": "token-bridge.js",
+      "filePath": "gccd_app/utils/token-bridge.js",
+      "language": "JavaScript",
+      "fileCategory": "code",
+      "totalLines": 107,
+      "summary": "A javascript code file in the 高齿传动 ERP system",
+      "complexity": "medium"
+    },
+    {
+      "id": "file:phpstan.neon",
+      "type": "file",
+      "name": "phpstan.neon",
+      "filePath": "phpstan.neon",
+      "language": "neon",
+      "fileCategory": "code",
+      "totalLines": 7,
+      "summary": "A neon code file in the 高齿传动 ERP system",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.mcp.json:mcpServers",
+      "type": "document",
+      "name": "mcpServers",
+      "filePath": ".mcp.json",
+      "summary": "Document: mcpServers",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:高齿传动 ERP 项目 — AI 助手统一工作守则",
+      "type": "document",
+      "name": "高齿传动 ERP 项目 — AI 助手统一工作守则",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 高齿传动 ERP 项目 — AI 助手统一工作守则",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:一、项目身份",
+      "type": "document",
+      "name": "一、项目身份",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 一、项目身份",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:二、代码规范",
+      "type": "document",
+      "name": "二、代码规范",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 二、代码规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:2.1 PHP（适配 PSR-12）",
+      "type": "document",
+      "name": "2.1 PHP（适配 PSR-12）",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 2.1 PHP（适配 PSR-12）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:2.2 微信小程序 JS（ES6+）",
+      "type": "document",
+      "name": "2.2 微信小程序 JS（ES6+）",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 2.2 微信小程序 JS（ES6+）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:2.3 Vue 3 后台",
+      "type": "document",
+      "name": "2.3 Vue 3 后台",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 2.3 Vue 3 后台",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:三、开发工作流",
+      "type": "document",
+      "name": "三、开发工作流",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 三、开发工作流",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:3.1 改前检查（强制）",
+      "type": "document",
+      "name": "3.1 改前检查（强制）",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 3.1 改前检查（强制）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:3.2 改后验证",
+      "type": "document",
+      "name": "3.2 改后验证",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 3.2 改后验证",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:3.3 Git 提交规范",
+      "type": "document",
+      "name": "3.3 Git 提交规范",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 3.3 Git 提交规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:3.4 多 AI 协作约定",
+      "type": "document",
+      "name": "3.4 多 AI 协作约定",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 3.4 多 AI 协作约定",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:四、工具链参考",
+      "type": "document",
+      "name": "四、工具链参考",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 四、工具链参考",
+      "complexity": "low"
+    },
+    {
+      "id": "document:AGENTS.md:五、不得违反（红线）",
+      "type": "document",
+      "name": "五、不得违反（红线）",
+      "filePath": "AGENTS.md",
+      "summary": "Document: 五、不得违反（红线）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CLAUDE.md:高齿传动 ERP 项目 — Claude Code 配置",
+      "type": "document",
+      "name": "高齿传动 ERP 项目 — Claude Code 配置",
+      "filePath": "CLAUDE.md",
+      "summary": "Document: 高齿传动 ERP 项目 — Claude Code 配置",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CLAUDE.md:与 AGENTS.md 的关系",
+      "type": "document",
+      "name": "与 AGENTS.md 的关系",
+      "filePath": "CLAUDE.md",
+      "summary": "Document: 与 AGENTS.md 的关系",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CLAUDE.md:本文件的作用",
+      "type": "document",
+      "name": "本文件的作用",
+      "filePath": "CLAUDE.md",
+      "summary": "Document: 本文件的作用",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:高齿传动 ERP 项目 — 开发者指南",
+      "type": "document",
+      "name": "高齿传动 ERP 项目 — 开发者指南",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 高齿传动 ERP 项目 — 开发者指南",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:快速开始",
+      "type": "document",
+      "name": "快速开始",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 快速开始",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:环境要求",
+      "type": "document",
+      "name": "环境要求",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 环境要求",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:后端启动",
+      "type": "document",
+      "name": "后端启动",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 后端启动",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:小程序构建",
+      "type": "document",
+      "name": "小程序构建",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 小程序构建",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:后台管理",
+      "type": "document",
+      "name": "后台管理",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 后台管理",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:代码规范",
+      "type": "document",
+      "name": "代码规范",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 代码规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:提交流程",
+      "type": "document",
+      "name": "提交流程",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 提交流程",
+      "complexity": "low"
+    },
+    {
+      "id": "document:CONTRIBUTING.md:项目结构",
+      "type": "document",
+      "name": "项目结构",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Document: 项目结构",
+      "complexity": "low"
+    },
+    {
+      "id": "document:PRECHECK.md:PRECHECK — 前置检查清单",
+      "type": "document",
+      "name": "PRECHECK — 前置检查清单",
+      "filePath": "PRECHECK.md",
+      "summary": "Document: PRECHECK — 前置检查清单",
+      "complexity": "low"
+    },
+    {
+      "id": "document:PRECHECK.md:网络",
+      "type": "document",
+      "name": "网络",
+      "filePath": "PRECHECK.md",
+      "summary": "Document: 网络",
+      "complexity": "low"
+    },
+    {
+      "id": "document:PRECHECK.md:CLI 工具",
+      "type": "document",
+      "name": "CLI 工具",
+      "filePath": "PRECHECK.md",
+      "summary": "Document: CLI 工具",
+      "complexity": "low"
+    },
+    {
+      "id": "document:PRECHECK.md:项目环境",
+      "type": "document",
+      "name": "项目环境",
+      "filePath": "PRECHECK.md",
+      "summary": "Document: 项目环境",
+      "complexity": "low"
+    },
+    {
+      "id": "document:PRECHECK.md:认证",
+      "type": "document",
+      "name": "认证",
+      "filePath": "PRECHECK.md",
+      "summary": "Document: 认证",
+      "complexity": "low"
+    },
+    {
+      "id": "document:PRECHECK.md:其他",
+      "type": "document",
+      "name": "其他",
+      "filePath": "PRECHECK.md",
+      "summary": "Document: 其他",
+      "complexity": "low"
+    },
+    {
+      "id": "document:README.md:高齿传动智能制造 ERP 系统",
+      "type": "document",
+      "name": "高齿传动智能制造 ERP 系统",
+      "filePath": "README.md",
+      "summary": "Document: 高齿传动智能制造 ERP 系统",
+      "complexity": "low"
+    },
+    {
+      "id": "document:README.md:项目结构",
+      "type": "document",
+      "name": "项目结构",
+      "filePath": "README.md",
+      "summary": "Document: 项目结构",
+      "complexity": "low"
+    },
+    {
+      "id": "document:README.md:核心功能",
+      "type": "document",
+      "name": "核心功能",
+      "filePath": "README.md",
+      "summary": "Document: 核心功能",
+      "complexity": "low"
+    },
+    {
+      "id": "document:README.md:项目配置文件",
+      "type": "document",
+      "name": "项目配置文件",
+      "filePath": "README.md",
+      "summary": "Document: 项目配置文件",
+      "complexity": "low"
+    },
+    {
+      "id": "document:README.md:开发",
+      "type": "document",
+      "name": "开发",
+      "filePath": "README.md",
+      "summary": "Document: 开发",
+      "complexity": "low"
+    },
+    {
+      "id": "document:README.md:技术栈来源",
+      "type": "document",
+      "name": "技术栈来源",
+      "filePath": "README.md",
+      "summary": "Document: 技术栈来源",
+      "complexity": "low"
+    },
+    {
+      "id": "document:package.json:devDependencies",
+      "type": "document",
+      "name": "devDependencies",
+      "filePath": "package.json",
+      "summary": "Document: devDependencies",
+      "complexity": "low"
+    },
+    {
+      "id": "document:project_gaochi_report_date_rule.md:规则",
+      "type": "document",
+      "name": "规则",
+      "filePath": "project_gaochi_report_date_rule.md",
+      "summary": "Document: 规则",
+      "complexity": "low"
+    },
+    {
+      "id": "document:project_gaochi_report_date_rule.md:适用范围",
+      "type": "document",
+      "name": "适用范围",
+      "filePath": "project_gaochi_report_date_rule.md",
+      "summary": "Document: 适用范围",
+      "complexity": "low"
+    },
+    {
+      "id": "document:project_gaochi_report_date_rule.md:涉及的核心方法",
+      "type": "document",
+      "name": "涉及的核心方法",
+      "filePath": "project_gaochi_report_date_rule.md",
+      "summary": "Document: 涉及的核心方法",
+      "complexity": "low"
+    },
+    {
+      "id": "document:project_gaochi_report_date_rule.md:字段说明",
+      "type": "document",
+      "name": "字段说明",
+      "filePath": "project_gaochi_report_date_rule.md",
+      "summary": "Document: 字段说明",
+      "complexity": "low"
+    },
+    {
+      "id": "document:project_gaochi_report_date_rule.md:删除重报处理",
+      "type": "document",
+      "name": "删除重报处理",
+      "filePath": "project_gaochi_report_date_rule.md",
+      "summary": "Document: 删除重报处理",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:高齿传动项目 - 技术架构",
+      "type": "document",
+      "name": "高齿传动项目 - 技术架构",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 高齿传动项目 - 技术架构",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:架构图",
+      "type": "document",
+      "name": "架构图",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 架构图",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:技术栈详情",
+      "type": "document",
+      "name": "技术栈详情",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 技术栈详情",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:后端技术栈",
+      "type": "document",
+      "name": "后端技术栈",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 后端技术栈",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:前端技术栈",
+      "type": "document",
+      "name": "前端技术栈",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 前端技术栈",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:小程序技术栈",
+      "type": "document",
+      "name": "小程序技术栈",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 小程序技术栈",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:模块划分",
+      "type": "document",
+      "name": "模块划分",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 模块划分",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:1. 后台管理模块 (admin/)",
+      "type": "document",
+      "name": "1. 后台管理模块 (admin/)",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 1. 后台管理模块 (admin/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:2. 数据模型 (common/model/admin/)",
+      "type": "document",
+      "name": "2. 数据模型 (common/model/admin/)",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 2. 数据模型 (common/model/admin/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:3. 业务服务 (common/service/admin/)",
+      "type": "document",
+      "name": "3. 业务服务 (common/service/admin/)",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 3. 业务服务 (common/service/admin/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:数据流图",
+      "type": "document",
+      "name": "数据流图",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 数据流图",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:目录权限",
+      "type": "document",
+      "name": "目录权限",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 目录权限",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:配置文件",
+      "type": "document",
+      "name": "配置文件",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 配置文件",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:主配置文件 (config/app.php)",
+      "type": "document",
+      "name": "主配置文件 (config/app.php)",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 主配置文件 (config/app.php)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:数据库配置 (config/database.php)",
+      "type": "document",
+      "name": "数据库配置 (config/database.php)",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 数据库配置 (config/database.php)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:路由配置 (config/route.php)",
+      "type": "document",
+      "name": "路由配置 (config/route.php)",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 路由配置 (config/route.php)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:安全设计",
+      "type": "document",
+      "name": "安全设计",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 安全设计",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:1. 认证机制",
+      "type": "document",
+      "name": "1. 认证机制",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 1. 认证机制",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:2. 权限控制",
+      "type": "document",
+      "name": "2. 权限控制",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 2. 权限控制",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:3. 数据安全",
+      "type": "document",
+      "name": "3. 数据安全",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 3. 数据安全",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:性能优化",
+      "type": "document",
+      "name": "性能优化",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 性能优化",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:1. 数据库优化",
+      "type": "document",
+      "name": "1. 数据库优化",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 1. 数据库优化",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:2. 缓存优化",
+      "type": "document",
+      "name": "2. 缓存优化",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 2. 缓存优化",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/ARCHITECTURE.md:3. 代码优化",
+      "type": "document",
+      "name": "3. 代码优化",
+      "filePath": ".planning/ARCHITECTURE.md",
+      "summary": "Document: 3. 代码优化",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:高齿传动项目 - 记忆索引",
+      "type": "document",
+      "name": "高齿传动项目 - 记忆索引",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 高齿传动项目 - 记忆索引",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:项目概览",
+      "type": "document",
+      "name": "项目概览",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 项目概览",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:业务模块",
+      "type": "document",
+      "name": "业务模块",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 业务模块",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:开发配置",
+      "type": "document",
+      "name": "开发配置",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 开发配置",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:决策记录",
+      "type": "document",
+      "name": "决策记录",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 决策记录",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:问题追踪",
+      "type": "document",
+      "name": "问题追踪",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 问题追踪",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/MEMORY.md:会话记忆（压缩）",
+      "type": "document",
+      "name": "会话记忆（压缩）",
+      "filePath": ".planning/MEMORY.md",
+      "summary": "Document: 会话记忆（压缩）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:高齿传动项目 - 项目概览",
+      "type": "document",
+      "name": "高齿传动项目 - 项目概览",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 高齿传动项目 - 项目概览",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:基本信息",
+      "type": "document",
+      "name": "基本信息",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 基本信息",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:项目结构",
+      "type": "document",
+      "name": "项目结构",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 项目结构",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:核心功能模块",
+      "type": "document",
+      "name": "核心功能模块",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 核心功能模块",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:1. 生产管理 (production/)",
+      "type": "document",
+      "name": "1. 生产管理 (production/)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 1. 生产管理 (production/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:2. 工资管理 (wage/)",
+      "type": "document",
+      "name": "2. 工资管理 (wage/)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 2. 工资管理 (wage/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:3. 设备管理 (repair/)",
+      "type": "document",
+      "name": "3. 设备管理 (repair/)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 3. 设备管理 (repair/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:4. 库存管理 (stock/, material/)",
+      "type": "document",
+      "name": "4. 库存管理 (stock/, material/)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 4. 库存管理 (stock/, material/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:5. 质量管理 (check/)",
+      "type": "document",
+      "name": "5. 质量管理 (check/)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 5. 质量管理 (check/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:6. 系统管理 (system/)",
+      "type": "document",
+      "name": "6. 系统管理 (system/)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 6. 系统管理 (system/)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:数据模型",
+      "type": "document",
+      "name": "数据模型",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 数据模型",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:核心表 (37 个 admin 模型)",
+      "type": "document",
+      "name": "核心表 (37 个 admin 模型)",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 核心表 (37 个 admin 模型)",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:环境配置",
+      "type": "document",
+      "name": "环境配置",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 环境配置",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:本地开发环境",
+      "type": "document",
+      "name": "本地开发环境",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 本地开发环境",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:线上环境",
+      "type": "document",
+      "name": "线上环境",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 线上环境",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:用户账号",
+      "type": "document",
+      "name": "用户账号",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 用户账号",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:开发规范",
+      "type": "document",
+      "name": "开发规范",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 开发规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:代码规范",
+      "type": "document",
+      "name": "代码规范",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 代码规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:命名规范",
+      "type": "document",
+      "name": "命名规范",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 命名规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:API 规范",
+      "type": "document",
+      "name": "API 规范",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: API 规范",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:部署说明",
+      "type": "document",
+      "name": "部署说明",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 部署说明",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:后端部署",
+      "type": "document",
+      "name": "后端部署",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 后端部署",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:前端部署",
+      "type": "document",
+      "name": "前端部署",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 前端部署",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:小程序部署",
+      "type": "document",
+      "name": "小程序部署",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 小程序部署",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:已知问题",
+      "type": "document",
+      "name": "已知问题",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 已知问题",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:相关资源",
+      "type": "document",
+      "name": "相关资源",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 相关资源",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:更新日志",
+      "type": "document",
+      "name": "更新日志",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 更新日志",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/PROJECT.md:2026-04-28",
+      "type": "document",
+      "name": "2026-04-28",
+      "filePath": ".planning/PROJECT.md",
+      "summary": "Document: 2026-04-28",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:GitNexus CLI Commands",
+      "type": "document",
+      "name": "GitNexus CLI Commands",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: GitNexus CLI Commands",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:Commands",
+      "type": "document",
+      "name": "Commands",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: Commands",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:analyze — Build or refresh the index",
+      "type": "document",
+      "name": "analyze — Build or refresh the index",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: analyze — Build or refresh the index",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:status — Check index freshness",
+      "type": "document",
+      "name": "status — Check index freshness",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: status — Check index freshness",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:clean — Delete the index",
+      "type": "document",
+      "name": "clean — Delete the index",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: clean — Delete the index",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:wiki — Generate documentation from the graph",
+      "type": "document",
+      "name": "wiki — Generate documentation from the graph",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: wiki — Generate documentation from the graph",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:list — Show all indexed repos",
+      "type": "document",
+      "name": "list — Show all indexed repos",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: list — Show all indexed repos",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:After Indexing",
+      "type": "document",
+      "name": "After Indexing",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: After Indexing",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:Troubleshooting",
+      "type": "document",
+      "name": "Troubleshooting",
+      "filePath": ".agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: Troubleshooting",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging with GitNexus",
+      "type": "document",
+      "name": "Debugging with GitNexus",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Debugging with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Checklist",
+      "type": "document",
+      "name": "Checklist",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Checklist",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging Patterns",
+      "type": "document",
+      "name": "Debugging Patterns",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Debugging Patterns",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Example: \"Payment endpoint returns 500 intermittently\"",
+      "type": "document",
+      "name": "Example: \"Payment endpoint returns 500 intermittently\"",
+      "filePath": ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Example: \"Payment endpoint returns 500 intermittently\"",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Exploring Codebases with GitNexus",
+      "type": "document",
+      "name": "Exploring Codebases with GitNexus",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Exploring Codebases with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Checklist",
+      "type": "document",
+      "name": "Checklist",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Checklist",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Resources",
+      "type": "document",
+      "name": "Resources",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Resources",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Example: \"How does payment processing work?\"",
+      "type": "document",
+      "name": "Example: \"How does payment processing work?\"",
+      "filePath": ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Example: \"How does payment processing work?\"",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:GitNexus Guide",
+      "type": "document",
+      "name": "GitNexus Guide",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: GitNexus Guide",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Always Start Here",
+      "type": "document",
+      "name": "Always Start Here",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Always Start Here",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Skills",
+      "type": "document",
+      "name": "Skills",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Skills",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Tools Reference",
+      "type": "document",
+      "name": "Tools Reference",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Tools Reference",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Resources Reference",
+      "type": "document",
+      "name": "Resources Reference",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Resources Reference",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Graph Schema",
+      "type": "document",
+      "name": "Graph Schema",
+      "filePath": ".agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Graph Schema",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Impact Analysis with GitNexus",
+      "type": "document",
+      "name": "Impact Analysis with GitNexus",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Impact Analysis with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Checklist",
+      "type": "document",
+      "name": "Checklist",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Checklist",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Understanding Output",
+      "type": "document",
+      "name": "Understanding Output",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Understanding Output",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Risk Assessment",
+      "type": "document",
+      "name": "Risk Assessment",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Risk Assessment",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Example: \"What breaks if I change validateUser?\"",
+      "type": "document",
+      "name": "Example: \"What breaks if I change validateUser?\"",
+      "filePath": ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Example: \"What breaks if I change validateUser?\"",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Refactoring with GitNexus",
+      "type": "document",
+      "name": "Refactoring with GitNexus",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Refactoring with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Checklists",
+      "type": "document",
+      "name": "Checklists",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Checklists",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Rename Symbol",
+      "type": "document",
+      "name": "Rename Symbol",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Rename Symbol",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Extract Module",
+      "type": "document",
+      "name": "Extract Module",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Extract Module",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Split Function/Service",
+      "type": "document",
+      "name": "Split Function/Service",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Split Function/Service",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Risk Rules",
+      "type": "document",
+      "name": "Risk Rules",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Risk Rules",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Example: Rename `validateUser` to `authenticateUser`",
+      "type": "document",
+      "name": "Example: Rename `validateUser` to `authenticateUser`",
+      "filePath": ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Example: Rename `validateUser` to `authenticateUser`",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:GitNexus CLI Commands",
+      "type": "document",
+      "name": "GitNexus CLI Commands",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: GitNexus CLI Commands",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:Commands",
+      "type": "document",
+      "name": "Commands",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: Commands",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:analyze — Build or refresh the index",
+      "type": "document",
+      "name": "analyze — Build or refresh the index",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: analyze — Build or refresh the index",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:status — Check index freshness",
+      "type": "document",
+      "name": "status — Check index freshness",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: status — Check index freshness",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:clean — Delete the index",
+      "type": "document",
+      "name": "clean — Delete the index",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: clean — Delete the index",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:wiki — Generate documentation from the graph",
+      "type": "document",
+      "name": "wiki — Generate documentation from the graph",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: wiki — Generate documentation from the graph",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:list — Show all indexed repos",
+      "type": "document",
+      "name": "list — Show all indexed repos",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: list — Show all indexed repos",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:After Indexing",
+      "type": "document",
+      "name": "After Indexing",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: After Indexing",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:Troubleshooting",
+      "type": "document",
+      "name": "Troubleshooting",
+      "filePath": ".claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "summary": "Document: Troubleshooting",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging with GitNexus",
+      "type": "document",
+      "name": "Debugging with GitNexus",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Debugging with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Checklist",
+      "type": "document",
+      "name": "Checklist",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Checklist",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging Patterns",
+      "type": "document",
+      "name": "Debugging Patterns",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Debugging Patterns",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Example: \"Payment endpoint returns 500 intermittently\"",
+      "type": "document",
+      "name": "Example: \"Payment endpoint returns 500 intermittently\"",
+      "filePath": ".claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "summary": "Document: Example: \"Payment endpoint returns 500 intermittently\"",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Exploring Codebases with GitNexus",
+      "type": "document",
+      "name": "Exploring Codebases with GitNexus",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Exploring Codebases with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Checklist",
+      "type": "document",
+      "name": "Checklist",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Checklist",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Resources",
+      "type": "document",
+      "name": "Resources",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Resources",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Example: \"How does payment processing work?\"",
+      "type": "document",
+      "name": "Example: \"How does payment processing work?\"",
+      "filePath": ".claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "summary": "Document: Example: \"How does payment processing work?\"",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:GitNexus Guide",
+      "type": "document",
+      "name": "GitNexus Guide",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: GitNexus Guide",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Always Start Here",
+      "type": "document",
+      "name": "Always Start Here",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Always Start Here",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Skills",
+      "type": "document",
+      "name": "Skills",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Skills",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Tools Reference",
+      "type": "document",
+      "name": "Tools Reference",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Tools Reference",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Resources Reference",
+      "type": "document",
+      "name": "Resources Reference",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Resources Reference",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Graph Schema",
+      "type": "document",
+      "name": "Graph Schema",
+      "filePath": ".claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "summary": "Document: Graph Schema",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Impact Analysis with GitNexus",
+      "type": "document",
+      "name": "Impact Analysis with GitNexus",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Impact Analysis with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Checklist",
+      "type": "document",
+      "name": "Checklist",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Checklist",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Understanding Output",
+      "type": "document",
+      "name": "Understanding Output",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Understanding Output",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Risk Assessment",
+      "type": "document",
+      "name": "Risk Assessment",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Risk Assessment",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Example: \"What breaks if I change validateUser?\"",
+      "type": "document",
+      "name": "Example: \"What breaks if I change validateUser?\"",
+      "filePath": ".claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "summary": "Document: Example: \"What breaks if I change validateUser?\"",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Refactoring with GitNexus",
+      "type": "document",
+      "name": "Refactoring with GitNexus",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Refactoring with GitNexus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:When to Use",
+      "type": "document",
+      "name": "When to Use",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: When to Use",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Workflow",
+      "type": "document",
+      "name": "Workflow",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Workflow",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Checklists",
+      "type": "document",
+      "name": "Checklists",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Checklists",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Rename Symbol",
+      "type": "document",
+      "name": "Rename Symbol",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Rename Symbol",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Extract Module",
+      "type": "document",
+      "name": "Extract Module",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Extract Module",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Split Function/Service",
+      "type": "document",
+      "name": "Split Function/Service",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Split Function/Service",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Tools",
+      "type": "document",
+      "name": "Tools",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Tools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Risk Rules",
+      "type": "document",
+      "name": "Risk Rules",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Risk Rules",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Example: Rename `validateUser` to `authenticateUser`",
+      "type": "document",
+      "name": "Example: Rename `validateUser` to `authenticateUser`",
+      "filePath": ".claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "summary": "Document: Example: Rename `validateUser` to `authenticateUser`",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.codex/config.toml:mcp_servers.chrome-devtools",
+      "type": "document",
+      "name": "mcp_servers.chrome-devtools",
+      "filePath": ".codex/config.toml",
+      "summary": "Document: mcp_servers.chrome-devtools",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.codex/config.toml:mcp_servers.chrome-devtools.env",
+      "type": "document",
+      "name": "mcp_servers.chrome-devtools.env",
+      "filePath": ".codex/config.toml",
+      "summary": "Document: mcp_servers.chrome-devtools.env",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:报工纠错与盘点推算 — 会话记忆（2026-05）",
+      "type": "document",
+      "name": "报工纠错与盘点推算 — 会话记忆（2026-05）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 报工纠错与盘点推算 — 会话记忆（2026-05）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:一、核心结论（给后续 AI / 开发）",
+      "type": "document",
+      "name": "一、核心结论（给后续 AI / 开发）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 一、核心结论（给后续 AI / 开发）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:1. 报工删改必须联动，不能只改 `ya_product_report` 一行",
+      "type": "document",
+      "name": "1. 报工删改必须联动，不能只改 `ya_product_report` 一行",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 1. 报工删改必须联动，不能只改 `ya_product_report` 一行",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:2. 12 点归属规则（不可乱）",
+      "type": "document",
+      "name": "2. 12 点归属规则（不可乱）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 2. 12 点归属规则（不可乱）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:3. 盘点智能推算 — 关键公式与坑",
+      "type": "document",
+      "name": "3. 盘点智能推算 — 关键公式与坑",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 3. 盘点智能推算 — 关键公式与坑",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:圆钢（溯源｜巨能｜50 等）",
+      "type": "document",
+      "name": "圆钢（溯源｜巨能｜50 等）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 圆钢（溯源｜巨能｜50 等）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:断钢（凯亚｜20#｜50 等，如 50*1.5）",
+      "type": "document",
+      "name": "断钢（凯亚｜20#｜50 等，如 50*1.5）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 断钢（凯亚｜20#｜50 等，如 50*1.5）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:数字核对例（断钢 凯亚｜20#｜50）",
+      "type": "document",
+      "name": "数字核对例（断钢 凯亚｜20#｜50）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 数字核对例（断钢 凯亚｜20#｜50）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:4. 用户要的流程（已对齐）",
+      "type": "document",
+      "name": "4. 用户要的流程（已对齐）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 4. 用户要的流程（已对齐）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:二、改动文件清单（部署用）",
+      "type": "document",
+      "name": "二、改动文件清单（部署用）",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 二、改动文件清单（部署用）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:三、数据关联速查",
+      "type": "document",
+      "name": "三、数据关联速查",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 三、数据关联速查",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:四、智能盘点操作顺序",
+      "type": "document",
+      "name": "四、智能盘点操作顺序",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 四、智能盘点操作顺序",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:五、未做 / 注意",
+      "type": "document",
+      "name": "五、未做 / 注意",
+      "filePath": ".planning/intel/REPORT_STOCKTAKE_202605.md",
+      "summary": "Document: 五、未做 / 注意",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:盘点 / 智能推算 — 上下文记忆（压缩版）",
+      "type": "document",
+      "name": "盘点 / 智能推算 — 上下文记忆（压缩版）",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 盘点 / 智能推算 — 上下文记忆（压缩版）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:1. 核心业务规则（必须一致）",
+      "type": "document",
+      "name": "1. 核心业务规则（必须一致）",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 1. 核心业务规则（必须一致）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:2. 关键代码位置",
+      "type": "document",
+      "name": "2. 关键代码位置",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 2. 关键代码位置",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:3. 已修复问题（需部署后端 + 发版小程序）",
+      "type": "document",
+      "name": "3. 已修复问题（需部署后端 + 发版小程序）",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 3. 已修复问题（需部署后端 + 发版小程序）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:4. 典型数据问题（非公式错）",
+      "type": "document",
+      "name": "4. 典型数据问题（非公式错）",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 4. 典型数据问题（非公式错）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:5. 已核对样例（calc_date=2026-05-20）",
+      "type": "document",
+      "name": "5. 已核对样例（calc_date=2026-05-20）",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 5. 已核对样例（calc_date=2026-05-20）",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:6. 审计工具",
+      "type": "document",
+      "name": "6. 审计工具",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 6. 审计工具",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:7. 数据库备忘",
+      "type": "document",
+      "name": "7. 数据库备忘",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 7. 数据库备忘",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:8. 待办 / 未改",
+      "type": "document",
+      "name": "8. 待办 / 未改",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 8. 待办 / 未改",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.planning/intel/STOCKTAKE-CALC.md:9. 部署检查清单",
+      "type": "document",
+      "name": "9. 部署检查清单",
+      "filePath": ".planning/intel/STOCKTAKE-CALC.md",
+      "summary": "Document: 9. 部署检查清单",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:knowledge_relations",
+      "type": "document",
+      "name": "knowledge_relations",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "summary": "Document: knowledge_relations",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_catalogs",
+      "type": "document",
+      "name": "wiki_catalogs",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "summary": "Document: wiki_catalogs",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_items",
+      "type": "document",
+      "name": "wiki_items",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "summary": "Document: wiki_items",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_overview",
+      "type": "document",
+      "name": "wiki_overview",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "summary": "Document: wiki_overview",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_readme",
+      "type": "document",
+      "name": "wiki_readme",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "summary": "Document: wiki_readme",
+      "complexity": "low"
+    },
+    {
+      "id": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_repo",
+      "type": "document",
+      "name": "wiki_repo",
+      "filePath": ".qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "summary": "Document: wiki_repo",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:name",
+      "type": "document",
+      "name": "name",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: name",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:appid",
+      "type": "document",
+      "name": "appid",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: appid",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:description",
+      "type": "document",
+      "name": "description",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: description",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:versionName",
+      "type": "document",
+      "name": "versionName",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: versionName",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:versionCode",
+      "type": "document",
+      "name": "versionCode",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: versionCode",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:transformPx",
+      "type": "document",
+      "name": "transformPx",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: transformPx",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:app-plus",
+      "type": "document",
+      "name": "app-plus",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: app-plus",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:quickapp",
+      "type": "document",
+      "name": "quickapp",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: quickapp",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:mp-weixin",
+      "type": "document",
+      "name": "mp-weixin",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: mp-weixin",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/manifest.json:h5",
+      "type": "document",
+      "name": "h5",
+      "filePath": "gccd_app/manifest.json",
+      "summary": "Document: h5",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:name",
+      "type": "document",
+      "name": "name",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: name",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:version",
+      "type": "document",
+      "name": "version",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: version",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:description",
+      "type": "document",
+      "name": "description",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: description",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:main",
+      "type": "document",
+      "name": "main",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: main",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:scripts",
+      "type": "document",
+      "name": "scripts",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: scripts",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:dependencies",
+      "type": "document",
+      "name": "dependencies",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: dependencies",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/package.json:devDependencies",
+      "type": "document",
+      "name": "devDependencies",
+      "filePath": "gccd_app/package.json",
+      "summary": "Document: devDependencies",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/pages.json:pages",
+      "type": "document",
+      "name": "pages",
+      "filePath": "gccd_app/pages.json",
+      "summary": "Document: pages",
+      "complexity": "low"
+    },
+    {
+      "id": "document:gccd_app/pages.json:globalStyle",
+      "type": "document",
+      "name": "globalStyle",
+      "filePath": "gccd_app/pages.json",
+      "summary": "Document: globalStyle",
+      "complexity": "low"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:.mcp.json",
+      "target": "document:.mcp.json:mcpServers",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document mcpServers"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:高齿传动 ERP 项目 — AI 助手统一工作守则",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动 ERP 项目 — AI 助手统一工作守则"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:一、项目身份",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 一、项目身份"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:二、代码规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 二、代码规范"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:2.1 PHP（适配 PSR-12）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2.1 PHP（适配 PSR-12）"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:2.2 微信小程序 JS（ES6+）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2.2 微信小程序 JS（ES6+）"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:2.3 Vue 3 后台",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2.3 Vue 3 后台"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:三、开发工作流",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 三、开发工作流"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:3.1 改前检查（强制）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3.1 改前检查（强制）"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:3.2 改后验证",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3.2 改后验证"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:3.3 Git 提交规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3.3 Git 提交规范"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:3.4 多 AI 协作约定",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3.4 多 AI 协作约定"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:四、工具链参考",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 四、工具链参考"
+    },
+    {
+      "source": "file:AGENTS.md",
+      "target": "document:AGENTS.md:五、不得违反（红线）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 五、不得违反（红线）"
+    },
+    {
+      "source": "file:CLAUDE.md",
+      "target": "document:CLAUDE.md:高齿传动 ERP 项目 — Claude Code 配置",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动 ERP 项目 — Claude Code 配置"
+    },
+    {
+      "source": "file:CLAUDE.md",
+      "target": "document:CLAUDE.md:与 AGENTS.md 的关系",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 与 AGENTS.md 的关系"
+    },
+    {
+      "source": "file:CLAUDE.md",
+      "target": "document:CLAUDE.md:本文件的作用",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 本文件的作用"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:高齿传动 ERP 项目 — 开发者指南",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动 ERP 项目 — 开发者指南"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:快速开始",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 快速开始"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:环境要求",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 环境要求"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:后端启动",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 后端启动"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:小程序构建",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 小程序构建"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:后台管理",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 后台管理"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:代码规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 代码规范"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:提交流程",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 提交流程"
+    },
+    {
+      "source": "file:CONTRIBUTING.md",
+      "target": "document:CONTRIBUTING.md:项目结构",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 项目结构"
+    },
+    {
+      "source": "file:PRECHECK.md",
+      "target": "document:PRECHECK.md:PRECHECK — 前置检查清单",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document PRECHECK — 前置检查清单"
+    },
+    {
+      "source": "file:PRECHECK.md",
+      "target": "document:PRECHECK.md:网络",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 网络"
+    },
+    {
+      "source": "file:PRECHECK.md",
+      "target": "document:PRECHECK.md:CLI 工具",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document CLI 工具"
+    },
+    {
+      "source": "file:PRECHECK.md",
+      "target": "document:PRECHECK.md:项目环境",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 项目环境"
+    },
+    {
+      "source": "file:PRECHECK.md",
+      "target": "document:PRECHECK.md:认证",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 认证"
+    },
+    {
+      "source": "file:PRECHECK.md",
+      "target": "document:PRECHECK.md:其他",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 其他"
+    },
+    {
+      "source": "file:README.md",
+      "target": "document:README.md:高齿传动智能制造 ERP 系统",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动智能制造 ERP 系统"
+    },
+    {
+      "source": "file:README.md",
+      "target": "document:README.md:项目结构",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 项目结构"
+    },
+    {
+      "source": "file:README.md",
+      "target": "document:README.md:核心功能",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 核心功能"
+    },
+    {
+      "source": "file:README.md",
+      "target": "document:README.md:项目配置文件",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 项目配置文件"
+    },
+    {
+      "source": "file:README.md",
+      "target": "document:README.md:开发",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 开发"
+    },
+    {
+      "source": "file:README.md",
+      "target": "document:README.md:技术栈来源",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 技术栈来源"
+    },
+    {
+      "source": "file:package.json",
+      "target": "document:package.json:devDependencies",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document devDependencies"
+    },
+    {
+      "source": "file:project_gaochi_report_date_rule.md",
+      "target": "document:project_gaochi_report_date_rule.md:规则",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 规则"
+    },
+    {
+      "source": "file:project_gaochi_report_date_rule.md",
+      "target": "document:project_gaochi_report_date_rule.md:适用范围",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 适用范围"
+    },
+    {
+      "source": "file:project_gaochi_report_date_rule.md",
+      "target": "document:project_gaochi_report_date_rule.md:涉及的核心方法",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 涉及的核心方法"
+    },
+    {
+      "source": "file:project_gaochi_report_date_rule.md",
+      "target": "document:project_gaochi_report_date_rule.md:字段说明",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 字段说明"
+    },
+    {
+      "source": "file:project_gaochi_report_date_rule.md",
+      "target": "document:project_gaochi_report_date_rule.md:删除重报处理",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 删除重报处理"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:高齿传动项目 - 技术架构",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动项目 - 技术架构"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:架构图",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 架构图"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:技术栈详情",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 技术栈详情"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:后端技术栈",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 后端技术栈"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:前端技术栈",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 前端技术栈"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:小程序技术栈",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 小程序技术栈"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:模块划分",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 模块划分"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:1. 后台管理模块 (admin/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 1. 后台管理模块 (admin/)"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:2. 数据模型 (common/model/admin/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2. 数据模型 (common/model/admin/)"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:3. 业务服务 (common/service/admin/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3. 业务服务 (common/service/admin/)"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:数据流图",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 数据流图"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:目录权限",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 目录权限"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:配置文件",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 配置文件"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:主配置文件 (config/app.php)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 主配置文件 (config/app.php)"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:数据库配置 (config/database.php)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 数据库配置 (config/database.php)"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:路由配置 (config/route.php)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 路由配置 (config/route.php)"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:安全设计",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 安全设计"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:1. 认证机制",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 1. 认证机制"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:2. 权限控制",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2. 权限控制"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:3. 数据安全",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3. 数据安全"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:性能优化",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 性能优化"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:1. 数据库优化",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 1. 数据库优化"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:2. 缓存优化",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2. 缓存优化"
+    },
+    {
+      "source": "file:.planning/ARCHITECTURE.md",
+      "target": "document:.planning/ARCHITECTURE.md:3. 代码优化",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3. 代码优化"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:高齿传动项目 - 记忆索引",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动项目 - 记忆索引"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:项目概览",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 项目概览"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:业务模块",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 业务模块"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:开发配置",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 开发配置"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:决策记录",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 决策记录"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:问题追踪",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 问题追踪"
+    },
+    {
+      "source": "file:.planning/MEMORY.md",
+      "target": "document:.planning/MEMORY.md:会话记忆（压缩）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 会话记忆（压缩）"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:高齿传动项目 - 项目概览",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 高齿传动项目 - 项目概览"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:基本信息",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 基本信息"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:项目结构",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 项目结构"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:核心功能模块",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 核心功能模块"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:1. 生产管理 (production/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 1. 生产管理 (production/)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:2. 工资管理 (wage/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2. 工资管理 (wage/)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:3. 设备管理 (repair/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3. 设备管理 (repair/)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:4. 库存管理 (stock/, material/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 4. 库存管理 (stock/, material/)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:5. 质量管理 (check/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 5. 质量管理 (check/)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:6. 系统管理 (system/)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 6. 系统管理 (system/)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:数据模型",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 数据模型"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:核心表 (37 个 admin 模型)",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 核心表 (37 个 admin 模型)"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:环境配置",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 环境配置"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:本地开发环境",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 本地开发环境"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:线上环境",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 线上环境"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:用户账号",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 用户账号"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:开发规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 开发规范"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:代码规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 代码规范"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:命名规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 命名规范"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:API 规范",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document API 规范"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:部署说明",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 部署说明"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:后端部署",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 后端部署"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:前端部署",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 前端部署"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:小程序部署",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 小程序部署"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:已知问题",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 已知问题"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:相关资源",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 相关资源"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:更新日志",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 更新日志"
+    },
+    {
+      "source": "file:.planning/PROJECT.md",
+      "target": "document:.planning/PROJECT.md:2026-04-28",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2026-04-28"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:GitNexus CLI Commands",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document GitNexus CLI Commands"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:Commands",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Commands"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:analyze — Build or refresh the index",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document analyze — Build or refresh the index"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:status — Check index freshness",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document status — Check index freshness"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:clean — Delete the index",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document clean — Delete the index"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:wiki — Generate documentation from the graph",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki — Generate documentation from the graph"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:list — Show all indexed repos",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document list — Show all indexed repos"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:After Indexing",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document After Indexing"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-cli/SKILL.md:Troubleshooting",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Troubleshooting"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Debugging with GitNexus"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Checklist",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklist"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging Patterns",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Debugging Patterns"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-debugging/SKILL.md:Example: \"Payment endpoint returns 500 intermittently\"",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: \"Payment endpoint returns 500 intermittently\""
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Exploring Codebases with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Exploring Codebases with GitNexus"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Checklist",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklist"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Resources",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Resources"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-exploring/SKILL.md:Example: \"How does payment processing work?\"",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: \"How does payment processing work?\""
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:GitNexus Guide",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document GitNexus Guide"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Always Start Here",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Always Start Here"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Skills",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Skills"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Tools Reference",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools Reference"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Resources Reference",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Resources Reference"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-guide/SKILL.md:Graph Schema",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Graph Schema"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Impact Analysis with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Impact Analysis with GitNexus"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Checklist",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklist"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Understanding Output",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Understanding Output"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Risk Assessment",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Risk Assessment"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Example: \"What breaks if I change validateUser?\"",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: \"What breaks if I change validateUser?\""
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Refactoring with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Refactoring with GitNexus"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Checklists",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklists"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Rename Symbol",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Rename Symbol"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Extract Module",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Extract Module"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Split Function/Service",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Split Function/Service"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Risk Rules",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Risk Rules"
+    },
+    {
+      "source": "file:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md:Example: Rename `validateUser` to `authenticateUser`",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: Rename `validateUser` to `authenticateUser`"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:GitNexus CLI Commands",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document GitNexus CLI Commands"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:Commands",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Commands"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:analyze — Build or refresh the index",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document analyze — Build or refresh the index"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:status — Check index freshness",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document status — Check index freshness"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:clean — Delete the index",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document clean — Delete the index"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:wiki — Generate documentation from the graph",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki — Generate documentation from the graph"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:list — Show all indexed repos",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document list — Show all indexed repos"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:After Indexing",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document After Indexing"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-cli/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-cli/SKILL.md:Troubleshooting",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Troubleshooting"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Debugging with GitNexus"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Checklist",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklist"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Debugging Patterns",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Debugging Patterns"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-debugging/SKILL.md:Example: \"Payment endpoint returns 500 intermittently\"",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: \"Payment endpoint returns 500 intermittently\""
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Exploring Codebases with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Exploring Codebases with GitNexus"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Checklist",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklist"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Resources",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Resources"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-exploring/SKILL.md:Example: \"How does payment processing work?\"",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: \"How does payment processing work?\""
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:GitNexus Guide",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document GitNexus Guide"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Always Start Here",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Always Start Here"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Skills",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Skills"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Tools Reference",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools Reference"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Resources Reference",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Resources Reference"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-guide/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-guide/SKILL.md:Graph Schema",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Graph Schema"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Impact Analysis with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Impact Analysis with GitNexus"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Checklist",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklist"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Understanding Output",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Understanding Output"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Risk Assessment",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Risk Assessment"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md:Example: \"What breaks if I change validateUser?\"",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: \"What breaks if I change validateUser?\""
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Refactoring with GitNexus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Refactoring with GitNexus"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:When to Use",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document When to Use"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Workflow",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Workflow"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Checklists",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Checklists"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Rename Symbol",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Rename Symbol"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Extract Module",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Extract Module"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Split Function/Service",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Split Function/Service"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Tools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Tools"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Risk Rules",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Risk Rules"
+    },
+    {
+      "source": "file:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md",
+      "target": "document:.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md:Example: Rename `validateUser` to `authenticateUser`",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document Example: Rename `validateUser` to `authenticateUser`"
+    },
+    {
+      "source": "file:.codex/config.toml",
+      "target": "document:.codex/config.toml:mcp_servers.chrome-devtools",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document mcp_servers.chrome-devtools"
+    },
+    {
+      "source": "file:.codex/config.toml",
+      "target": "document:.codex/config.toml:mcp_servers.chrome-devtools.env",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document mcp_servers.chrome-devtools.env"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:报工纠错与盘点推算 — 会话记忆（2026-05）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 报工纠错与盘点推算 — 会话记忆（2026-05）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:一、核心结论（给后续 AI / 开发）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 一、核心结论（给后续 AI / 开发）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:1. 报工删改必须联动，不能只改 `ya_product_report` 一行",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 1. 报工删改必须联动，不能只改 `ya_product_report` 一行"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:2. 12 点归属规则（不可乱）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2. 12 点归属规则（不可乱）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:3. 盘点智能推算 — 关键公式与坑",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3. 盘点智能推算 — 关键公式与坑"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:圆钢（溯源｜巨能｜50 等）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 圆钢（溯源｜巨能｜50 等）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:断钢（凯亚｜20#｜50 等，如 50*1.5）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 断钢（凯亚｜20#｜50 等，如 50*1.5）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:数字核对例（断钢 凯亚｜20#｜50）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 数字核对例（断钢 凯亚｜20#｜50）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:4. 用户要的流程（已对齐）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 4. 用户要的流程（已对齐）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:二、改动文件清单（部署用）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 二、改动文件清单（部署用）"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:三、数据关联速查",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 三、数据关联速查"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:四、智能盘点操作顺序",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 四、智能盘点操作顺序"
+    },
+    {
+      "source": "file:.planning/intel/REPORT_STOCKTAKE_202605.md",
+      "target": "document:.planning/intel/REPORT_STOCKTAKE_202605.md:五、未做 / 注意",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 五、未做 / 注意"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:盘点 / 智能推算 — 上下文记忆（压缩版）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 盘点 / 智能推算 — 上下文记忆（压缩版）"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:1. 核心业务规则（必须一致）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 1. 核心业务规则（必须一致）"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:2. 关键代码位置",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 2. 关键代码位置"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:3. 已修复问题（需部署后端 + 发版小程序）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 3. 已修复问题（需部署后端 + 发版小程序）"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:4. 典型数据问题（非公式错）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 4. 典型数据问题（非公式错）"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:5. 已核对样例（calc_date=2026-05-20）",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 5. 已核对样例（calc_date=2026-05-20）"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:6. 审计工具",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 6. 审计工具"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:7. 数据库备忘",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 7. 数据库备忘"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:8. 待办 / 未改",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 8. 待办 / 未改"
+    },
+    {
+      "source": "file:.planning/intel/STOCKTAKE-CALC.md",
+      "target": "document:.planning/intel/STOCKTAKE-CALC.md:9. 部署检查清单",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document 9. 部署检查清单"
+    },
+    {
+      "source": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "target": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:knowledge_relations",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document knowledge_relations"
+    },
+    {
+      "source": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "target": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_catalogs",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki_catalogs"
+    },
+    {
+      "source": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "target": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_items",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki_items"
+    },
+    {
+      "source": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "target": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_overview",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki_overview"
+    },
+    {
+      "source": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "target": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_readme",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki_readme"
+    },
+    {
+      "source": "file:.qoder/repowiki/zh/meta/repowiki-metadata.json",
+      "target": "document:.qoder/repowiki/zh/meta/repowiki-metadata.json:wiki_repo",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document wiki_repo"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:name",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document name"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:appid",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document appid"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:description",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document description"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:versionName",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document versionName"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:versionCode",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document versionCode"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:transformPx",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document transformPx"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:app-plus",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document app-plus"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:quickapp",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document quickapp"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:mp-weixin",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document mp-weixin"
+    },
+    {
+      "source": "file:gccd_app/manifest.json",
+      "target": "document:gccd_app/manifest.json:h5",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document h5"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:name",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document name"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:version",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document version"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:description",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document description"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:main",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document main"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:scripts",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document scripts"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:dependencies",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document dependencies"
+    },
+    {
+      "source": "file:gccd_app/package.json",
+      "target": "document:gccd_app/package.json:devDependencies",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document devDependencies"
+    },
+    {
+      "source": "file:gccd_app/pages.json",
+      "target": "document:gccd_app/pages.json:pages",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document pages"
+    },
+    {
+      "source": "file:gccd_app/pages.json",
+      "target": "document:gccd_app/pages.json:globalStyle",
+      "type": "contains",
+      "weight": 1.0,
+      "description": "Contains document globalStyle"
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer-backend",
+      "name": "后端服务",
+      "description": "PHP ThinkPHP 后端 API 服务",
+      "nodeIds": [
+        "file:gccd_app/manifest.json",
+        "file:gccd_app/package.json",
+        "file:gccd_app/pages.json",
+        "file:gccd_app/App.vue",
+        "file:gccd_app/main.js",
+        "file:gccd_app/pages/index/index.vue",
+        "file:gccd_app/pages/login/login.vue",
+        "file:gccd_app/utils/token-bridge.js",
+        "document:gccd_app/manifest.json:name",
+        "document:gccd_app/manifest.json:appid",
+        "document:gccd_app/manifest.json:description",
+        "document:gccd_app/manifest.json:versionName",
+        "document:gccd_app/manifest.json:versionCode",
+        "document:gccd_app/manifest.json:transformPx",
+        "document:gccd_app/manifest.json:app-plus",
+        "document:gccd_app/manifest.json:quickapp",
+        "document:gccd_app/manifest.json:mp-weixin",
+        "document:gccd_app/manifest.json:h5",
+        "document:gccd_app/package.json:name",
+        "document:gccd_app/package.json:version",
+        "document:gccd_app/package.json:description",
+        "document:gccd_app/package.json:main",
+        "document:gccd_app/package.json:scripts",
+        "document:gccd_app/package.json:dependencies",
+        "document:gccd_app/package.json:devDependencies",
+        "document:gccd_app/pages.json:pages",
+        "document:gccd_app/pages.json:globalStyle"
+      ]
+    },
+    {
+      "id": "layer-frontend",
+      "name": "前端应用",
+      "description": "Vue/uni-app 移动端 + 微信小程序",
+      "nodeIds": [
+        "file:gccd_app/manifest.json",
+        "file:gccd_app/package.json",
+        "file:gccd_app/pages.json",
+        "file:gccd_app/App.vue",
+        "file:gccd_app/main.js",
+        "file:gccd_app/pages/index/index.vue",
+        "file:gccd_app/pages/login/login.vue",
+        "file:gccd_app/utils/token-bridge.js",
+        "document:gccd_app/manifest.json:name",
+        "document:gccd_app/manifest.json:appid",
+        "document:gccd_app/manifest.json:description",
+        "document:gccd_app/manifest.json:versionName",
+        "document:gccd_app/manifest.json:versionCode",
+        "document:gccd_app/manifest.json:transformPx",
+        "document:gccd_app/manifest.json:app-plus",
+        "document:gccd_app/manifest.json:quickapp",
+        "document:gccd_app/manifest.json:mp-weixin",
+        "document:gccd_app/manifest.json:h5",
+        "document:gccd_app/package.json:name",
+        "document:gccd_app/package.json:version",
+        "document:gccd_app/package.json:description",
+        "document:gccd_app/package.json:main",
+        "document:gccd_app/package.json:scripts",
+        "document:gccd_app/package.json:dependencies",
+        "document:gccd_app/package.json:devDependencies",
+        "document:gccd_app/pages.json:pages",
+        "document:gccd_app/pages.json:globalStyle"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "项目概览",
+      "description": "高齿传动 ERP 系统包含后端、移动端和小程序三个子系统",
+      "nodeIds": [
+        "file:.mcp.json",
+        "file:AGENTS.md",
+        "file:CLAUDE.md",
+        "file:CONTRIBUTING.md",
+        "file:PRECHECK.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+/**
+ * 全局设计令牌 — 制造/工单场景：Soft UI、清晰层级与对比（避免紫蓝 AI 渐变）
+ */
+page {
+  --gcc-bg: #f0f2f5;
+  --gcc-surface: #ffffff;
+  --gcc-text: #1f2937;
+  --gcc-text-secondary: #6b7280;
+  --gcc-text-muted: #9ca3af;
+  --gcc-border: #e5e7eb;
+  --gcc-primary: #0d9488;
+  --gcc-primary-dark: #0f766e;
+  --gcc-shadow-sm: 0 4rpx 20rpx rgba(15, 23, 42, 0.06);
+  --gcc-shadow-card: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+  --gcc-radius: 24rpx;
+  --gcc-radius-sm: 16rpx;
+
+  /* Vant Weapp：主色与 --gcc-primary 对齐（由 page 继承进组件） */
+  --button-primary-background-color: #0d9488;
+  --button-primary-border-color: #0d9488;
+  --button-info-background-color: #0d9488;
+  --button-info-border-color: #0d9488;
+  --tag-primary-color: #0d9488;
+  --checkbox-checked-icon-color: #0d9488;
+  --radio-checked-icon-color: #0d9488;
+  --switch-on-background-color: #0d9488;
+  --slider-active-background-color: #0d9488;
+  --nav-bar-text-color: #0d9488;
+  --nav-bar-icon-color: #0d9488;
+  --tabbar-item-active-color: #0f766e;
+  --progress-color: #0d9488;
+  --progress-pivot-background-color: #0d9488;
+  --notify-primary-background-color: #0d9488;
+  --tabs-bottom-bar-color: #0d9488;
+  --tabs-default-color: #0d9488;
+  --tab-active-text-color: #0d9488;
+  --tree-select-item-active-color: #0d9488;
+  --index-anchor-active-text-color: #0d9488;
+  --picker-confirm-action-color: #0d9488;
+
+  background-color: var(--gcc-bg);
+  color: var(--gcc-text);
+  font-size: 28rpx;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+/* 自定义导航栏（全站统一，浅色顶栏 + 细分割线） */
+.custom-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background-color: var(--gcc-surface);
+  border-bottom: 1rpx solid var(--gcc-border);
+  box-shadow: var(--gcc-shadow-sm);
+  z-index: 100;
+  box-sizing: content-box;
+}
+
+.navbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 65%;
+  color: var(--gcc-text);
+  font-size: 34rpx;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.navbar-left,
+.navbar-right {
+  min-width: 160rpx;
+  flex-shrink: 0;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  padding-left: 8rpx;
+  box-sizing: border-box;
+}
+
+.navbar-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.back-icon {
+  margin-left: 12px;
+  color: var(--gcc-text);
+  font-size: 40rpx;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 101;
+}
+
+.navbar-back-btn {
+  display: flex;
+  align-items: center;
+}
+
+.back-text {
+  margin-left: 10rpx;
+  font-size: 28rpx;
+  color: var(--gcc-text-secondary);
+}
+
+/* 物料 / 能耗等：底栏在文档流内，仅需列表底部少量留白（勿再按 fixed 叠层预留 56px） */
+.page-content--sub-tab {
+  padding-bottom: 24rpx;
+}

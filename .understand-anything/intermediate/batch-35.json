@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/comment.BsR8-YcT.js",
+    "public/admin/js/compass.B3VqdpvU.js",
+    "public/admin/js/connection.CZmHzUf8.js",
+    "public/admin/js/console.Dhbom0_e.js",
+    "public/admin/js/content.Ci1KRqvD.js",
+    "public/admin/js/ContentExport.0yYd_TlR.js",
+    "public/admin/js/coordinate.DFFJzma_.js",
+    "public/admin/js/copy-document.DB_tdAsP.js",
+    "public/admin/js/cpu.DPgO4FET.js",
+    "public/admin/js/credit-card.D6JSqS0h.js",
+    "public/admin/js/crop.CfJIEOsW.js",
+    "public/admin/js/d-arrow-left.BF0s6ySN.js",
+    "public/admin/js/d-arrow-right.D08XJnwr.js",
+    "public/admin/js/d-caret.Dw5EuS9T.js",
+    "public/admin/js/data-analysis.D5xbDFKw.js",
+    "public/admin/js/data-board.Ddak6Phc.js",
+    "public/admin/js/data-line.DfOXX9GW.js",
+    "public/admin/js/debounce.CANUAkxO.js",
+    "public/admin/js/delete-filled.DuMDt7wi.js",
+    "public/admin/js/delete-location.BCEhtR0d.js",
+    "public/admin/js/delete.CBg2vXj4.js",
+    "public/admin/js/dept.CLrXx7Gy.js",
+    "public/admin/js/dessert.5wjG5tIW.js",
+    "public/admin/js/discount.DP4a6jqU.js",
+    "public/admin/js/dish-dot.CqmxMJLW.js"
+  ],
+  "results": []
+}

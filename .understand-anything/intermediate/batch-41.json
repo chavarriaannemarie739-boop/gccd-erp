@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "public/admin/js/iphone.IcMwS6jd.js",
+    "public/admin/js/key.Cq_igigX.js",
+    "public/admin/js/knife-fork.DsYMaSu0.js",
+    "public/admin/js/lightning.Co0sGls9.js",
+    "public/admin/js/link.CASnJy8S.js",
+    "public/admin/js/link.DMfk87Sw.js",
+    "public/admin/js/list.BhZMnUJz.js",
+    "public/admin/js/loading.Dkb45NZx.js",
+    "public/admin/js/location-filled.DHeJm9KB.js",
+    "public/admin/js/location-information.dSrl9Iob.js",
+    "public/admin/js/location.TVavSH3M.js",
+    "public/admin/js/lock.CYm1d25h.js",
+    "public/admin/js/log.Cc8TuCaW.js",
+    "public/admin/js/login.Bxx1VCcv.js",
+    "public/admin/js/logout.B3o3VhOQ.js",
+    "public/admin/js/lollipop.DMN5YPSZ.js",
+    "public/admin/js/magic-stick.LfB2-Fhs.js",
+    "public/admin/js/magnet.BFR_6jnz.js",
+    "public/admin/js/male.DKfvfl8l.js",
+    "public/admin/js/management.Vx5SAFA_.js",
+    "public/admin/js/map-location.-JzUrNJD.js",
+    "public/admin/js/medal.Dw1TjZJc.js",
+    "public/admin/js/member.BPtCRw5R.js",
+    "public/admin/js/member.DKFknKty.js",
+    "public/admin/js/MemberExport.CpIJKEPw.js"
+  ],
+  "results": []
+}

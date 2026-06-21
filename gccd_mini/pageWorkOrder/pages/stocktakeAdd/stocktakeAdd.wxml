@@ -1,0 +1,350 @@
+<view class="page-stocktake-root">
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
+    <view class="navbar-title">{{processName}} · 生产盘点</view>
+    <view class="navbar-right"></view>
+  </view>
+
+  <view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+
+    <view class="date-bar">
+      <van-icon name="calendar-o" size="28rpx" color="#0d9488" />
+      <text class="date-bar-text">盘点日期：{{stocktakeDate}}</text>
+    </view>
+
+    <view class="section">
+      <view class="section-title">
+        <view class="section-dot"></view>
+        <text>盘点明细</text>
+        <!-- 智能预填按钮：如有推算数据，则允许用户点击强制覆盖草稿 -->
+        <view wx:if="{{hasCalcData}}" class="auto-fill-btn" bindtap="triggerManualAutoFill" hover-class="auto-fill-btn--hover">
+          <van-icon name="magic" size="24rpx" color="#0d9488" />
+          <text class="auto-fill-btn-text">智能预填</text>
+        </view>
+        <text class="section-hint">{{sectionHint}}</text>
+      </view>
+
+      <!-- 次成品：两类分区，每类多行 = 选成品 + 库存吨数 -->
+      <block wx:if="{{isCiChengPin}}">
+        <view
+          class="ci-type-panel"
+          wx:for="{{ciBlocks}}"
+          wx:for-item="block"
+          wx:for-index="bIdx"
+          wx:key="sub"
+        >
+          <view class="ci-type-header">
+            <view class="ci-type-pill">
+              <text class="ci-type-pill-txt">{{block.sub}}</text>
+            </view>
+          </view>
+
+          <view
+            class="ci-line-card"
+            wx:for="{{block.lines}}"
+            wx:for-item="row"
+            wx:for-index="lidx"
+            wx:key="rowKey"
+          >
+            <view class="ci-line-row1">
+              <text class="ci-line-no">{{lidx + 1}}</text>
+              <view class="ci-line-spec-wrap">
+                <input
+                  class="ci-spec-input"
+                  type="text"
+                  placeholder="如 51*5"
+                  value="{{row.specInput}}"
+                  data-block="{{bIdx}}"
+                  data-row="{{lidx}}"
+                  bindinput="onLineSpecInputCi"
+                />
+              </view>
+              <view class="ci-line-qty">
+                <input
+                  class="ci-qty-input"
+                  type="digit"
+                  placeholder="0"
+                  value="{{row.qty}}"
+                  data-block="{{bIdx}}"
+                  data-row="{{lidx}}"
+                  bindinput="onLineQtyInputCi"
+                />
+                <text class="ci-line-unit">吨</text>
+              </view>
+              <view
+                class="ci-line-del"
+                data-block="{{bIdx}}"
+                data-index="{{lidx}}"
+                catch:tap="removeLineCi"
+                hover-class="ci-line-del--hover"
+              >
+                <van-icon name="delete-o" size="32rpx" color="#d1d5db" />
+              </view>
+            </view>
+          </view>
+
+          <view class="ci-add" hover-class="ci-add--hover" data-block="{{bIdx}}" bind:tap="addCiLine">
+            <van-icon name="plus" size="28rpx" color="#0d9488" />
+            <text>本类再添加一行</text>
+          </view>
+        </view>
+
+        <view class="total-bar total-bar--ci">
+          <text class="total-bar-label">合计</text>
+          <text class="total-bar-value">{{totalQty}} 吨</text>
+        </view>
+      </block>
+
+      <!-- 半成品：两项并排，直接填数量 -->
+      <block wx:elif="{{isBanChengPin}}">
+        <view class="ban-panel">
+          <view
+            class="ban-item-card"
+            wx:for="{{banBlocks}}"
+            wx:for-item="block"
+            wx:for-index="bIdx"
+            wx:key="sub"
+          >
+            <view class="ban-item-left">
+              <view class="ban-dot"></view>
+              <text class="ban-item-name">{{block.sub}}</text>
+            </view>
+            <view class="ban-spec-wrap">
+              <input
+                class="ban-spec-input"
+                type="text"
+                placeholder="如 51*5"
+                value="{{block.lines[0].specInput}}"
+                data-block="{{bIdx}}"
+                data-row="0"
+                bindinput="onLineSpecInputBan"
+              />
+            </view>
+            <view class="ban-item-right">
+              <input
+                class="ban-qty-input"
+                type="digit"
+                placeholder="0.000"
+                value="{{block.lines[0].qty}}"
+                data-block="{{bIdx}}"
+                data-row="0"
+                bindinput="onLineQtyInputBan"
+              />
+              <text class="ban-qty-unit">吨</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="total-bar total-bar--ban">
+          <text class="total-bar-label">合计</text>
+          <text class="total-bar-value">{{totalQty}} 吨</text>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="line-stocktake-item" wx:for="{{lines}}" wx:key="rowKey" wx:for-index="rowIdx">
+          <view class="line-card line-card--compact">
+            <view class="compact-row">
+              <text class="compact-index">{{rowIdx + 1}}</text>
+              <view
+                class="compact-tap compact-tap--mat {{isDuanGangStyle || isSpecInputMode ? 'compact-tap--mat-wide' : ''}} {{item.mat ? '' : 'compact-tap--empty'}}"
+                hover-class="compact-tap--hover"
+                data-row="{{rowIdx}}"
+                bind:tap="showMaterialPicker"
+                style="{{isDuanGangManualProduct || isSpecInputMode ? 'flex: 1.8;' : ''}}"
+              >
+                <text class="compact-tap-text">{{item.mat ? item.mat.label : '原料'}}</text>
+                <van-icon name="arrow-down" size="22rpx" color="#9ca3af" class="compact-tap-ico" />
+              </view>
+              <block wx:if="{{isDuanGangStyle == false}}">
+                <!-- 断钢：手动输入规格 -->
+                <view wx:if="{{isDuanGangManualProduct}}" class="compact-qty-block" style="flex: 1; max-width: 170rpx; margin-right: 8rpx; margin-left: 8rpx; padding: 0 12rpx; background: #f9fafb; border-radius: 8rpx; border: 1px solid #e5e7eb;">
+                  <input
+                    class="compact-qty-input"
+                    type="text"
+                    placeholder="输入断钢规格"
+                    value="{{item.manualProduct}}"
+                    data-row="{{rowIdx}}"
+                    bindinput="onLineManualProductInput"
+                    style="width: 100%; height: 52rpx; font-size: 26rpx; text-align: center;"
+                  />
+                </view>
+                <!-- 穿孔+：手动输入壁厚规格 -->
+                <view wx:elif="{{isSpecInputMode}}" class="compact-qty-block" style="flex: 1; max-width: 170rpx; margin-right: 8rpx; margin-left: 8rpx; padding: 0 12rpx; background: #f9fafb; border-radius: 8rpx; border: 1px solid #e5e7eb;">
+                  <input
+                    class="compact-qty-input"
+                    type="text"
+                    placeholder="如 51*5"
+                    value="{{item.specInput}}"
+                    data-row="{{rowIdx}}"
+                    bindinput="onLineSpecInput"
+                    style="width: 100%; height: 52rpx; font-size: 26rpx; text-align: center;"
+                  />
+                </view>
+                <!-- 其余工序仍沿用成品档案选择 -->
+                <view
+                  wx:else
+                  class="compact-tap compact-tap--prod {{item.product ? '' : 'compact-tap--empty'}}"
+                  hover-class="compact-tap--hover"
+                  data-row="{{rowIdx}}"
+                  bind:tap="showModelPicker"
+                >
+                  <text class="compact-tap-text">{{item.product ? item.product.label : '成品'}}</text>
+                  <van-icon name="arrow-down" size="22rpx" color="#9ca3af" class="compact-tap-ico" />
+                </view>
+              </block>
+              <view class="compact-qty-block" style="{{isDuanGangManualProduct || isSpecInputMode ? 'flex: 0 0 144rpx; width: 144rpx; padding: 12rpx 10rpx;' : ''}}">
+                <input
+                  class="compact-qty-input"
+                  type="digit"
+                  placeholder="0"
+                  value="{{item.qty}}"
+                  data-row="{{rowIdx}}"
+                  bindinput="onLineQtyInput"
+                />
+                <text class="compact-qty-unit">吨</text>
+              </view>
+              <view
+                class="compact-del"
+                data-index="{{rowIdx}}"
+                catch:tap="removeLine"
+                hover-class="compact-del--hover"
+              >
+                <van-icon name="delete-o" size="32rpx" color="#d1d5db" />
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="add-line" hover-class="add-line--hover" bind:tap="addLine">
+          <van-icon name="plus" size="28rpx" color="#0d9488" />
+          <text class="add-line-text">添加一行</text>
+        </view>
+
+        <view class="total-bar" wx:if="{{lines.length > 0}}">
+          <text class="total-bar-label">合计</text>
+          <text class="total-bar-value">{{totalQty}} 吨</text>
+        </view>
+      </block>
+    </view>
+
+    <view class="submit-wrap">
+      <van-button type="primary" block round bind:click="onSubmitTap" loading="{{loading}}" disabled="{{submitting}}">
+        提交盘点
+      </van-button>
+    </view>
+
+  </view>
+
+  <van-popup show="{{showMaterialPopup}}" position="bottom" round bind:close="hideMaterialPicker" custom-style="height: 70vh">
+    <view class="search-popup">
+      <view class="search-popup-header">
+        <text class="search-popup-title">选择原材料</text>
+        <text class="search-popup-count">共 {{filteredMaterials.length}} 条</text>
+      </view>
+      <view class="search-bar">
+        <van-icon name="search" size="32rpx" color="#9ca3af" />
+        <input
+          class="search-input"
+          type="text"
+          placeholder="输入关键字搜索（如型号、名称）"
+          value="{{materialSearch}}"
+          bindinput="onMaterialSearchInput"
+          confirm-type="search"
+          focus="{{showMaterialPopup}}"
+        />
+        <van-icon wx:if="{{materialSearch}}" name="clear" size="32rpx" color="#9ca3af" bind:click="onMaterialSearchClear" />
+      </view>
+      <scroll-view scroll-y class="search-list">
+        <view wx:if="{{filteredMaterials.length == 0}}" class="search-empty">
+          <text class="search-empty-text">没有匹配的物料</text>
+        </view>
+        <view
+          wx:for="{{filteredMaterials}}"
+          wx:key="uniqKey"
+          class="search-item"
+          hover-class="search-item--hover"
+          data-idx="{{index}}"
+          bind:tap="onMaterialSelect"
+        >
+          <view class="search-item-main">
+            <text class="search-item-label">{{item.y_material_name}}</text>
+            <text class="search-item-sub">{{item.y_material_spec}}</text>
+            <text class="search-item-sub" wx:if="{{item.y_material_model}}">{{item.y_material_model}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="search-popup-footer">
+        <van-button type="default" block bind:click="hideMaterialPicker">取消</van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <van-popup show="{{showModelPopup}}" position="bottom" round bind:close="hideModelPicker" custom-style="height: 60vh">
+    <view class="search-popup">
+      <view class="search-popup-header">
+        <text class="search-popup-title">{{modelPopupTitle}}</text>
+        <text class="search-popup-count">共 {{filteredModels.length}} 条</text>
+      </view>
+      <view class="search-bar">
+        <van-icon name="search" size="32rpx" color="#9ca3af" />
+        <input
+          class="search-input"
+          type="text"
+          placeholder="搜索规格、型号"
+          value="{{modelSearch}}"
+          bindinput="onModelSearchInput"
+          confirm-type="search"
+          focus="{{showModelPopup}}"
+        />
+        <van-icon wx:if="{{modelSearch}}" name="clear" size="32rpx" color="#9ca3af" bind:click="onModelSearchClear" />
+      </view>
+      <scroll-view scroll-y class="search-list search-list--short">
+        <view wx:if="{{filteredModels.length == 0}}" class="search-empty">
+          <text class="search-empty-text">没有匹配的成品</text>
+        </view>
+        <view
+          wx:for="{{filteredModels}}"
+          wx:key="uniqKey"
+          class="search-item"
+          hover-class="search-item--hover"
+          data-idx="{{index}}"
+          bind:tap="onModelSelect"
+        >
+          <view class="search-item-main search-item-main--col">
+            <text class="search-item-label">{{item.c_product_spec}}</text>
+            <text class="search-item-sub">{{item.c_product_model}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="search-popup-footer">
+        <van-button type="default" block bind:click="hideModelPicker">取消</van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <van-dialog
+    show="{{showConfirmDialog}}"
+    title="确认提交"
+    message="{{confirmDialogMessage}}"
+    show-cancel-button
+    confirm-button-text="提交"
+    cancel-button-text="再看看"
+    bind:confirm="onConfirmDialogConfirm"
+    bind:cancel="onConfirmDialogCancel"
+    bind:close="onConfirmDialogCancel"
+  ></van-dialog>
+
+  <van-dialog
+    show="{{showSubmitSuccessDialog}}"
+    title="提交成功"
+    message="{{successDialogMessage}}"
+    show-cancel-button="{{false}}"
+    confirm-button-text="返回列表"
+    close-on-click-overlay="{{false}}"
+    bind:confirm="onSubmitSuccessConfirm"
+    bind:close="onSubmitSuccessDialogClose"
+  ></van-dialog>
+
+  <van-toast id="van-toast" />
+</view>

@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/admin/controller/production/ProductReport.php",
+    "app/admin/controller/production/ProductTask.php",
+    "app/admin/controller/production/QualityCheckRecord.php",
+    "app/admin/controller/production/Routing.php",
+    "app/admin/controller/production/Ship.php",
+    "app/admin/controller/receiving/Receiving.php",
+    "app/admin/controller/repair/Device.php",
+    "app/admin/controller/ReportCoefficient.php",
+    "app/admin/controller/setting/Accord.php",
+    "app/admin/controller/setting/Carousel.php",
+    "app/admin/controller/setting/Feedback.php",
+    "app/admin/controller/setting/Link.php",
+    "app/admin/controller/setting/Notice.php",
+    "app/admin/controller/setting/Region.php",
+    "app/admin/controller/setting/Setting.php",
+    "app/admin/controller/stock/InStock.php",
+    "app/admin/controller/stock/OutStock.php",
+    "app/admin/controller/system/Apidoc.php",
+    "app/admin/controller/system/Dept.php",
+    "app/admin/controller/system/Index.php",
+    "app/admin/controller/system/Login.php",
+    "app/admin/controller/system/Menu.php",
+    "app/admin/controller/system/Notice.php",
+    "app/admin/controller/system/Post.php",
+    "app/admin/controller/system/Role.php"
+  ],
+  "results": []
+}

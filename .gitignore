@@ -9,3 +9,33 @@
 /console_output.png
 /login_*.png
 /page_*.png
+/tmp/
+/temp/
+
+# 依赖目录
+node_modules
+vendor/
+
+# 构建产物
+dist/
+unpackage/
+
+# 编译缓存
+*.pyc
+__pycache__
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境变量（含敏感信息）
+.env
+.env.local
+
+# 运行时
+runtime/
+gccd_server/runtime/*.php
+!gccd_server/runtime/.gitkeep

@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/api/controller/setting/Notice.php",
+    "app/api/controller/setting/Region.php",
+    "app/api/controller/setting/Setting.php",
+    "app/api/controller/setting/Upload.php",
+    "app/api/event.php",
+    "app/api/middleware.php",
+    "app/api/middleware/ApiTokenMiddleware.php",
+    "app/api/middleware/ApiVerifyMiddleware.php",
+    "app/api/middleware/ContentSettingMiddleware.php",
+    "app/api/middleware/FileSettingMiddleware.php",
+    "app/api/middleware/MemberLogMiddleware.php",
+    "app/api/service/IndexService.php",
+    "app/api/service/LoginService.php",
+    "app/api/service/RegisterService.php",
+    "app/AppService.php",
+    "app/BaseController.php",
+    "app/bootstrap_php85.php",
+    "app/command/AuditStocktakeCalc.php",
+    "app/command/ImportInventory.php",
+    "app/command/Timer.php",
+    "app/common.php",
+    "app/common/cache/Cache.php",
+    "app/common/cache/content/CategoryCache.php",
+    "app/common/cache/content/ContentCache.php",
+    "app/common/cache/content/SettingCache.php"
+  ],
+  "results": []
+}

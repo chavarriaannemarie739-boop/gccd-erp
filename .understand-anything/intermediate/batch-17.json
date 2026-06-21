@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/common/cache/system/RoleCache.php",
+    "app/common/cache/system/SettingCache.php",
+    "app/common/cache/system/UserCache.php",
+    "app/common/cache/system/UserLogCache.php",
+    "app/common/cache/utils/CaptchaEmailCache.php",
+    "app/common/cache/utils/CaptchaSmsCache.php",
+    "app/common/config/DailyReportConfig.php",
+    "app/common/controller/ApidocDefinitions.php",
+    "app/common/controller/BaseController.php",
+    "app/common/middleware/AllowCrossDomain.php",
+    "app/common/middleware/ApidocCrudMiddleware.php",
+    "app/common/middleware/LogClear.php",
+    "app/common/model/admin/CheckModel.php",
+    "app/common/model/admin/DailySummaryModel.php",
+    "app/common/model/admin/DailyWorkModel.php",
+    "app/common/model/admin/DeviceModel.php",
+    "app/common/model/admin/InStockModel.php",
+    "app/common/model/admin/MaintenanceReportModel.php",
+    "app/common/model/admin/MaterialInventoryModel.php",
+    "app/common/model/admin/MaterialModel.php",
+    "app/common/model/admin/MesCodeModel.php",
+    "app/common/model/admin/MessageModel.php",
+    "app/common/model/admin/OutStockModel.php",
+    "app/common/model/admin/PowerModel.php",
+    "app/common/model/admin/ProcessesCheckModel.php"
+  ],
+  "results": []
+}

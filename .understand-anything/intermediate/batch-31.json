@@ -1,0 +1,107 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 6,
+  "filesSkipped": [
+    "import_inventory.php",
+    "private/apidoc/apidocs.md",
+    "private/apidoc/template/codes/fe_api_file.tpl",
+    "private/apidoc/template/codes/jq_ajax.tpl",
+    "private/apidoc/template/codes/vue_crud.tpl",
+    "private/apidoc/template/crud/cache.tpl",
+    "private/apidoc/template/crud/controller.tpl",
+    "private/apidoc/template/crud/model.tpl",
+    "private/apidoc/template/crud/service.tpl",
+    "private/apidoc/template/crud/validate.tpl",
+    "private/apidoc/template/relation/controller.tpl",
+    "private/apidoc/template/relation/model_sub.tpl",
+    "private/apidoc/template/relation/model.tpl",
+    "private/apidoc/template/relation/route.tpl",
+    "private/apidoc/template/relation/service.tpl",
+    "private/apidoc/template/relation/validate.tpl",
+    "private/database/DeviceService.php",
+    "private/import/member-import.xlsx",
+    "private/import/member-tag-import.xlsx"
+  ],
+  "results": [
+    {
+      "path": "gccd_app/App.vue",
+      "language": "vue",
+      "fileCategory": "code",
+      "totalLines": 58,
+      "nonEmptyLines": 53,
+      "metrics": {}
+    },
+    {
+      "path": "gccd_app/main.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "createApp",
+          "startLine": 15,
+          "endLine": 20,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "createApp",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "createApp",
+          "callee": "createSSRApp",
+          "lineNumber": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "gccd_app/pages/index/index.vue",
+      "language": "vue",
+      "fileCategory": "code",
+      "totalLines": 441,
+      "nonEmptyLines": 412,
+      "metrics": {}
+    },
+    {
+      "path": "gccd_app/pages/login/login.vue",
+      "language": "vue",
+      "fileCategory": "code",
+      "totalLines": 510,
+      "nonEmptyLines": 453,
+      "metrics": {}
+    },
+    {
+      "path": "gccd_app/utils/token-bridge.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 107,
+      "nonEmptyLines": 103,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "phpstan.neon",
+      "language": "neon",
+      "fileCategory": "code",
+      "totalLines": 7,
+      "nonEmptyLines": 7,
+      "metrics": {}
+    }
+  ]
+}

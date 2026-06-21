@@ -1,0 +1,60 @@
+/* 页面内容样式 */
+.page-content {
+    padding: 24rpx;
+    box-sizing: border-box;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+.section-title {
+    margin: 32rpx 0 16rpx 24rpx;
+    font-size: 30rpx;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.process-item {
+    margin-bottom: 24rpx;
+    background-color: #fff;
+    border-radius: 24rpx;
+    overflow: hidden;
+    box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.06);
+    border: 1rpx solid #e5e7eb;
+}
+
+/* 详情页特有样式 */
+.status-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.status-0 { background-color: #ff976a; } /* 未生产 */
+.status-1 { background-color: #0d9488; } /* 生产中 */
+.status-2 { background-color: #07c160; } /* 生产完成 */
+
+/* 浮动按钮样式 */
+.float-buttons-container {
+    position: fixed;
+    z-index: 999;
+}
+
+.float-button {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 50%;
+    background-color: #07C160;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    position: absolute;
+}
+
+.button-image {
+    width: 60rpx;
+    height: 60rpx;
+}

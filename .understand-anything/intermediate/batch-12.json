@@ -1,0 +1,32 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 0,
+  "filesSkipped": [
+    "app/admin/controller/DailyWork.php",
+    "app/admin/controller/file/Export.php",
+    "app/admin/controller/file/File.php",
+    "app/admin/controller/file/Group.php",
+    "app/admin/controller/file/Import.php",
+    "app/admin/controller/file/Setting.php",
+    "app/admin/controller/file/Tag.php",
+    "app/admin/controller/material/Settlement.php",
+    "app/admin/controller/material/Stock.php",
+    "app/admin/controller/member/Api.php",
+    "app/admin/controller/member/Group.php",
+    "app/admin/controller/member/Log.php",
+    "app/admin/controller/member/Member.php",
+    "app/admin/controller/member/Setting.php",
+    "app/admin/controller/member/SupervisorAttendance.php",
+    "app/admin/controller/member/SupervisorWage.php",
+    "app/admin/controller/member/Tag.php",
+    "app/admin/controller/member/Third.php",
+    "app/admin/controller/message/Message.php",
+    "app/admin/controller/processes/Processes.php",
+    "app/admin/controller/production/DailyReport.php",
+    "app/admin/controller/production/Inventory.php",
+    "app/admin/controller/production/Material.php",
+    "app/admin/controller/production/ProductCount.php",
+    "app/admin/controller/production/Production.php"
+  ],
+  "results": []
+}
