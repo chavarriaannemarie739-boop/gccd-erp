@@ -23,7 +23,7 @@
         <el-form-item class="filter-form-item--field">
           <el-input
             v-model="query.material_spec"
-            placeholder="配件规格"
+            placeholder="材质"
             clearable
             size="small"
             class="filter-input"
@@ -61,120 +61,92 @@
           />
         </el-form-item>
         <el-form-item class="filter-form-item--actions">
-          <el-button v-preventReClick type="primary" size="small" @click="handleSearch">搜索</el-button>
+          <el-button v-preventReClick type="primary" size="small" @click="handleSearch"
+            >搜索</el-button
+          >
           <el-button v-preventReClick size="small" @click="handleResetting">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
     <div class="contenter">
-        <el-card>
-          <div style="margin-bottom: 20px">
-            <el-button type="success" @click="CheckbelowGoods">新增</el-button>
-            <el-button type="danger" :disabled="type" v-preventReClick @click="dele(row)"
-              >删除</el-button
-            >
-            <el-button
-              type="primary"
-              :disabled="selectList.length !== 1"
-              v-preventReClick
-              @click="editSelected"
-              >编辑</el-button
-            >
-            <el-button
-              type="warning"
-              :disabled="selectList.length === 0"
-              v-preventReClick
-              @click="openBatchThreshold"
-              >批量设置最低库存</el-button
-            >
-          </div>
-          <el-table
-            ref="tableDataRefss"
-            :data="tableData"
-            border
-            fit
-            style="width: 100%"
-            :header-cell-style="{ 'text-align': 'center' }"
-            :cell-style="{ 'text-align': 'center' }"
-            v-loading="loading"
-            :row-key="getRowKeys"
-            @selection-change="handleSelectionChange"
+      <el-card>
+        <div style="margin-bottom: 20px">
+          <el-button type="success" @click="CheckbelowGoods">新增</el-button>
+          <el-button type="danger" :disabled="type" v-preventReClick @click="dele(row)"
+            >删除</el-button
           >
-            <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
-            <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
-            <el-table-column prop="material_name" label="配件名称" show-overflow-tooltip />
-            <el-table-column prop="material_spec" label="配件规格" show-overflow-tooltip />
-            <el-table-column prop="material_model" label="配件型号" show-overflow-tooltip />
-            <el-table-column prop="min_stock_qty" label="最低库存阈值" width="110" />
-            <!-- <el-table-column prop="supplier" label="供应商" show-overflow-tooltip />
+          <el-button
+            type="primary"
+            :disabled="selectList.length !== 1"
+            v-preventReClick
+            @click="editSelected"
+            >编辑</el-button
+          >
+        </div>
+        <el-table
+          ref="tableDataRefss"
+          :data="tableData"
+          border
+          fit
+          style="width: 100%"
+          :header-cell-style="{ 'text-align': 'center' }"
+          :cell-style="{ 'text-align': 'center' }"
+          v-loading="loading"
+          :row-key="getRowKeys"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
+          <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
+          <el-table-column prop="material_name" label="配件名称" show-overflow-tooltip />
+          <el-table-column prop="manufacturer" label="厂商" show-overflow-tooltip />
+          <el-table-column prop="material_spec" label="材质" show-overflow-tooltip />
+          <el-table-column prop="material_model" label="配件型号" show-overflow-tooltip />
+          <!-- <el-table-column prop="supplier" label="供应商" show-overflow-tooltip />
             <el-table-column prop="material_num" label="数量" show-overflow-tooltip /> -->
-            <!-- <el-table-column prop="supplier" label="单价" show-overflow-tooltip /> -->
-            <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
-          </el-table>
-          <!-- 分页 -->
-          <el-pagination
-            style="margin-top: 10px"
-            :page-sizes="[30, 60, 100, 200]"
-            :current-page="query.page"
-            :page-size="query.limit"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-card>
-        <el-dialog
-          title="新增"
-          v-if="processVisible"
-          v-model="processVisible"
-          width="30%"
-          :close-on-click-modal="false"
-        >
-          <CreateMaterials
-            v-model:is-show="processVisible"
-            :material-property="query.material_property"
-            @list="list"
-          />
-        </el-dialog>
-        <el-dialog
-          title="编辑"
-          v-if="processVisibleGoodsquery"
-          v-model="processVisibleGoodsquery"
-          width="30%"
-          :close-on-click-modal="false"
-        >
-          <EditMaterials :view="view" @list="list" v-model:is-show="processVisibleGoodsquery" />
-        </el-dialog>
-        <el-dialog
-          v-model="batchThresholdVisible"
-          title="批量设置最低库存"
-          width="420px"
-          :close-on-click-modal="false"
-        >
-          <p class="batch-threshold-tip">已选 {{ selectList.length }} 条配件档案，留空或填 0 表示取消预警。</p>
-          <el-form label-width="100px">
-            <el-form-item label="最低库存">
-              <el-input-number
-                v-model="batchMinStockQty"
-                :min="0"
-                :precision="3"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <el-button @click="batchThresholdVisible = false">取消</el-button>
-            <el-button type="primary" @click="saveBatchThreshold">确定</el-button>
-          </template>
-        </el-dialog>
-      </div>
-    <router-view />
+          <!-- <el-table-column prop="supplier" label="单价" show-overflow-tooltip /> -->
+          <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
+        </el-table>
+        <!-- 分页 -->
+        <el-pagination
+          style="margin-top: 10px"
+          :page-sizes="[30, 60, 100, 200]"
+          :current-page="query.page"
+          :page-size="query.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-card>
+      <el-dialog
+        title="新增"
+        v-if="processVisible"
+        v-model="processVisible"
+        width="30%"
+        :close-on-click-modal="false"
+      >
+        <CreateMaterials
+          v-model:is-show="processVisible"
+          :material-property="query.material_property"
+          @list="list"
+        />
+      </el-dialog>
+      <el-dialog
+        title="编辑"
+        v-if="processVisibleGoodsquery"
+        v-model="processVisibleGoodsquery"
+        width="30%"
+        :close-on-click-modal="false"
+      >
+        <EditMaterials :view="view" @list="list" v-model:is-show="processVisibleGoodsquery" />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
-import { list, dele, batchUpdateMinStockQty } from '@/api/mes/MaterialManagement/MaterialManagement'
+import { list, dele } from '@/api/mes/MaterialManagement/MaterialManagement'
 import CreateMaterials from './components/CreateMaterials.vue'
 import EditMaterials from './components/EditMaterials.vue'
 export default {
@@ -211,10 +183,11 @@ export default {
       },
       count: 0,
       tableList: [],
-      loading: true,
-      batchThresholdVisible: false,
-      batchMinStockQty: null
+      loading: true
     }
+  },
+  mounted() {
+    this.list()
   },
   activated() {
     this.list()
@@ -243,31 +216,15 @@ export default {
         this.type = true
       }
     },
-    openBatchThreshold() {
-      if (this.selectList.length === 0) return
-      this.batchMinStockQty = null
-      this.batchThresholdVisible = true
-    },
-    async saveBatchThreshold() {
-      if (this.selectList.length === 0) return
-      try {
-        await batchUpdateMinStockQty({
-          ids: this.selectList.map((item) => item.id),
-          min_stock_qty: this.batchMinStockQty
-        })
-        ElMessage.success('批量设置成功')
-        this.batchThresholdVisible = false
-        await this.list()
-      } catch (e) {
-        /* 全局拦截器提示 */
-      }
-    },
     async list() {
       this.loading = true
-      const resp = await list(this.query)
-      this.tableData = resp.data.list
-      this.total = resp.data.count
-      this.loading = false
+      try {
+        const resp = await list(this.query)
+        this.tableData = resp.data.list
+        this.total = resp.data.count
+      } finally {
+        this.loading = false
+      }
     },
     handleSearch() {
       this.query.page = 1
@@ -355,11 +312,6 @@ export default {
 }
 </script>
 <style scoped>
-.batch-threshold-tip {
-  margin: 0 0 12px;
-  color: #606266;
-  font-size: 13px;
-}
 .contenter {
   margin-top: 10px;
 }

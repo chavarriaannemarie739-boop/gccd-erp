@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 盘点报表圆钢统一名称、厂商、材质、型号及导出列 -->
   <div class="app-container">
     <!-- 视图切换 Tab -->
     <el-card class="filter-card-compact" shadow="never">
@@ -25,11 +26,14 @@
                 />
               </el-form-item>
               <el-form-item class="filter-form-item--actions">
-                <el-button type="primary" size="small" :loading="loading" @click="handleSearch">查看</el-button>
+                <el-button type="primary" size="small" :loading="loading" @click="handleSearch"
+                  >查看</el-button
+                >
               </el-form-item>
             </el-form>
             <div class="filter-hint">
-              与小程序「智能推算」同源 · 推算日默认今天 · 盘点归属日一般为 <strong>{{ stocktakeBaselineDate || '昨天' }}</strong>
+              与小程序「智能推算」同源 · 推算日默认今天 · 盘点归属日一般为
+              <strong>{{ stocktakeBaselineDate || '昨天' }}</strong>
             </div>
           </el-col>
         </template>
@@ -49,12 +53,29 @@
                 />
               </el-form-item>
               <el-form-item>
-                <el-select v-model="categoryFilter" placeholder="类别筛选" size="small" style="width:120px" @change="applyMonthlyFilter">
-                  <el-option v-for="opt in categoryOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
+                <el-select
+                  v-model="categoryFilter"
+                  placeholder="类别筛选"
+                  size="small"
+                  style="width: 120px"
+                  @change="applyMonthlyFilter"
+                >
+                  <el-option
+                    v-for="opt in categoryOptions"
+                    :key="opt.value"
+                    :label="opt.label"
+                    :value="opt.value"
+                  />
                 </el-select>
               </el-form-item>
               <el-form-item class="filter-form-item--actions">
-                <el-button type="primary" size="small" :loading="loading" @click="handleMonthlySearch">查询</el-button>
+                <el-button
+                  type="primary"
+                  size="small"
+                  :loading="loading"
+                  @click="handleMonthlySearch"
+                  >查询</el-button
+                >
               </el-form-item>
             </el-form>
           </el-col>
@@ -69,7 +90,7 @@
           </el-col>
         </template>
 
-        <el-col :span="activeView === 'daily' ? 6 : 6" style="text-align:right">
+        <el-col :span="activeView === 'daily' ? 6 : 6" style="text-align: right">
           <el-button size="small" @click="handleRefresh">
             <el-icon><Refresh /></el-icon> 刷新
           </el-button>
@@ -84,16 +105,17 @@
       <div class="report-meta">
         <span class="meta-label">推算日：</span>
         <span class="meta-value">{{ query.calcDate || todayDate }}</span>
-        <span class="meta-label" style="margin-left:16px">小程序盘点基准日：</span>
+        <span class="meta-label" style="margin-left: 16px">小程序盘点基准日：</span>
         <span class="meta-value">{{ stocktakeBaselineDate || '-' }}</span>
-        <span v-if="lastRefreshTime" class="meta-label" style="margin-left:16px">最后刷新：</span>
+        <span v-if="lastRefreshTime" class="meta-label" style="margin-left: 16px">最后刷新：</span>
         <span v-if="lastRefreshTime" class="meta-value">{{ lastRefreshTime }}</span>
       </div>
       <div class="report-meta report-meta--sub">
         <span class="meta-label">昨日库存 → 当日入库/产出 − 当日消耗 → </span>
         <span class="meta-value meta-value--accent">当前库存</span>
-        <span v-if="dailySummary.count" class="meta-label" style="margin-left:16px">
-          共 {{ dailySummary.count }} 条 · 库存合计 {{ formatNumber(dailySummary.totalPredicted) }} t
+        <span v-if="dailySummary.count" class="meta-label" style="margin-left: 16px">
+          共 {{ dailySummary.count }} 条 · 库存合计
+          {{ formatNumber(dailySummary.totalPredicted) }} t
         </span>
       </div>
     </div>
@@ -108,7 +130,11 @@
     </div>
 
     <!-- ============ 日推算表格 ============ -->
-    <el-card v-if="activeView === 'daily'" class="report-table-card report-table-card--daily" shadow="never">
+    <el-card
+      v-if="activeView === 'daily'"
+      class="report-table-card report-table-card--daily"
+      shadow="never"
+    >
       <el-table
         :data="tableData"
         border
@@ -119,10 +145,21 @@
         stripe
       >
         <el-table-column prop="category" label="工序" align="center" class-name="col-process" />
-        <el-table-column label="材料" align="center" class-name="col-material" show-overflow-tooltip>
+        <el-table-column
+          label="材料"
+          align="center"
+          class-name="col-material"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             <div v-if="!row.isPlaceholder" class="material-line">
-              <span class="mat-part mat-part--cat">{{ row.material_name || '-' }}</span>
+              <span class="mat-part mat-part--cat">{{
+                row.y_material_name || row.material_name || '-'
+              }}</span>
+              <template v-if="row.y_material_manufacturer">
+                <span class="mat-dot">·</span>
+                <span class="mat-part">{{ row.y_material_manufacturer }}</span>
+              </template>
               <template v-if="row.y_material_spec">
                 <span class="mat-dot">·</span>
                 <span class="mat-part">{{ row.y_material_spec }}</span>
@@ -137,22 +174,29 @@
         </el-table-column>
         <el-table-column label="规格" align="center" class-name="col-spec">
           <template #default="{ row }">
-            <span v-if="!row.isPlaceholder" class="spec-tag">{{ row.c_material_spec || row.c_product_spec || '-' }}</span>
+            <span v-if="!row.isPlaceholder" class="spec-tag">{{
+              row.c_material_spec || row.c_product_spec || '-'
+            }}</span>
             <span v-else class="placeholder-text">-</span>
           </template>
         </el-table-column>
         <el-table-column label="昨日库存" align="center" class-name="col-num">
           <template #default="{ row }">
-            <span v-if="!row.isPlaceholder" class="num-cell">{{ formatNumber(calcYesterdayStock(row)) }}</span>
+            <span v-if="!row.isPlaceholder" class="num-cell">{{
+              formatNumber(calcYesterdayStock(row))
+            }}</span>
             <span v-else class="num-cell empty">0.000</span>
           </template>
         </el-table-column>
         <el-table-column align="center" class-name="col-num">
           <template #header>
-            <span class="col-header-multi">当日<br>入库/产出</span>
+            <span class="col-header-multi">当日<br />入库/产出</span>
           </template>
           <template #default="{ row }">
-            <span v-if="!row.isPlaceholder" :class="['num-cell', calcDayInOut(row) > 0 ? 'num-positive' : 'empty']">
+            <span
+              v-if="!row.isPlaceholder"
+              :class="['num-cell', calcDayInOut(row) > 0 ? 'num-positive' : 'empty']"
+            >
               {{ calcDayInOut(row) > 0 ? '+' : '' }}{{ formatNumber(calcDayInOut(row)) }}
             </span>
             <span v-else class="num-cell empty">0.000</span>
@@ -190,7 +234,12 @@
         <el-table-column label="当前库存" align="center" class-name="col-current">
           <template #default="{ row }">
             <div v-if="!row.isPlaceholder" class="current-stock">
-              <span :class="['current-stock__val', (row.today_predicted||0) < 0 ? 'num-negative' : '']">
+              <span
+                :class="[
+                  'current-stock__val',
+                  (row.today_predicted || 0) < 0 ? 'num-negative' : ''
+                ]"
+              >
                 {{ formatNumber(row.today_predicted || 0) }}
               </span>
             </div>
@@ -199,7 +248,9 @@
         </el-table-column>
         <el-table-column label="合计" align="center" class-name="col-total">
           <template #default="{ row }">
-            <span v-if="!row.isPlaceholder" class="cat-total-num">{{ formatNumber(row.today_cat_total || row.category_total || 0) }}</span>
+            <span v-if="!row.isPlaceholder" class="cat-total-num">{{
+              formatNumber(row.today_cat_total || row.category_total || 0)
+            }}</span>
             <span v-else class="num-cell empty">0.000</span>
           </template>
         </el-table-column>
@@ -214,7 +265,13 @@
         fit
         style="width: 100%"
         class="pro-table"
-        :header-cell-style="{ 'text-align': 'center', 'background-color': '#f8fafc', 'color': '#1e293b', 'font-weight': 'bold', 'font-size': '14px' }"
+        :header-cell-style="{
+          'text-align': 'center',
+          'background-color': '#f8fafc',
+          color: '#1e293b',
+          'font-weight': 'bold',
+          'font-size': '14px'
+        }"
         :cell-style="{ 'text-align': 'center' }"
         v-loading="loading"
         :span-method="monthlySpanMethod"
@@ -237,7 +294,9 @@
         <!-- 物料型号 -->
         <el-table-column label="物料型号" min-width="96">
           <template #default="{ row }">
-            <span v-if="row.c_material_spec && row.process_name !== '圆钢'" class="spec-tag">{{ row.c_material_spec }}</span>
+            <span v-if="row.c_material_spec && row.process_name !== '圆钢'" class="spec-tag">{{
+              row.c_material_spec
+            }}</span>
             <span v-else class="num-cell empty">-</span>
           </template>
         </el-table-column>
@@ -245,7 +304,9 @@
         <!-- 上月结余 -->
         <el-table-column label="上月结余" width="128">
           <template #default="{ row }">
-            <span :class="['num-cell', row.begin_qty > 0 ? '' : 'empty']">{{ formatNumber(row.begin_qty) }}</span>
+            <span :class="['num-cell', row.begin_qty > 0 ? '' : 'empty']">{{
+              formatNumber(row.begin_qty)
+            }}</span>
           </template>
         </el-table-column>
 
@@ -259,11 +320,17 @@
               trigger="hover"
             >
               <template #reference>
-                <span class="num-cell num-positive prod-hover">+{{ formatNumber(row.production_total) }}</span>
+                <span class="num-cell num-positive prod-hover"
+                  >+{{ formatNumber(row.production_total) }}</span
+                >
               </template>
               <div class="popover-daily">
                 <div class="popover-title">逐日产量/入库明细</div>
-                <div v-for="d in row.daily.filter(d => d.output > 0)" :key="d.date" class="popover-row">
+                <div
+                  v-for="d in row.daily.filter((d) => d.output > 0)"
+                  :key="d.date"
+                  class="popover-row"
+                >
                   <span class="popover-date">{{ d.date }}</span>
                   <span class="popover-val">
                     <span class="popover-label-out">产出</span> +{{ formatNumber(d.output) }}
@@ -271,7 +338,9 @@
                 </div>
               </div>
             </el-popover>
-            <span v-else-if="row.production_total > 0" class="num-cell num-positive">+{{ formatNumber(row.production_total) }}</span>
+            <span v-else-if="row.production_total > 0" class="num-cell num-positive"
+              >+{{ formatNumber(row.production_total) }}</span
+            >
             <span v-else class="num-cell empty">0.000</span>
           </template>
         </el-table-column>
@@ -280,17 +349,23 @@
         <el-table-column label="累计消耗/出库" width="128">
           <template #default="{ row }">
             <el-popover
-              v-if="row.total_consume > 0 && row.daily && row.daily.some(d => d.consume > 0)"
+              v-if="row.total_consume > 0 && row.daily && row.daily.some((d) => d.consume > 0)"
               placement="bottom"
               :width="300"
               trigger="hover"
             >
               <template #reference>
-                <span class="num-cell num-negative cons-hover">-{{ formatNumber(row.total_consume) }}</span>
+                <span class="num-cell num-negative cons-hover"
+                  >-{{ formatNumber(row.total_consume) }}</span
+                >
               </template>
               <div class="popover-daily">
                 <div class="popover-title">逐日消耗/出库明细</div>
-                <div v-for="d in row.daily.filter(d => d.consume > 0)" :key="d.date" class="popover-row">
+                <div
+                  v-for="d in row.daily.filter((d) => d.consume > 0)"
+                  :key="d.date"
+                  class="popover-row"
+                >
                   <span class="popover-date">{{ d.date }}</span>
                   <span class="popover-val">
                     <span class="popover-label-con">消耗</span> -{{ formatNumber(d.consume) }}
@@ -298,7 +373,9 @@
                 </div>
               </div>
             </el-popover>
-            <span v-else-if="row.total_consume > 0" class="num-cell num-negative">-{{ formatNumber(row.total_consume) }}</span>
+            <span v-else-if="row.total_consume > 0" class="num-cell num-negative"
+              >-{{ formatNumber(row.total_consume) }}</span
+            >
             <span v-else class="num-cell empty">0.000</span>
           </template>
         </el-table-column>
@@ -307,7 +384,9 @@
         <el-table-column label="当前库存" width="128">
           <template #default="{ row }">
             <div class="total-container">
-              <span :class="['tonnage-num', row.current_qty < 0 ? 'num-negative' : '']">{{ formatNumber(row.current_qty) }}</span>
+              <span :class="['tonnage-num', row.current_qty < 0 ? 'num-negative' : '']">{{
+                formatNumber(row.current_qty)
+              }}</span>
               <span class="unit">t</span>
             </div>
           </template>
@@ -351,7 +430,7 @@ export default {
         { value: '易合', label: '易合' },
         { value: '高齿', label: '高齿' },
         { value: '马强济', label: '马强济' },
-        { value: 'other', label: '其他' },
+        { value: 'other', label: '其他' }
       ],
       monthlyRawRows: [],
       monthlyDisplayRows: [],
@@ -373,7 +452,7 @@ export default {
       return this.offsetDate(calcDate, -1)
     },
     dailySummary() {
-      const rows = (this.tableData || []).filter(r => !r.isPlaceholder)
+      const rows = (this.tableData || []).filter((r) => !r.isPlaceholder)
       return {
         count: rows.length,
         totalPredicted: rows.reduce((s, r) => s + parseFloat(r.today_predicted || 0), 0)
@@ -386,7 +465,8 @@ export default {
     this.query.calcDate = today
     // 默认本月
     const now = new Date()
-    this.monthlyQuery.yearMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
+    this.monthlyQuery.yearMonth =
+      now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
     this.loadData()
   },
   methods: {
@@ -424,16 +504,28 @@ export default {
 
     processData() {
       const dataMap = {}
-      this.categories.forEach(cat => {
-        dataMap[cat] = { items: [], subtotals: { yesterdayStock: 0, dayInOut: 0, dayConsume: 0, today_predicted: 0 } }
+      this.categories.forEach((cat) => {
+        dataMap[cat] = {
+          items: [],
+          subtotals: { yesterdayStock: 0, dayInOut: 0, dayConsume: 0, today_predicted: 0 }
+        }
       })
-      this.rawList.forEach(item => {
-        if (!item.material_name && !item.y_material_spec && !item.y_material_model && !item.material_id) {
+      this.rawList.forEach((item) => {
+        if (
+          !item.y_material_name &&
+          !item.material_name &&
+          !item.y_material_spec &&
+          !item.y_material_model &&
+          !item.material_id
+        ) {
           return
         }
         const cat = item.process_name || '其他'
         if (!dataMap[cat]) {
-          dataMap[cat] = { items: [], subtotals: { yesterdayStock: 0, dayInOut: 0, dayConsume: 0, today_predicted: 0 } }
+          dataMap[cat] = {
+            items: [],
+            subtotals: { yesterdayStock: 0, dayInOut: 0, dayConsume: 0, today_predicted: 0 }
+          }
         }
         dataMap[cat].items.push(item)
         dataMap[cat].subtotals.yesterdayStock += this.calcYesterdayStock(item)
@@ -443,13 +535,23 @@ export default {
       })
       const result = []
       const spans = []
-      this.categories.forEach(cat => {
+      this.categories.forEach((cat) => {
         const group = dataMap[cat]
         if (group.items.length === 0) {
           result.push({
-            category: cat, material_name: '-', y_material_spec: '-', y_material_model: '-',
-            c_material_spec: '-', baseline_qty: 0, current_qty: 0, consume_qty: 0,
-            predicted_qty: 0, category_total: 0, isPlaceholder: true,
+            category: cat,
+            y_material_name: '-',
+            y_material_manufacturer: '-',
+            material_name: '-',
+            y_material_spec: '-',
+            y_material_model: '-',
+            c_material_spec: '-',
+            baseline_qty: 0,
+            current_qty: 0,
+            consume_qty: 0,
+            predicted_qty: 0,
+            category_total: 0,
+            isPlaceholder: true,
             _today_sub: { yesterdayStock: 0, dayInOut: 0, dayConsume: 0, predicted: 0 }
           })
           spans.push(1)
@@ -479,7 +581,7 @@ export default {
 
     generateSpanArr(spans) {
       this.spanArr = []
-      spans.forEach(count => {
+      spans.forEach((count) => {
         for (let i = 0; i < count; i++) {
           this.spanArr.push(i === 0 ? count : 0)
         }
@@ -494,9 +596,15 @@ export default {
       }
     },
 
-    handleSearch() { this.loadData() },
+    handleSearch() {
+      this.loadData()
+    },
     handleRefresh() {
-      if (this.activeView === 'monthly') { this.loadMonthly() } else { this.loadData() }
+      if (this.activeView === 'monthly') {
+        this.loadMonthly()
+      } else {
+        this.loadData()
+      }
     },
     handleExport() {
       if (this.activeView === 'monthly') {
@@ -514,7 +622,9 @@ export default {
 
     formatDateTime(date) {
       const pad = (n) => String(n).padStart(2, '0')
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(
+        date.getHours()
+      )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
     },
 
     dailyHeaderStyle() {
@@ -564,10 +674,12 @@ export default {
     },
 
     formatMonthlyMaterialLabel(row) {
+      const name = (row.y_material_name || row.material_name || '').trim()
+      const manufacturer = (row.y_material_manufacturer || '').trim()
       const spec = (row.y_material_spec || '').trim()
       const model = (row.y_material_model || '').trim()
-      if (spec && model) {
-        return `${spec}｜${model}`
+      if (row.process_name === '圆钢') {
+        return [name, manufacturer, spec, model].filter(Boolean).join('｜') || '-'
       }
       if ((row.process_name || '') !== '圆钢') {
         const cSpec = (row.c_material_spec || '').trim()
@@ -575,19 +687,28 @@ export default {
           return cSpec
         }
       }
-      if (row.material_name && /[｜|]/.test(row.material_name)) {
-        return row.material_name.replace(/\|/g, '｜')
+      if (name && /[｜|]/.test(name)) {
+        return name.replace(/\|/g, '｜')
       }
-      return spec || model || row.material_name || '-'
+      return spec || model || name || '-'
     },
 
     formatMaterialLabel(row) {
-      const parts = [row.material_name, row.y_material_spec, row.y_material_model].filter(Boolean)
-      if (parts.length >= 3) {
+      const parts = [
+        row.y_material_name || row.material_name,
+        row.y_material_manufacturer,
+        row.y_material_spec,
+        row.y_material_model
+      ].filter(Boolean)
+      if (parts.length >= 4) {
         return parts.join(' | ')
       }
       if (row.material_name && row.material_name.includes('｜')) {
-        return [row.category || row.material_name.split('｜')[0], row.y_material_spec, row.y_material_model]
+        return [
+          row.category || row.material_name.split('｜')[0],
+          row.y_material_spec,
+          row.y_material_model
+        ]
           .filter(Boolean)
           .join(' | ')
       }
@@ -595,14 +716,17 @@ export default {
     },
 
     exportDailyExcel() {
-      const rows = (this.tableData || []).filter(r => !r.isPlaceholder)
+      const rows = (this.tableData || []).filter((r) => !r.isPlaceholder)
       if (!rows.length) {
         this.$message.warning('暂无数据可导出')
         return
       }
-      const sheetRows = rows.map(r => ({
+      const sheetRows = rows.map((r) => ({
         工序: r.category || r.process_name,
-        材料: this.formatMaterialLabel(r),
+        圆钢名称: r.y_material_name || r.material_name || '',
+        圆钢厂商: r.y_material_manufacturer || '',
+        圆钢材质: r.y_material_spec || '',
+        圆钢型号: r.y_material_model || '',
         工序规格: r.c_material_spec || r.c_product_spec || '',
         昨日库存: this.formatNumber(this.calcYesterdayStock(r)),
         当日入库产出: this.formatNumber(this.calcDayInOut(r)),
@@ -646,18 +770,18 @@ export default {
       // 类别过滤：按 category 字段精确匹配
       if (this.categoryFilter !== 'all') {
         const knownCats = ['溯源', '凯亚', '易合', '高齿', '马强济']
-        rows = rows.filter(r => {
+        rows = rows.filter((r) => {
           const cat = r.category || ''
           const name = r.material_name || ''
           if (this.categoryFilter === 'other') {
-            return !knownCats.some(c => cat.startsWith(c) || name.startsWith(c))
+            return !knownCats.some((c) => cat.startsWith(c) || name.startsWith(c))
           }
           return cat.startsWith(this.categoryFilter) || name.startsWith(this.categoryFilter)
         })
       }
       // 业务过滤
       if (this.monthlyFilterActive) {
-        rows = rows.filter(r => r.has_activity === true || r.has_activity === 1)
+        rows = rows.filter((r) => r.has_activity === true || r.has_activity === 1)
       }
       this.buildMonthlyDisplay(rows)
     },
@@ -665,9 +789,11 @@ export default {
     buildMonthlyDisplay(rows) {
       const processOrder = ['圆钢', '断钢', '穿孔', '球化', '矫直', '酸洗', '次成品', '半成品']
       const groups = {}
-      processOrder.forEach(p => { groups[p] = [] })
+      processOrder.forEach((p) => {
+        groups[p] = []
+      })
 
-      rows.forEach(r => {
+      rows.forEach((r) => {
         const p = r.process_name
         if (groups[p]) groups[p].push(r)
       })
@@ -676,13 +802,13 @@ export default {
       const spans = []
       let idx = 0
 
-      processOrder.forEach(p => {
+      processOrder.forEach((p) => {
         const items = groups[p]
         if (items.length === 0) return
 
         // 计算该工序合计
         const sub = { current_qty: 0 }
-        items.forEach(item => {
+        items.forEach((item) => {
           sub.current_qty += parseFloat(item.current_qty || 0)
         })
 
@@ -701,7 +827,7 @@ export default {
             total_consume: parseFloat(item.total_consume || 0),
             current_qty: parseFloat(item.current_qty || 0),
             _groupSpan: i === 0 ? n : 0,
-            cat_total: i === 0 ? sub.current_qty : 0,
+            cat_total: i === 0 ? sub.current_qty : 0
           })
           spans.push(i === 0 ? n : 0)
         })
@@ -758,9 +884,15 @@ export default {
   align-items: center;
 }
 
-.filter-form-item--date { margin-bottom: 0; }
-.filter-form-item--actions { margin-bottom: 0; }
-.filter-date { width: 240px; }
+.filter-form-item--date {
+  margin-bottom: 0;
+}
+.filter-form-item--actions {
+  margin-bottom: 0;
+}
+.filter-date {
+  width: 240px;
+}
 
 .filter-hint {
   margin-top: 6px;
@@ -819,8 +951,15 @@ export default {
   align-items: center;
 }
 
-.meta-label { color: #64748b; font-size: 12px; }
-.meta-value { color: #f8fafc; font-size: 12px; font-weight: 500; }
+.meta-label {
+  color: #64748b;
+  font-size: 12px;
+}
+.meta-value {
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 500;
+}
 
 .report-table-card {
   border-radius: 0 0 12px 12px;
@@ -828,7 +967,9 @@ export default {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
 
-.pro-table { border-radius: 8px; }
+.pro-table {
+  border-radius: 8px;
+}
 
 /* 日推算表格：8 列等比铺满容器，无需横向滚动 */
 .report-table-card--daily :deep(.el-card__body) {
@@ -854,14 +995,20 @@ export default {
 }
 
 /* 第1列 1/16，第2-7列各 1/8，第8列 3/16（收回第1列让出的一半） */
-:deep(.daily-table col:nth-child(1)) { width: 6.25%; }
+:deep(.daily-table col:nth-child(1)) {
+  width: 6.25%;
+}
 :deep(.daily-table col:nth-child(2)),
 :deep(.daily-table col:nth-child(3)),
 :deep(.daily-table col:nth-child(4)),
 :deep(.daily-table col:nth-child(5)),
 :deep(.daily-table col:nth-child(6)),
-:deep(.daily-table col:nth-child(7)) { width: 12.5%; }
-:deep(.daily-table col:nth-child(8)) { width: 18.75%; }
+:deep(.daily-table col:nth-child(7)) {
+  width: 12.5%;
+}
+:deep(.daily-table col:nth-child(8)) {
+  width: 18.75%;
+}
 
 :deep(.daily-table .el-table__header th) {
   border-bottom: 2px solid #e2e8f0 !important;
@@ -921,10 +1068,21 @@ export default {
   white-space: nowrap;
 }
 
-.mat-part { font-weight: 500; }
-.mat-part--cat { color: #1e293b; font-weight: 600; }
-.mat-part--model { color: #0369a1; font-weight: 600; }
-.mat-dot { color: #cbd5e1; user-select: none; }
+.mat-part {
+  font-weight: 500;
+}
+.mat-part--cat {
+  color: #1e293b;
+  font-weight: 600;
+}
+.mat-part--model {
+  color: #0369a1;
+  font-weight: 600;
+}
+.mat-dot {
+  color: #cbd5e1;
+  user-select: none;
+}
 
 :deep(.daily-table .num-cell) {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
@@ -957,11 +1115,29 @@ export default {
   line-height: 1.2;
 }
 
-.info-container { display: flex; justify-content: center; width: 100%; }
-.info-group { display: flex; align-items: center; gap: 8px; }
-.info-sep { color: #94a3b8; font-weight: 300; font-size: 14px; }
-.info-val { color: #334155; font-weight: 500; }
-.model-highlight { color: #0369a1; font-weight: 700; }
+.info-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.info-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-sep {
+  color: #94a3b8;
+  font-weight: 300;
+  font-size: 14px;
+}
+.info-val {
+  color: #334155;
+  font-weight: 500;
+}
+.model-highlight {
+  color: #0369a1;
+  font-weight: 700;
+}
 
 .spec-tag {
   display: inline-block;
@@ -983,7 +1159,10 @@ export default {
   font-size: 13px;
   font-weight: 600;
 }
-.num-cell.empty { color: #cbd5e1; font-weight: 400; }
+.num-cell.empty {
+  color: #cbd5e1;
+  font-weight: 400;
+}
 .num-cell--has-detail {
   cursor: help;
   border-bottom: 1px dashed rgba(220, 38, 38, 0.45);
@@ -997,8 +1176,12 @@ export default {
 .consume-detail-tooltip__line {
   white-space: nowrap;
 }
-.num-positive { color: #059669; }
-.num-negative { color: #dc2626 !important; }
+.num-positive {
+  color: #059669;
+}
+.num-negative {
+  color: #dc2626 !important;
+}
 
 .tonnage-num {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
@@ -1022,12 +1205,24 @@ export default {
   text-shadow: 0 0 10px rgba(0, 208, 132, 0.2);
 }
 
-.unit { font-size: 12px; color: #94a3b8; font-weight: 600; }
-.placeholder-text { color: #cbd5e1; }
+.unit {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.placeholder-text {
+  color: #cbd5e1;
+}
 
-:deep(.daily-table .el-table__row) { transition: background-color 0.15s; }
-:deep(.daily-table .el-table__row:hover > td) { background-color: #f8fafc !important; }
-:deep(.daily-table .el-table__row:hover > td.col-current) { background-color: #ecfdf5 !important; }
+:deep(.daily-table .el-table__row) {
+  transition: background-color 0.15s;
+}
+:deep(.daily-table .el-table__row:hover > td) {
+  background-color: #f8fafc !important;
+}
+:deep(.daily-table .el-table__row:hover > td.col-current) {
+  background-color: #ecfdf5 !important;
+}
 
 /* 累计产量/入库悬停弹窗 */
 .prod-hover {
@@ -1066,9 +1261,15 @@ export default {
   font-weight: 600;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
-.popover-label-in { color: #2563eb; }
-.popover-label-out { color: #059669; }
-.popover-label-con { color: #dc2626; }
+.popover-label-in {
+  color: #2563eb;
+}
+.popover-label-out {
+  color: #059669;
+}
+.popover-label-con {
+  color: #dc2626;
+}
 
 .process-name {
   font-weight: 700;

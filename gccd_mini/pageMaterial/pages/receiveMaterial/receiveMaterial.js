@@ -1,6 +1,7 @@
 const util = require("../../../utils/util.js");
 import Toast from '@vant/weapp/toast/toast';
 
+// [AI-2026-08] 圆钢领料按档案 ID 选择，四字段用于展示与筛选。
 Page({
     data: {
         statusBarHeight: 0,
@@ -10,6 +11,12 @@ Page({
         loadingMore: false,
         hasMore: true,
         searchValue: '',
+        searchParams: {
+            material_name: '',
+            manufacturer: '',
+            material_spec: '',
+            material_model: ''
+        },
         materialList: [], // 当前显示的物料列表
         originalMaterialList: [], // 所有物料列表（用于搜索过滤）
         selectedMaterials: [], // 选中的物料ID数组
@@ -82,7 +89,7 @@ Page({
         const params = {
             limit: this.data.pageSize,
             page: page,
-            material_name: this.data.searchValue, // 传递 material_name 
+            ...this.data.searchParams,
             warehouse: this.data.warehouseType // 传递仓库类型
         };
 
@@ -94,7 +101,8 @@ Page({
                         newList;
 
                     // 如果是搜索，不保存 originalMaterialList
-                    if (!this.data.searchValue) {
+                    const hasSearch = Object.values(this.data.searchParams).some(value => value);
+                    if (!hasSearch) {
                         this.setData({
                             originalMaterialList: newList
                         });
@@ -141,11 +149,12 @@ Page({
         }
     },
 
-    // 搜索物料
+    // 圆钢四字段筛选
     onSearchChange(e) {
-        const searchValue = e.detail;
+        const field = e.currentTarget.dataset.field;
+        const value = e.detail;
         this.setData({
-            searchValue,
+            [`searchParams.${field}`]: value,
             currentPage: 1 // 重置为第一页
         }, () => {
             this.getMaterialList(1); // 重新获取第一页数据
@@ -165,8 +174,10 @@ Page({
                 const existing = this.data.selectedMaterialsInfo.find(item => item.material_id == material_id);
                 newSelectedInfo.push({
                     material_id: material_id,
-                    material_spec: material.material_spec,
                     material_name: material.material_name,
+                    manufacturer: material.manufacturer,
+                    material_spec: material.material_spec,
+                    material_model: material.material_model,
                     material_num: existing ? existing.material_num : ''
                 });
             }

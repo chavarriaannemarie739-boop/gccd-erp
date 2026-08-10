@@ -138,7 +138,6 @@
           <EditProcessSalary :view="view" @list="list" v-model:is-show="processVisibleGoodsquery" />
         </el-dialog>
       </div>
-    <router-view />
   </div>
 </template>
 
@@ -178,6 +177,9 @@ export default {
       tableList: [],
       loading: true
     }
+  },
+  mounted() {
+    this.list()
   },
   activated() {
     this.list()
@@ -221,10 +223,13 @@ export default {
     },
     async list() {
       this.loading = true
-      const resp = await list(this.query)
-      this.tableData = resp.data.list
-      this.total = resp.data.count
-      this.loading = false
+      try {
+        const resp = await list(this.query)
+        this.tableData = resp.data.list
+        this.total = resp.data.count
+      } finally {
+        this.loading = false
+      }
     },
     // 处理时间
     handleChange(val) {

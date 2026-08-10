@@ -1,6 +1,8 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "van-toast": "@vant/weapp/toast/index"
+    "van-toast": "@vant/weapp/toast/index",
+    "van-button": "@vant/weapp/button/index",
+    "print-flow-card": "/pages/components/print-flow-card/print-flow-card"
   }
 }

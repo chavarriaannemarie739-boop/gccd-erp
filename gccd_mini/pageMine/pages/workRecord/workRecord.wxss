@@ -5,7 +5,34 @@
     box-sizing: border-box;
     background-color: #f0f2f5;
     min-height: 100vh;
-    margin-top: calc(var(--status-bar-height) + 44px);
+}
+
+/* glass-easel：文档流布局，避免 fixed 顶栏首屏不显示 */
+.wr-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f2f5;
+}
+
+.wr-navbar {
+    position: relative !important;
+    flex-shrink: 0;
+    top: auto;
+    left: auto;
+    right: auto;
+}
+
+.wr-body {
+    flex: 1;
+    min-height: 0;
+}
+
+.loading-tip {
+    text-align: center;
+    padding: 80rpx 0;
+    color: #9ca3af;
+    font-size: 28rpx;
 }
 
 /* 报工列表项 */
@@ -256,4 +283,47 @@
     background: #f4f5f7;
     color: #555;
     padding: 0 16rpx;
+}
+
+/* 日工报工卡片 */
+.report-header--daily {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.daily-tag {
+    font-size: 22rpx;
+    color: #e6a23c;
+    background: #fdf6ec;
+    border: 1rpx solid #f5dab1;
+    border-radius: 8rpx;
+    padding: 4rpx 12rpx;
+}
+
+.info-body1--daily {
+    background-color: #fffbf0;
+}
+
+.info-row-full {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+
+.info-row-full .info-label {
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+    width: 70px;
+}
+
+.info-row-full .info-value {
+    color: #333;
+    font-size: 13px;
+    flex: 1;
+    word-break: break-all;
+    line-height: 1.5;
 }

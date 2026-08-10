@@ -187,19 +187,16 @@ class ProductReport extends BaseController
                 $where[] = ['relation_code', '=', ''];
             }
         }
-        if (!empty($param['y_material_spec']) || !empty($param['y_material_model'])) {
-            $tasks = MaterialSearchHelper::taskCodesByRawMaterial(
-                (string) ($param['y_material_spec'] ?? ''),
-                (string) ($param['y_material_model'] ?? '')
-            );
-            if (!empty($tasks)) {
-                $where[] = ['relation_code', 'in', $tasks];
-            } else {
-                $where[] = ['relation_code', '=', ''];
-            }
-        }
-
-        $data = ProductReportService::list($where, $this->page(), $this->limit(), $this->order());
+        /* [AI-2026-08] 报工圆钢四字段组合检索 */
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        $data = ProductReportService::list(
+            $where,
+            $this->page(),
+            $this->limit(),
+            $this->order(),
+            [],
+            $roundFilters
+        );
         return success($data);
     }
 
@@ -207,7 +204,8 @@ class ProductReport extends BaseController
     {
         $where = [['is_delete','=','0']];
         /*添加搜索条件*/
-        $param = $this->params(ProductReportService::$search_field);
+        /* [AI-2026-08] 能耗表不关联物料，使用独立检索声明 */
+        $param = $this->params(ProductReportService::$powerSearchField);
         /*用户名*/
         if (!empty($param['routing_code'])) {
             $where[] = ['routing_code', 'like', '%' . $param['routing_code'] . '%'];

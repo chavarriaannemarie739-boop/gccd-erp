@@ -1,6 +1,6 @@
 -- ========================================
 -- 穿孔工序日工工资统计 - 数据库变更脚本
--- 执行日期：2026-05-05
+-- 数据库：gxgccd（线上请逐段执行，已存在的 ALTER 报错可忽略）
 -- ========================================
 
 -- 1. 创建日工记录表
@@ -25,13 +25,33 @@ CREATE TABLE IF NOT EXISTS `ya_daily_work` (
   KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='日工记录表';
 
--- 2. 修改用户工资明细表，增加工资类型字段
-ALTER TABLE `ya_user_wage_details`
-ADD COLUMN `wage_type` varchar(50) DEFAULT NULL COMMENT '工资类型：piece=计件，fixed=固定工资，daily_work=日工，team_leader_allowance=岗位津贴' AFTER `relation_code`;
+-- 2. 用户工资明细表增加工资类型（字段已存在则跳过）
+SET @exist := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ya_user_wage_details' AND COLUMN_NAME = 'wage_type'
+);
+SET @sqlstmt := IF(
+  @exist = 0,
+  'ALTER TABLE `ya_user_wage_details` ADD COLUMN `wage_type` varchar(50) DEFAULT NULL COMMENT ''工资类型：piece=计件，fixed=固定工资，daily_work=日工，team_leader_allowance=岗位津贴'' AFTER `relation_code`',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sqlstmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
--- 3. 修改产品报工表，增加日工标识字段
-ALTER TABLE `ya_product_report`
-ADD COLUMN `is_daily_work` tinyint NOT NULL DEFAULT 0 COMMENT '是否日工报工：0=否，1=是' AFTER `processes_code`;
+-- 3. 产品报工表增加日工标识（字段已存在则跳过）
+SET @exist := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ya_product_report' AND COLUMN_NAME = 'is_daily_work'
+);
+SET @sqlstmt := IF(
+  @exist = 0,
+  'ALTER TABLE `ya_product_report` ADD COLUMN `is_daily_work` tinyint NOT NULL DEFAULT 0 COMMENT ''是否日工报工：0=否，1=是'' AFTER `processes_code`',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sqlstmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- ========================================
 -- 变更完成

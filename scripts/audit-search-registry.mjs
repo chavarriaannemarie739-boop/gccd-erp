@@ -32,7 +32,7 @@ const walk = (dir, ext, out = []) => {
   return out
 }
 
-const parseVueFilters = (content, filePath) => {
+export const parseVueFilters = (content, filePath) => {
   const hasFilterForm =
     /filter-form|placeholder=/.test(content) &&
     (/<el-form|<el-input/.test(content) || content.includes('placeholder'))
@@ -61,8 +61,18 @@ const parseVueFilters = (content, filePath) => {
   const rm = filterSection.match(radioRe)
   if (rm) uiFields.push({ placeholder: 'radio', vModel: rm[1], bound: true, type: 'radio' })
 
-  const apiImport = content.match(/from\s+['"]@\/api\/([^'"]+)['"]/)?.[1] || ''
-  const listFn = content.match(/import\s*\{([^}]+)\}/)?.[1] || ''
+  // [AI-2026-08] 列表函数必须从同一条 API import 提取，避免误取 ElMessage 等命名导入。
+  const apiImportMatches = [
+    ...content.matchAll(
+      /import\s*\{([^}]+)\}\s*from\s+['"]@\/api\/([^'"]+)['"]/g
+    )
+  ]
+  const apiImportMatch = apiImportMatches.find((match) =>
+    match[1].split(',').some((name) => name.trim().split(/\s+as\s+/)[0] === 'list')
+  )
+    || apiImportMatches[0]
+  const apiImport = apiImportMatch?.[2] || ''
+  const listFn = apiImportMatch?.[1] || ''
   const queryBlock = content.match(/query\s*:\s*\{([^}]+)\}/s)?.[1] || ''
   const queryKeys = [...queryBlock.matchAll(/(\w+)\s*:/g)].map((x) => x[1])
 
@@ -185,6 +195,15 @@ const loadControllerHandlers = () => {
       const block = extractFnBlock(c, listFn)
       if (!block) continue
       const paramRefs = [...block.matchAll(/\$param\[['"](\w+)['"]\]/g)].map((x) => x[1])
+      // [AI-2026-08] 公共解析器已显式处理标准圆钢四字段，纳入 controller 分支审计。
+      if (/MaterialSearchHelper::resolveRoundSteelFilters\(\$param\)/.test(block)) {
+        paramRefs.push(
+          'y_material_name',
+          'y_material_manufacturer',
+          'y_material_spec',
+          'y_material_model'
+        )
+      }
       const serviceRef = block.match(/params\((\w+)::\$(search_field|detail_field)\)/)?.[1]
       const key = `${path.relative(ROOT, f)}::${listFn}`
       map[key] = { handledParams: [...new Set(paramRefs)], service: serviceRef }
@@ -344,4 +363,6 @@ const main = () => {
   }
 }
 
-main()
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main()
+}

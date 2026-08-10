@@ -1,0 +1,224 @@
+/**
+ * 打印流转卡组件样式
+ * [AI-2026-06]
+ */
+
+.pfc-container {
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.pfc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.pfc-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pfc-close {
+  font-size: 20px;
+  color: #9ca3af;
+  padding: 4px;
+}
+
+.pfc-section {
+  margin-bottom: 18px;
+}
+
+.pfc-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+/* 打印机状态栏 */
+.pfc-printer-status {
+  display: flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-sizing: border-box;
+}
+
+.pfc-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  margin-right: 8px;
+  transition: background-color 0.3s;
+}
+
+.pfc-status-dot--on {
+  background-color: #10b981;
+}
+
+.pfc-status-text {
+  font-size: 14px;
+  color: #374151;
+  flex-grow: 1;
+}
+
+.pfc-status-action {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0d9488;
+  padding: 4px 8px;
+}
+
+.pfc-status-action:active {
+  opacity: 0.7;
+}
+
+/* 扫描设备列表 */
+.pfc-device-list {
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.pfc-device-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.pfc-device-item:last-child {
+  border-bottom: none;
+}
+
+.pfc-device-item:active {
+  background-color: #f9fafb;
+}
+
+.pfc-device-name {
+  font-size: 13px;
+  color: #374151;
+  flex-grow: 1;
+}
+
+.pfc-device-rssi {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-right: 8px;
+}
+
+.pfc-device-tag {
+  font-size: 10px;
+  color: #0d9488;
+  background-color: #ccfbf1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.pfc-hint {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 0;
+}
+
+/* 设备选择器 */
+.pfc-device-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pfc-pick-item {
+  font-size: 13px;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.pfc-pick-item--active {
+  color: #0d9488;
+  background-color: #f0fdfa;
+  border-color: #5eead4;
+  font-weight: 500;
+}
+
+/* 标签预览框（比例拟合 30x30mm 视觉） */
+.pfc-preview {
+  width: 140px;
+  height: 140px;
+  margin: 4px auto 0;
+  border: 1px dashed #d1d5db;
+  background-color: #fafafa;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.02);
+}
+
+.pfc-preview-line {
+  font-size: 9px;
+  color: #374151;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.pfc-preview-title {
+  font-weight: bold;
+  font-size: 10px;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.pfc-preview-qr {
+  font-size: 8px;
+  color: #9ca3af;
+  font-family: monospace;
+  margin-top: 4px;
+  background-color: #f3f4f6;
+  padding: 1px 4px;
+  border-radius: 2px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pfc-footer {
+  margin-top: 10px;
+}
+
+.pfc-copies {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pfc-copies .pfc-label {
+  margin-bottom: 0;
+}

@@ -1,11 +1,21 @@
 <template>
+  <!-- [AI-2026-08] 盘点圆钢业务字段统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <el-card class="filter-card-compact" shadow="never">
       <el-form :model="query" class="filter-form-flex" @submit.prevent>
         <el-form-item class="filter-form-item--field">
           <el-input
-            v-model="query.material_name"
-            placeholder="原材料"
+            v-model="query.y_material_name"
+            placeholder="圆钢名称"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
+            v-model="query.y_material_manufacturer"
+            placeholder="圆钢厂商"
             clearable
             size="small"
             class="filter-input"
@@ -23,7 +33,7 @@
         <el-form-item class="filter-form-item--field">
           <el-input
             v-model="query.y_material_spec"
-            placeholder="规格"
+            placeholder="圆钢材质"
             clearable
             size="small"
             class="filter-input"
@@ -67,17 +77,13 @@
       </el-form>
     </el-card>
     <el-card class="main-list-card" shadow="never">
-      <el-table
-        v-loading="loading"
-        :data="tableData"
-        border
-        style="width: 100%; margin-top: 15px;"
-      >
+      <el-table v-loading="loading" :data="tableData" border style="width: 100%; margin-top: 15px">
         <el-table-column type="index" label="序号" width="60" align="center" />
         <el-table-column prop="inventory_date" label="盘点日期" width="120" align="center" />
         <el-table-column prop="process_name" label="工序" width="100" align="center" />
-        <el-table-column prop="material_name" label="圆钢名称" min-width="120" />
-        <el-table-column prop="y_material_spec" label="圆钢规格" min-width="100" />
+        <el-table-column prop="y_material_name" label="圆钢名称" min-width="120" />
+        <el-table-column prop="y_material_manufacturer" label="圆钢厂商" min-width="120" />
+        <el-table-column prop="y_material_spec" label="圆钢材质" min-width="100" />
         <el-table-column prop="y_material_model" label="圆钢型号" min-width="100" />
         <el-table-column label="工序规格" min-width="120">
           <template #default="scope">
@@ -93,7 +99,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div style="margin-top: 20px; text-align: right;">
+      <div style="margin-top: 20px; text-align: right">
         <el-pagination
           v-model:current-page="query.page"
           v-model:page-size="query.limit"
@@ -119,7 +125,8 @@ export default {
       query: {
         page: 1,
         limit: 10,
-        material_name: '',
+        y_material_name: '',
+        y_material_manufacturer: '',
         process_name: '',
         inventory_start_date: '',
         inventory_end_date: '',
@@ -132,7 +139,7 @@ export default {
       total: 0,
       loading: false,
       // 物料档案查找表：用于反查缺失的圆钢型号
-      _matLookup: {}
+      matLookup: {}
     }
   },
   created() {
@@ -155,7 +162,7 @@ export default {
             if (!lookup[key]) lookup[key] = model
           }
         })
-        this._matLookup = lookup
+        this.matLookup = lookup
         // 如果表格数据已加载，重新填充型号
         if (this.tableData.length > 0) {
           this._enrichTableData()
@@ -166,10 +173,10 @@ export default {
     },
     /** 用物料档案反查填充 y_material_model */
     _enrichTableData() {
-      const lookup = this._matLookup || {}
-      this.tableData = this.tableData.map(row => {
+      const lookup = this.matLookup || {}
+      this.tableData = this.tableData.map((row) => {
         if (!row.y_material_model || !(row.y_material_model || '').trim()) {
-          const name = (row.material_name || '').trim()
+          const name = (row.y_material_name || row.material_name || '').trim()
           const spec = (row.y_material_spec || '').trim()
           if (name && spec) {
             const found = lookup[name + '|' + spec]
@@ -196,8 +203,16 @@ export default {
     },
     handleReset() {
       this.query = {
-        page: 1, limit: 10, material_name: '', process_name: '', inventory_start_date: '', inventory_end_date: '',
-        y_material_spec: '', y_material_model: '', c_material_spec: ''
+        page: 1,
+        limit: 10,
+        y_material_name: '',
+        y_material_manufacturer: '',
+        process_name: '',
+        inventory_start_date: '',
+        inventory_end_date: '',
+        y_material_spec: '',
+        y_material_model: '',
+        c_material_spec: ''
       }
       this.dateRange = []
       this.handleSearch()
@@ -206,7 +221,11 @@ export default {
       this.loading = true
       try {
         const resp = await list(this.query)
-        this.tableData = resp.data.list
+        this.tableData = (resp.data.list || []).map((row) => ({
+          ...row,
+          y_material_name: row.y_material_name || row.material_name || '',
+          y_material_manufacturer: row.y_material_manufacturer || row.manufacturer || ''
+        }))
         this.total = resp.data.count
         // 反查填充缺失的圆钢型号
         this._enrichTableData()

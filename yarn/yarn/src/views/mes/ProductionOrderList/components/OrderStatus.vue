@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 工单状态圆钢统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px">
@@ -34,7 +35,9 @@
           <el-table-column prop="report_num" label="报工数量" show-overflow-tooltip />
           <el-table-column prop="task_num" label="任务数量" show-overflow-tooltip />
           <el-table-column prop="y_material_name" label="圆钢名称" show-overflow-tooltip />
-          <el-table-column prop="y_material_spec" label="圆钢规格" show-overflow-tooltip />
+          <el-table-column prop="y_material_manufacturer" label="圆钢厂商" show-overflow-tooltip />
+          <el-table-column prop="y_material_spec" label="圆钢材质" show-overflow-tooltip />
+          <el-table-column prop="y_material_model" label="圆钢型号" show-overflow-tooltip />
         </el-table>
       </el-form-item>
     </el-form>

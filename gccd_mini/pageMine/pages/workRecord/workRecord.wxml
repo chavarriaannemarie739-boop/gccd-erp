@@ -1,29 +1,41 @@
-<!-- pageMine/pages/wordRecord/wordRecord.wxml -->
-<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+<!-- [AI-2026-08] 圆钢四字段顺序：名称、厂商、材质、型号。 -->
+<view class="wr-shell">
+<view class="custom-navbar wr-navbar" style="padding-top: {{statusBarHeight}}px">
     <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
     <view class="navbar-title">报工记录</view>
 </view>
 
 <!-- 页面内容 -->
-<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+<view class="page-content wr-body" style="padding-top: {{statusBarHeight + 44}}px">
     <!-- 高级检索模块 -->
     <view class="filter-container">
-        <!-- 第一行: 圆钢型号, 成品规格 -->
         <view class="filter-row">
             <view class="filter-input-wrap">
                 <van-icon name="orders-o" color="#999" size="14px" style="margin-right: 6px;"/>
-                <input placeholder="圆钢型号" placeholder-style="color:#999;" model:value="{{y_material_model}}" />
+                <input placeholder="圆钢名称" placeholder-style="color:#999;" model:value="{{y_material_name}}" />
             </view>
             <view class="filter-input-wrap">
                 <van-icon name="label-o" color="#999" size="14px" style="margin-right: 6px;"/>
-                <input placeholder="成品规格" placeholder-style="color:#999;" model:value="{{c_material_spec}}" />
+                <input placeholder="圆钢厂商" placeholder-style="color:#999;" model:value="{{y_material_manufacturer}}" />
             </view>
         </view>
-        <!-- 第二行: 成品型号, 时间, 按钮 -->
         <view class="filter-row">
+            <view class="filter-input-wrap">
+                <input placeholder="圆钢材质" placeholder-style="color:#999;" model:value="{{y_material_spec}}" />
+            </view>
+            <view class="filter-input-wrap">
+                <input placeholder="圆钢型号" placeholder-style="color:#999;" model:value="{{y_material_model}}" />
+            </view>
+        </view>
+        <view class="filter-row">
+            <view class="filter-input-wrap">
+                <input placeholder="成品规格" placeholder-style="color:#999;" model:value="{{c_material_spec}}" />
+            </view>
             <view class="filter-input-wrap" style="flex: 1.2; padding: 0 10rpx;">
                 <input placeholder="成品型号" placeholder-style="color:#999; font-size: 24rpx;" model:value="{{c_material_model}}" />
             </view>
+        </view>
+        <view class="filter-row">
             <view class="time-wrap">
                 <picker mode="date" value="{{create_start_date}}" bindchange="bindStartDateChange" style="flex: 1;">
                     <view class="t-picker {{create_start_date ? '' : 'placeholder'}}">{{create_start_date ? create_start_date : '开始'}}</view>
@@ -40,6 +52,46 @@
 
     <!-- 报工列表 -->
     <view wx:for="{{list}}" wx:key="id" class="report-item">
+        <!-- 日工报工 -->
+        <block wx:if="{{item.is_daily_work == 1}}">
+            <view class="report-header report-header--daily">
+                <text class="report-code">日工报工</text>
+                <text class="daily-tag">日工</text>
+            </view>
+            <view class="report-body">
+                <view class="info-body1 info-body1--daily">
+                    <view class="info-group-row">
+                        <view class="info-row-full">
+                            <text class="info-label">报工人员：</text>
+                            <text class="info-value">{{item.daily_work_user_name || item.product_user || '—'}}</text>
+                        </view>
+                    </view>
+                    <view class="info-group-row">
+                        <view class="info-row-half">
+                            <text class="info-label">报工类型：</text>
+                            <text class="info-value">{{item.work_type_label || (item.work_type == 2 ? '半天日工' : '全天日工')}}</text>
+                        </view>
+                        <view class="info-row-half">
+                            <text class="info-label">上班时长：</text>
+                            <text class="info-value">{{item.work_hours || 0}} 小时</text>
+                        </view>
+                    </view>
+                    <view class="info-group-row">
+                        <view class="info-row-full">
+                            <text class="info-label">备注：</text>
+                            <text class="info-value">{{item.remark || '无'}}</text>
+                        </view>
+                    </view>
+                </view>
+                <view class="info-footer">
+                    <text class="info-label">提交时间：</text>
+                    <text class="info-time">{{item.create_time}}</text>
+                </view>
+            </view>
+        </block>
+
+        <!-- 正常生产报工（保持原样） -->
+        <block wx:else>
         <view class="report-header">
             <text class="report-code">{{item.production_plan_name}}</text>
         </view>
@@ -47,7 +99,17 @@
             <view class="info-body1">
                 <view class="info-group-row">
                     <view class="info-row-half">
-                        <text class="info-label">圆钢规格：</text>
+                        <text class="info-label">圆钢名称：</text>
+                        <text class="info-value">{{item.y_material_name}}</text>
+                    </view>
+                    <view class="info-row-half">
+                        <text class="info-label">圆钢厂商：</text>
+                        <text class="info-value">{{item.y_material_manufacturer}}</text>
+                    </view>
+                </view>
+                <view class="info-group-row">
+                    <view class="info-row-half">
+                        <text class="info-label">圆钢材质：</text>
                         <text class="info-value">{{item.y_material_spec}}</text>
                     </view>
                     <view class="info-row-half">
@@ -108,34 +170,6 @@
                     </view>
                 </view>
             </view>
-            <!-- <view class="info-row" wx:if="{{item.defective && item.defective.length > 0}}">
-                <text class="info-label">不良品：</text>
-                <view class="defective-list">
-                    <view wx:for="{{item.defective}}" wx:key="name" class="defective-item">
-                        <text class="info-value">{{itemDefective.name}} ({{itemDefective.num}})</text>
-                    </view>
-                </view>
-            </view> -->
-            <!-- <view class="info-group">
-                <view class="info-item">
-                    <text class="info-label">电表：</text>
-                    <text class="info-value">{{item.power_num}} kWh</text>
-                </view>
-                <view class="info-item">
-                    <text class="info-label">电力消耗：</text>
-                    <text class="info-value">{{item.power_consume}} kWh</text>
-                </view>
-            </view>
-            <view class="info-group">
-                <view class="info-item">
-                    <text class="info-label">气表：</text>
-                    <text class="info-value">{{item.gas_num}} m³</text>
-                </view>
-                <view class="info-item">
-                    <text class="info-label">气体消耗：</text>
-                    <text class="info-value">{{item.gas_consume}} m³</text>
-                </view>
-            </view> -->
             <view class="info-footer">
                 <text class="info-label">备注：</text>
                 <text class="info-value">{{item.remark}}</text>
@@ -146,10 +180,15 @@
                 <text class="info-time">{{item.create_time}}</text>
             </view>
         </view>
+        </block>
     </view>
 
+    <!-- 加载中 -->
+    <view wx:if="{{loading && list.length === 0}}" class="loading-tip">加载中…</view>
+
     <!-- 空状态提示 -->
-    <view wx:if="{{list.length === 0}}" class="empty-tip">
+    <view wx:if="{{!loading && list.length === 0}}" class="empty-tip">
         <van-empty description="暂无报工记录" />
     </view>
+</view>
 </view>

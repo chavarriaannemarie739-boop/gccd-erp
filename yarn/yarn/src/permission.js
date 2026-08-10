@@ -3,6 +3,7 @@ import defaultSettings from '@/settings'
 import { useUserStoreHook } from '@/store/modules/user'
 import { useSettingsStoreHook } from '@/store/modules/settings'
 import { usePermissionStoreHook } from '@/store/modules/permission'
+import { findDefaultHomePath, hasDashboardAccess } from '@/utils/homeRoute'
 import { translateRouteTitle } from '@/utils/i18n'
 import getPageTitle from '@/utils/page-title'
 import NProgress from 'nprogress'
@@ -41,15 +42,29 @@ router.beforeEach(async (to, from, next) => {
   const hasToken = localStorage.getItem(storePrefix + tokenName)
   if (hasToken) {
     if (to.path === '/login') {
-      // 如果已登录，跳转首页
-      next({ path: '/' })
+      // 已登录：进默认首页（有驾驶舱权限才进 /dashboard）
+      const home = findDefaultHomePath(permissionStore.routes)
+      next({ path: home === '/404' ? '/' : home })
       NProgress.done()
     } else {
       const hasRoles = userStore.user.roles && userStore.user.roles.length > 0
       if (hasRoles) {
+        const home = findDefaultHomePath(permissionStore.routes)
+        // [AI-2026-08] 根路径或无首页权限时访问驾驶舱 → 落到首个已授权菜单
+        if (to.path === '/' || to.path === '/dashboard') {
+          next({ path: home, replace: true })
+          return
+        }
+        if (
+          (to.path === '/dashboard/index' || to.path.startsWith('/dashboard/')) &&
+          !hasDashboardAccess(permissionStore.routes)
+        ) {
+          next({ path: home, replace: true })
+          return
+        }
         // 未匹配到任何路由，跳转404
         if (to.matched.length === 0) {
-          from.name ? next({ name: from.name }) : next('/404')
+          from.name ? next({ name: from.name }) : next({ name: '404' })
         } else {
           next()
         }
@@ -60,7 +75,17 @@ router.beforeEach(async (to, from, next) => {
           accessRoutes.forEach((route) => {
             router.addRoute(route)
           })
-          next({ ...to, replace: true })
+          const home = findDefaultHomePath(permissionStore.routes)
+          if (
+            to.path === '/' ||
+            to.path === '/dashboard' ||
+            ((to.path === '/dashboard/index' || to.path.startsWith('/dashboard/')) &&
+              !hasDashboardAccess(permissionStore.routes))
+          ) {
+            next({ path: home, replace: true })
+          } else {
+            next({ ...to, replace: true })
+          }
         } catch (error) {
           // 移除 token 并跳转登录页
           await userStore.resetToken()

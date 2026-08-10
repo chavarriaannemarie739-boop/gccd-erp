@@ -25,12 +25,14 @@ class WmsMaterialModel extends Model
         return $this->hasOne(MaterialModel::class, 'id', 'material_id')
             ->bind(
                 [
+                    // [AI-2026-08] 库存圆钢标准四字段，保留 material_* 兼容
                     'material_name' => 'material_name',
                     'material_spec' => 'material_spec',
                     'material_thickness' => 'material_thickness',
                     'material_model' => 'material_model',
                     'supplier' => 'supplier',
                     'manufacturer' => 'manufacturer',
+                    'material_property' => 'material_property',
                     'is_product' => 'is_product',
                 ]
             );
@@ -45,7 +47,7 @@ class WmsMaterialModel extends Model
                     'location' => 'location',
                     'relation_code' => 'relation_code',
                     'in_create_time' => 'create_time',
-                    'y_material_spec' => 'material_spec1',
+                    'legacy_y_material_spec' => 'material_spec1',
                 ]
             );
     }

@@ -14,6 +14,18 @@
     color: #1f2937;
 }
 
+/* [AI-2026-08] 四字段筛选两列布局，避免小屏横向拥挤。 */
+.filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8rpx;
+    margin: 0 24rpx 16rpx;
+}
+
+.filter-grid van-search {
+    width: calc(50% - 4rpx);
+}
+
 /* 优化后的表格布局 */
 .table-container {
     background: #fff;

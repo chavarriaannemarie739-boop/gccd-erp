@@ -1,0 +1,1 @@
+import{Y as t}from"./index.Do6b8hFY.js";const o="/admin/check.Check/";function a(a){return t({url:o+"list",method:"post",data:a})}function n(a){return t({url:o+"info",method:"post",data:a})}function r(a){return t({url:o+"add",method:"post",data:a})}function d(a){return t({url:o+"dele",method:"post",data:a})}export{r as a,d,n as i,a as l};

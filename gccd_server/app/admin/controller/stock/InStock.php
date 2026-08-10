@@ -15,8 +15,10 @@ use app\common\model\admin\MaterialModel;
 use app\common\model\admin\WmsMaterialModel;
 use app\common\service\admin\FinishedStockService;
 use app\common\service\admin\InStockService;
+use app\common\service\admin\MaterialStockThresholdService;
 use app\common\service\admin\StockAlertService;
 use app\common\service\admin\PublicService;
+use app\common\service\utils\MaterialSearchHelper;
 use app\Request;
 use hg\apidoc\annotation as Apidoc;
 use think\Filesystem;
@@ -66,6 +68,10 @@ class InStock extends BaseController
         if (!empty($param['material_name'])) {
             $wh[] = ['material_name', 'like', '%' . $param['material_name'] . '%'];
         }
+        /* [AI-2026-08] 厂商筛选与入库列表展示字段保持一致 */
+        if (!empty($param['manufacturer'])) {
+            $wh[] = ['manufacturer', 'like', '%' . $param['manufacturer'] . '%'];
+        }
         if (!empty($param['material_spec'])) {
             $wh[] = ['material_spec','like','%' . $param['material_spec'] . '%'];
         }
@@ -84,11 +90,33 @@ class InStock extends BaseController
             $data = array_column($data, 'id');
             $where[] = ['material_id', 'in', $data];
         }
+        /* [AI-2026-08] 入库圆钢四字段独立/组合检索 */
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+            $roundQuery = (new MaterialModel())->alias('m')
+                ->where('m.is_delete', 0)
+                ->where('m.material_property', 'like', '%圆钢%');
+            MaterialSearchHelper::applyRoundSteelFilters($roundQuery, $roundFilters, 'm');
+            $where[] = ['material_id', 'in', $roundQuery->column('m.id') ?: [0]];
+        }
         /*库位--代码*/
         if (!empty($param['location'])) {
             $where[] = ['location','like','%' . $param['location'] . '%'];
         }
         if (!empty($param['warehouse'])) {
+            /* [AI-2026-08] 无对应入库仓权限时直接空结果 */
+            if (!\app\common\service\admin\WarehouseScopeService::tabAllowed(
+                \app\common\service\admin\WarehouseScopeService::ACTION_INBOUND,
+                (string) $param['warehouse']
+            )) {
+                return success([
+                    'count' => 0,
+                    'pages' => 0,
+                    'page' => $this->page(),
+                    'limit' => $this->limit(),
+                    'list' => [],
+                ]);
+            }
             $likes = InStockService::warehouseSearchOrLikesFromTabKeyword($param['warehouse']);
             if ($likes !== null && $likes !== []) {
                 $where[] = static function ($query) use ($likes) {
@@ -133,6 +161,13 @@ class InStock extends BaseController
         $warehouse = (string) ($list['warehouse'] ?? '');
         if ($warehouse !== '' && preg_match('/成品/u', $warehouse)) {
             return error('成品仓库不允许手动新增入库，成品入库由酸洗工序报工自动生成');
+        }
+        /* [AI-2026-08] 入库写入校验仓库权限 */
+        if ($warehouse !== '' && !\app\common\service\admin\WarehouseScopeService::tabAllowed(
+            \app\common\service\admin\WarehouseScopeService::ACTION_INBOUND,
+            $warehouse
+        )) {
+            return error('无该仓库的入库权限');
         }
 //        return success($param);
 //        $param = [
@@ -205,6 +240,20 @@ class InStock extends BaseController
         /* ya_wms_material.stock 多为「配件仓库/圆钢仓库」等，与 Tab「配件库/圆钢库」字面不一致；与入库 list 一致用 OR-LIKE */
         $warehouseTab = trim((string) ($param['warehouse'] ?? ''));
         if ($warehouseTab !== '') {
+            /* [AI-2026-08] 库存 Tab 权限 */
+            if (!\app\common\service\admin\WarehouseScopeService::tabAllowed(
+                \app\common\service\admin\WarehouseScopeService::ACTION_INVENTORY,
+                $warehouseTab
+            )) {
+                return success([
+                    'count' => 0,
+                    'pages' => 0,
+                    'page' => $this->page(),
+                    'limit' => $this->limit(),
+                    'list' => [],
+                    'alert_count' => 0,
+                ]);
+            }
             $tabToKeyword = [
                 '配件库'   => '配件',
                 '原料库'   => '圆钢',
@@ -241,7 +290,16 @@ class InStock extends BaseController
             $where[] = ['create_time', '<=', $param['create_end_date'] . ' ' . '23:59:59'];
         }
         /*需要处理数据*/
-        if (!empty($param['material_name']) || !empty($param['material_spec']) || !empty($param['material_model'])) {
+        if (
+            !empty($param['material_name'])
+            || !empty($param['manufacturer'])
+            || !empty($param['material_spec'])
+            || !empty($param['material_model'])
+        ) {
+            /* [AI-2026-08] 库存厂商筛选与展示字段保持一致 */
+            if (!empty($param['manufacturer'])) {
+                $wh[] = ['manufacturer', 'like', '%' . $param['manufacturer'] . '%'];
+            }
             if (!empty($param['material_spec'])) {
                 $wh[] = ['material_spec','like','%' . $param['material_spec'] . '%'];
             }
@@ -255,6 +313,15 @@ class InStock extends BaseController
             $result = $model->field('id')->where($wh)->select()->toArray();
             $result = array_column($result, 'id');
             $where[] = ['material_id', 'in', $result];
+        }
+        /* [AI-2026-08] 库存圆钢四字段独立/组合检索 */
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+            $roundQuery = (new MaterialModel())->alias('m')
+                ->where('m.is_delete', 0)
+                ->where('m.material_property', 'like', '%圆钢%');
+            MaterialSearchHelper::applyRoundSteelFilters($roundQuery, $roundFilters, 'm');
+            $where[] = ['material_id', 'in', $roundQuery->column('m.id') ?: [0]];
         }
         if (!empty($param['stock_alert_only'])) {
             $kw = StockAlertService::warehouseKeywordFromTab($warehouseTab);
@@ -284,6 +351,27 @@ class InStock extends BaseController
     public function stockAlertSummary()
     {
         return success(StockAlertService::summary());
+    }
+
+    /**
+     * [AI-2026-08] 库存管理按物料与仓库范围批量设置最低库存。
+     *
+     * @return \json
+     */
+    public function batchUpdateStockThreshold()
+    {
+        $param = $this->params([
+            'material_ids/a' => [],
+            'warehouse' => '',
+            'min_stock_qty' => null,
+        ]);
+        $data = MaterialStockThresholdService::batchUpdate(
+            $param['material_ids'] ?? [],
+            (string) ($param['warehouse'] ?? ''),
+            $param['min_stock_qty'] ?? null
+        );
+
+        return success($data);
     }
 
     /*根据物料ID获取批次号*/

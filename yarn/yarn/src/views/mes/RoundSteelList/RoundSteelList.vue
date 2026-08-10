@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 圆钢档案：左树（名称>厂商>材质>型号）+ 右表，树只做导航筛选 -->
   <div class="app-container">
     <el-card class="filter-card-compact" shadow="never">
       <el-form :model="query" class="filter-form-flex" @submit.prevent>
@@ -13,8 +14,8 @@
         </el-form-item>
         <el-form-item class="filter-form-item--field">
           <el-input
-            v-model="query.material_model"
-            placeholder="圆钢型号"
+            v-model="query.manufacturer"
+            placeholder="厂商"
             clearable
             size="small"
             class="filter-input"
@@ -23,7 +24,16 @@
         <el-form-item class="filter-form-item--field">
           <el-input
             v-model="query.material_spec"
-            placeholder="圆钢规格"
+            placeholder="材质"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
+            v-model="query.material_model"
+            placeholder="型号"
             clearable
             size="small"
             class="filter-input"
@@ -43,122 +53,132 @@
           />
         </el-form-item>
         <el-form-item class="filter-form-item--actions">
-          <el-button v-preventReClick type="primary" size="small" @click="handleSearch">搜索</el-button>
+          <el-button v-preventReClick type="primary" size="small" @click="handleSearch"
+            >搜索</el-button
+          >
           <el-button v-preventReClick size="small" @click="handleResetting">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
-    <div class="contenter">
-        <el-card>
-          <div style="margin-bottom: 20px">
-            <el-button type="success" @click="CheckbelowGoods">新增</el-button>
-            <el-button type="danger" :disabled="type" v-preventReClick @click="dele(row)"
-              >删除</el-button
-            >
-            <el-button
-              type="primary"
-              :disabled="selectList.length !== 1"
-              v-preventReClick
-              @click="editSelected"
-              >编辑</el-button
-            >
-            <el-button
-              type="warning"
-              :disabled="selectList.length === 0"
-              v-preventReClick
-              @click="openBatchThreshold"
-              >批量设置最低库存</el-button
-            >
+    <div class="contenter round-steel-layout">
+      <el-card class="round-steel-tree-card" shadow="never">
+        <div class="tree-toolbar">
+          <el-input
+            v-model="treeFilterText"
+            placeholder="筛选名称或路径"
+            clearable
+            size="small"
+            class="tree-filter-input"
+          />
+          <div class="tree-toolbar-actions">
+            <el-button link type="primary" size="small" @click="expandAllTree">展开</el-button>
+            <el-button link type="primary" size="small" @click="collapseAllTree">收起</el-button>
           </div>
-          <el-table
-            ref="tableDataRefss"
-            :data="tableData"
-            border
-            fit
-            style="width: 100%"
-            :header-cell-style="{ 'text-align': 'center' }"
-            :cell-style="{ 'text-align': 'center' }"
-            v-loading="loading"
-            :row-key="getRowKeys"
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
-            <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
-            <el-table-column prop="material_name" label="圆钢名称" show-overflow-tooltip />
-            <el-table-column prop="material_spec" label="圆钢规格" show-overflow-tooltip />
-            <el-table-column prop="material_model" label="圆钢型号" show-overflow-tooltip />
-            <el-table-column prop="min_stock_qty" label="最低库存阈值" width="110" />
-            <!-- <el-table-column prop="supplier" label="供应商" show-overflow-tooltip />
-            <el-table-column prop="material_num" label="数量" show-overflow-tooltip /> -->
-            <!-- <el-table-column prop="supplier" label="单价" show-overflow-tooltip /> -->
-            <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
-          </el-table>
-          <!-- 分页 -->
-          <el-pagination
-            style="margin-top: 10px"
-            :page-sizes="[30, 60, 100, 200]"
-            :current-page="query.page"
-            :page-size="query.limit"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-card>
-        <el-dialog
-          title="新增"
-          v-if="processVisible"
-          v-model="processVisible"
-          width="30%"
-          :close-on-click-modal="false"
+        </div>
+        <el-tree
+          ref="roundSteelTreeRef"
+          class="round-steel-tree"
+          :data="treeData"
+          node-key="id"
+          highlight-current
+          :expand-on-click-node="false"
+          :default-expanded-keys="defaultExpandedKeys"
+          :filter-node-method="filterTreeNode"
+          :props="treeProps"
+          @node-click="handleTreeNodeClick"
         >
-          <CreateMaterials
-            v-model:is-show="processVisible"
-            :material-property="query.material_property"
-            @list="list"
-          />
-        </el-dialog>
-        <el-dialog
-          title="编辑"
-          v-if="processVisibleGoodsquery"
-          v-model="processVisibleGoodsquery"
-          width="30%"
-          :close-on-click-modal="false"
-        >
-          <EditMaterials :view="view" @list="list" v-model:is-show="processVisibleGoodsquery" />
-        </el-dialog>
-        <el-dialog
-          v-model="batchThresholdVisible"
-          title="批量设置最低库存"
-          width="420px"
-          :close-on-click-modal="false"
-        >
-          <p class="batch-threshold-tip">已选 {{ selectList.length }} 条圆钢档案，留空或填 0 表示取消预警。</p>
-          <el-form label-width="100px">
-            <el-form-item label="最低库存">
-              <el-input-number
-                v-model="batchMinStockQty"
-                :min="0"
-                :precision="3"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <el-button @click="batchThresholdVisible = false">取消</el-button>
-            <el-button type="primary" @click="saveBatchThreshold">确定</el-button>
+          <template #default="{ data }">
+            <span class="tree-node">
+              <el-tag size="small" effect="plain" class="tree-node-tag">{{ data.tag }}</el-tag>
+              <span class="tree-node-label">{{ data.label }}</span>
+              <span class="tree-node-count">({{ data.count }})</span>
+            </span>
           </template>
-        </el-dialog>
-      </div>
-    <router-view />
+        </el-tree>
+      </el-card>
+      <el-card class="round-steel-table-card">
+        <div style="margin-bottom: 20px">
+          <el-button type="success" @click="CheckbelowGoods">新增</el-button>
+          <el-button type="danger" :disabled="type" v-preventReClick @click="dele(row)"
+            >删除</el-button
+          >
+          <el-button
+            type="primary"
+            :disabled="selectList.length !== 1"
+            v-preventReClick
+            @click="editSelected"
+            >编辑</el-button
+          >
+        </div>
+        <el-table
+          ref="tableDataRefss"
+          :data="tableData"
+          border
+          fit
+          style="width: 100%"
+          :header-cell-style="{ 'text-align': 'center' }"
+          :cell-style="{ 'text-align': 'center' }"
+          v-loading="loading"
+          :row-key="getRowKeys"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
+          <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
+          <el-table-column prop="material_name" label="圆钢名称" show-overflow-tooltip />
+          <el-table-column prop="manufacturer" label="厂商" show-overflow-tooltip />
+          <el-table-column prop="material_spec" label="材质" show-overflow-tooltip />
+          <el-table-column prop="material_model" label="型号" show-overflow-tooltip />
+          <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
+        </el-table>
+        <el-pagination
+          style="margin-top: 10px"
+          :page-sizes="[30, 60, 100, 200]"
+          :current-page="query.page"
+          :page-size="query.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-card>
+      <el-dialog
+        title="新增"
+        v-if="processVisible"
+        v-model="processVisible"
+        width="30%"
+        :close-on-click-modal="false"
+      >
+        <CreateMaterials
+          v-model:is-show="processVisible"
+          :material-property="query.material_property"
+          @list="onArchiveChanged"
+        />
+      </el-dialog>
+      <el-dialog
+        title="编辑"
+        v-if="processVisibleGoodsquery"
+        v-model="processVisibleGoodsquery"
+        width="30%"
+        :close-on-click-modal="false"
+      >
+        <EditMaterials
+          :view="view"
+          @list="onArchiveChanged"
+          v-model:is-show="processVisibleGoodsquery"
+        />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
-import { list, dele, batchUpdateMinStockQty } from '@/api/mes/MaterialManagement/MaterialManagement'
+import { list, dele, roundSteelTree } from '@/api/mes/MaterialManagement/MaterialManagement'
 import CreateMaterials from './components/CreateMaterials.vue'
 import EditMaterials from './components/EditMaterials.vue'
+
+const IDENTITY_FIELDS = ['material_name', 'manufacturer', 'material_spec', 'material_model']
+
 export default {
   name: 'RoundSteelList',
   components: {
@@ -172,16 +192,23 @@ export default {
       selectList: [],
       processVisible: false,
       processVisibleGoodsquery: false,
-      buttons: [{ type: 'primary', text: 'primary' }],
-      dialogTableVis: false,
       order_times: '',
       tableData: [],
       total: 0,
+      treeData: [],
+      treeFilterText: '',
+      currentTreeKey: '',
+      defaultExpandedKeys: [],
+      treeProps: {
+        children: 'children',
+        label: 'label'
+      },
       query: {
         AdminToken: '',
         page: 1,
-        limit: 10,
+        limit: 30,
         material_thickness: '',
+        manufacturer: '',
         material_model: '',
         material_spec: '',
         create_end_date: '',
@@ -189,18 +216,93 @@ export default {
         material_property: '圆钢',
         material_name: ''
       },
-      count: 0,
-      tableList: [],
-      loading: true,
-      batchThresholdVisible: false,
-      batchMinStockQty: null
+      loading: true
     }
   },
+  watch: {
+    treeFilterText(val) {
+      this.$refs.roundSteelTreeRef?.filter?.(val)
+    }
+  },
+  mounted() {
+    this.loadTree()
+    this.list()
+  },
   activated() {
+    this.loadTree()
     this.list()
   },
   methods: {
-    // 新增
+    async loadTree() {
+      try {
+        const resp = await roundSteelTree({})
+        this.treeData = resp.data?.tree || []
+        this.defaultExpandedKeys = this.treeData.map((item) => item.id)
+        await this.$nextTick()
+        if (this.currentTreeKey) {
+          this.$refs.roundSteelTreeRef?.setCurrentKey?.(this.currentTreeKey)
+        }
+      } catch (e) {
+        /* request 拦截器已提示 */
+      }
+    },
+    filterTreeNode(value, data) {
+      if (!value) return true
+      const keyword = String(value).trim().toLowerCase()
+      if (!keyword) return true
+      const label = String(data.label || '').toLowerCase()
+      const id = String(data.id || '').toLowerCase()
+      return label.includes(keyword) || id.includes(keyword)
+    },
+    expandAllTree() {
+      const tree = this.$refs.roundSteelTreeRef
+      if (!tree?.store?.nodesMap) return
+      Object.values(tree.store.nodesMap).forEach((node) => {
+        node.expanded = true
+      })
+    },
+    collapseAllTree() {
+      const tree = this.$refs.roundSteelTreeRef
+      if (!tree?.store?.nodesMap) return
+      Object.values(tree.store.nodesMap).forEach((node) => {
+        node.expanded = false
+      })
+    },
+    parseTreeNodeFilters(nodeId) {
+      const filters = {
+        material_name: '',
+        manufacturer: '',
+        material_spec: '',
+        material_model: ''
+      }
+      String(nodeId || '')
+        .split('|')
+        .filter(Boolean)
+        .forEach((segment) => {
+          const idx = segment.indexOf(':')
+          if (idx < 0) return
+          const field = segment.slice(0, idx)
+          const value = segment.slice(idx + 1)
+          if (IDENTITY_FIELDS.includes(field)) {
+            filters[field] = value
+          }
+        })
+      return filters
+    },
+    handleTreeNodeClick(data) {
+      const filters = this.parseTreeNodeFilters(data.id)
+      this.currentTreeKey = data.id
+      this.query.material_name = filters.material_name
+      this.query.manufacturer = filters.manufacturer
+      this.query.material_spec = filters.material_spec
+      this.query.material_model = filters.material_model
+      this.query.page = 1
+      this.list()
+    },
+    clearTreeSelection() {
+      this.currentTreeKey = ''
+      this.$refs.roundSteelTreeRef?.setCurrentKey?.(null)
+    },
     CheckbelowGoods() {
       this.processVisible = true
     },
@@ -209,51 +311,31 @@ export default {
       this.view = this.selectList[0]
       this.processVisibleGoodsquery = true
     },
-    // 产品唯一的标识
     getRowKeys(row) {
       return row.id
     },
-    // 选择项发生改变
     handleSelectionChange(val) {
-      // 当前选中的天平书
       this.selectList = val
-      if (this.selectList.length !== 0) {
-        this.type = false
-      } else {
-        this.type = true
-      }
-    },
-    openBatchThreshold() {
-      if (this.selectList.length === 0) return
-      this.batchMinStockQty = null
-      this.batchThresholdVisible = true
-    },
-    async saveBatchThreshold() {
-      if (this.selectList.length === 0) return
-      try {
-        await batchUpdateMinStockQty({
-          ids: this.selectList.map((item) => item.id),
-          min_stock_qty: this.batchMinStockQty
-        })
-        ElMessage.success('批量设置成功')
-        this.batchThresholdVisible = false
-        await this.list()
-      } catch (e) {
-        /* 全局拦截器提示 */
-      }
+      this.type = val.length === 0
     },
     async list() {
       this.loading = true
-      const resp = await list(this.query)
-      this.tableData = resp.data.list
-      this.total = resp.data.count
-      this.loading = false
+      try {
+        const resp = await list(this.query)
+        this.tableData = resp.data.list
+        this.total = resp.data.count
+      } finally {
+        this.loading = false
+      }
+    },
+    async onArchiveChanged() {
+      await Promise.all([this.list(), this.loadTree()])
     },
     handleSearch() {
       this.query.page = 1
+      this.clearTreeSelection()
       this.list()
     },
-    // 处理时间
     handleChange(val) {
       if (val && val.length === 2) {
         this.query.create_start_date = val[0]
@@ -263,25 +345,20 @@ export default {
         this.query.create_end_date = ''
       }
     },
-    // 处理序号
     handleIndex(index) {
       return index + 1 + this.query.limit * (this.query.page - 1)
     },
-    // 条数
     handleSizeChange(val) {
       this.query.limit = val
-      // 获取列表
       this.list()
     },
-    // 页数
     handleCurrentChange(val) {
       this.query.page = val
-      // 获取列表
       this.list()
     },
-    // 重置
     handleResetting() {
       this.query.material_thickness = ''
+      this.query.manufacturer = ''
       this.query.material_model = ''
       this.query.material_spec = ''
       this.query.create_end_date = ''
@@ -289,10 +366,11 @@ export default {
       this.query.material_property = '圆钢'
       this.query.material_name = ''
       this.order_times = []
+      this.treeFilterText = ''
+      this.clearTreeSelection()
       this.handleSearch()
     },
-    // 删除计划
-    dele(row) {
+    dele() {
       ElMessageBox.confirm('是否删除该产品', '温馨提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -307,7 +385,7 @@ export default {
             params.ids.push(item.id)
           })
           await dele(params)
-          await this.list()
+          await this.onArchiveChanged()
           this.selectList = []
           this.type = true
           await this.$nextTick()
@@ -317,34 +395,61 @@ export default {
             message: '删除成功'
           })
         })
-        .catch(() => {
-          // ElMessage({
-          //   type: 'info',
-          //   message: 'Delete canceled'
-          // })
-        })
-    },
-    // 库存下推
-    handlePush_down() {
-      // 处理发货操作
-      const tmpPath = {
-        path: '/mes/productionPlan/PlanningManagement/ProductionplanpushDown'
-      }
-      this.$router.push(tmpPath)
+        .catch(() => {})
     }
   }
 }
 </script>
 <style scoped>
-.batch-threshold-tip {
-  margin: 0 0 12px;
-  color: #606266;
-  font-size: 13px;
-}
 .contenter {
   margin-top: 10px;
 }
-/* .app-container {
-  background-color: #eaedf1;
-} */
+.round-steel-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+.round-steel-tree-card {
+  width: 320px;
+  flex: 0 0 320px;
+  min-height: 560px;
+}
+.round-steel-table-card {
+  flex: 1;
+  min-width: 0;
+}
+.tree-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tree-toolbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.tree-filter-input {
+  width: 100%;
+}
+.round-steel-tree {
+  max-height: calc(100vh - 280px);
+  overflow: auto;
+}
+.tree-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 8px;
+}
+.tree-node-tag {
+  flex-shrink: 0;
+}
+.tree-node-label {
+  color: #303133;
+}
+.tree-node-count {
+  color: #909399;
+  font-size: 12px;
+}
 </style>

@@ -1,12 +1,14 @@
-<view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
-  <view class="navbar-left">
-    <scan-code bind:scanSuccess="onScanSuccess" />
+<!-- [AI-2026-08] 扫码计划信息按圆钢四字段展示。 -->
+<view class="wb-shell">
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
+    <view class="navbar-left">
+      <scan-code bind:scanSuccess="onScanSuccess" />
+    </view>
+    <view class="navbar-title">工作台</view>
+    <view class="navbar-right"></view>
   </view>
-  <view class="navbar-title">工作台</view>
-  <view class="navbar-right"></view>
-</view>
 
-<view class="page-content" style="padding-top: {{statusBarHeight + 44}}px">
+  <view class="page-content wb-body" style="padding-top: {{statusBarHeight + 44}}px">
   <view class="wb-section-title">车间常用</view>
   <view class="wb-grid">
     <view class="wb-tile" bindtap="goReport" hover-class="wb-tile--hover">
@@ -48,6 +50,7 @@
       <view class="wb-record-action">查看</view>
     </view>
   </navigator>
+  </view>
 </view>
 
 <repair-form show="{{showRepairForm}}" device_code="{{repairDeviceCode}}" bind:close="onRepairClose" bind:success="onRepairSuccess" />
@@ -61,7 +64,10 @@
 >
   <view class="plan-info-body" wx:if="{{planInfo}}">
     <view class="plan-info-row"><text class="plan-info-label">计划名称</text><text>{{planInfo.production_plan_name}}</text></view>
-    <view class="plan-info-row"><text class="plan-info-label">圆钢</text><text>{{planInfo.y_material_spec}}{{planInfo.y_material_model}}</text></view>
+    <view class="plan-info-row"><text class="plan-info-label">圆钢名称</text><text>{{planInfo.y_material_name || '-'}}</text></view>
+    <view class="plan-info-row"><text class="plan-info-label">圆钢厂商</text><text>{{planInfo.y_material_manufacturer || '-'}}</text></view>
+    <view class="plan-info-row"><text class="plan-info-label">圆钢材质</text><text>{{planInfo.y_material_spec || '-'}}</text></view>
+    <view class="plan-info-row"><text class="plan-info-label">圆钢型号</text><text>{{planInfo.y_material_model || '-'}}</text></view>
     <view class="plan-info-row"><text class="plan-info-label">成品规格</text><text>{{planInfo.c_material_spec}}</text></view>
     <view class="plan-info-row"><text class="plan-info-label">成品型号</text><text>{{planInfo.c_material_model}}</text></view>
     <view class="plan-info-row"><text class="plan-info-label">计划数量</text><text>{{planInfo.plan_num}}</text></view>

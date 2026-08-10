@@ -305,7 +305,7 @@ class DuangangMergeReportMirror
                 if (!empty($group)) {
                     $newRep = round(max(0.0, (float) ($group['reported_total'] ?? 0) - $deduct), 3);
                     $cap = (float) ($group['capacity_total'] ?? 0);
-                    $status = ($cap > 0.0001 && $newRep >= $cap - 0.0001) ? 1 : 0;
+                    $status = DuangangMergeService::isMergeGroupComplete($newRep, $cap) ? 1 : 0;
                     Db::name('duangang_merge_group')->where('id', $groupId)->update([
                         'reported_total' => $newRep,
                         'status' => $status,
@@ -361,7 +361,7 @@ class DuangangMergeReportMirror
             if (!empty($group)) {
                 $newRep = round(max(0.0, (float) ($group['reported_total'] ?? 0) + $numDelta), 3);
                 $cap = (float) ($group['capacity_total'] ?? 0);
-                $status = ($cap > 0.0001 && $newRep >= $cap - 0.0001) ? 1 : 0;
+                $status = DuangangMergeService::isMergeGroupComplete($newRep, $cap) ? 1 : 0;
                 Db::name('duangang_merge_group')->where('id', $groupId)->update([
                     'reported_total' => $newRep,
                     'status' => $status,

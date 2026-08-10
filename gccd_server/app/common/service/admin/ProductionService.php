@@ -56,12 +56,59 @@ class ProductionService
         'create_end_date' => '',
         'material_spec' => '',      // 物料规格
         'material_model' => '',     // 物料型号
+        'y_mateial_name' => '',      // 圆钢名称（历史拼写，读兼容）
+        'y_mateial_manufacturer' => '', // 圆钢厂商（历史拼写，读兼容）
         'y_mateial_spec' => '',      // 原物料规格（历史拼写，保留兼容）
         'y_mateial_model' => '',     // 原物料型号（历史拼写，保留兼容）
+        'y_material_name' => '',     // 圆钢名称
+        'y_material_manufacturer' => '', // 圆钢厂商
         'y_material_spec' => '',     // 圆钢规格（标准命名）
         'y_material_model' => '',    // 圆钢型号（标准命名）
         'plan_finish' => ''         // 计划是否已全部完工：0 进行中 1 已完成（与小程序工单完成逻辑一致）
     ];
+
+    /**
+     * 为生产计划行写入圆钢标准四字段及历史拼写兼容字段。
+     *
+     * @param array<int,array<string,mixed>> $rows
+     * @param array<string,array<int,array<string,mixed>>> $materialMap
+     * @param array<string,string> $filters
+     * @return array<int,array<string,mixed>>
+     */
+    public static function applyRoundSteelDtosToProductionRows(
+        array $rows,
+        array $materialMap,
+        array $filters = []
+    ): array {
+        foreach ($rows as &$row) {
+            $planCode = (string) ($row['production_plan_code'] ?? '');
+            $materials = array_values(array_filter(
+                $materialMap[$planCode] ?? [],
+                static fn (array $material): bool => MaterialSearchHelper::materialMatchesRoundSteel(
+                    $material,
+                    $filters
+                )
+            ));
+            $fieldMap = [
+                'y_material_name' => 'material_name',
+                'y_material_manufacturer' => 'manufacturer',
+                'y_material_spec' => 'material_spec',
+                'y_material_model' => 'material_model',
+            ];
+            foreach ($fieldMap as $target => $source) {
+                $values = array_values(array_unique(array_filter(array_map(
+                    static fn (array $material): string => trim((string) ($material[$source] ?? '')),
+                    $materials
+                ), static fn (string $value): bool => $value !== '')));
+                $row[$target] = implode(',', $values);
+                $legacyTarget = str_replace('y_material_', 'y_mateial_', $target);
+                $row[$legacyTarget] = $row[$target];
+            }
+        }
+        unset($row);
+
+        return $rows;
+    }
 
     /**
      * 列表
@@ -82,51 +129,29 @@ class ProductionService
         if (empty($order)) {
             $order = ['create_time' => 'desc'];
         }
+        $roundFilters = [
+            'name' => (string) ($listOptions['yMaterialName'] ?? ''),
+            'manufacturer' => (string) ($listOptions['yMaterialManufacturer'] ?? ''),
+            'spec' => (string) ($listOptions['yMaterialSpec'] ?? ''),
+            'model' => (string) ($listOptions['yMaterialModel'] ?? ''),
+        ];
         if ($page == 0 || $limit == 0) {
-            return $model->where($where)->order($order)->select()->toArray();
+            $list = $model->with(['getMaterial'])->where($where)->order($order)->select()->toArray();
+            $materialMap = MaterialSearchHelper::roundSteelMaterialsByPlanCodes(
+                array_column($list, 'production_plan_code')
+            );
+            return self::applyRoundSteelDtosToProductionRows($list, $materialMap, $roundFilters);
         }
         $count = $model->where($where)->count();
         $pages = ceil($count / $limit);
-        $yFilterSpec = (string) ($listOptions['yMaterialSpec'] ?? '');
-        $yFilterModel = (string) ($listOptions['yMaterialModel'] ?? '');
         $list = $model->with(['getMaterial'])->where($where)->page($page)->limit($limit)->order($order)->select()->toArray();
+        $materialMap = MaterialSearchHelper::roundSteelMaterialsByPlanCodes(
+            array_column($list, 'production_plan_code')
+        );
+        $list = self::applyRoundSteelDtosToProductionRows($list, $materialMap, $roundFilters);
         $punchDeviceMap = ProductionPunchDeviceService::listByPlanCodes(array_column($list, 'production_plan_code'));
         foreach ($list as $k => &$v) {
             $v['plan_num'] = $model->getPlanWithJoinStats($v['production_plan_code']);
-            $engId = (int) ($v['english_material'] ?? 0);
-            /*增加详情物料的*/
-            $content = Db::name('production_detail')
-                ->alias('a')
-                ->where('production_plan_code', $v['production_plan_code'])
-                ->where('a.is_delete', '=', '0')
-                ->leftJoin('material b', 'b.id=a.material_id')
-                ->select()
-                ->toArray();
-            /*循环取出规格和型号来（排除成品；有检索时仅展示命中的圆钢行）*/
-            $specParts = [];
-            $modelParts = [];
-            foreach ($content as $k2 => $v2) {
-                $mid = (int) ($v2['material_id'] ?? 0);
-                if ($engId > 0 && $mid === $engId) {
-                    continue;
-                }
-                $rowSpec = (string) ($v2['material_spec'] ?? '');
-                $rowModel = (string) ($v2['material_model'] ?? '');
-                if (
-                    ($yFilterSpec !== '' || $yFilterModel !== '')
-                    && !MaterialSearchHelper::materialMatchesSpecModel($rowSpec, $rowModel, $yFilterSpec, $yFilterModel)
-                ) {
-                    continue;
-                }
-                if ($rowSpec !== '') {
-                    $specParts[] = $rowSpec;
-                }
-                if ($rowModel !== '') {
-                    $modelParts[] = $rowModel;
-                }
-            }
-            $v['y_mateial_spec'] = implode(',', $specParts);
-            $v['y_mateial_model'] = implode(',', $modelParts);
             /* [AI-2026-06] 列表展示穿孔设备 */
             $punchDevices = $punchDeviceMap[(string) ($v['production_plan_code'] ?? '')] ?? [];
             $v['punch_devices'] = $punchDevices;
@@ -174,9 +199,30 @@ class ProductionService
                 ->leftJoin('material b', 'b.id=a.material_id')
                 ->select()
                 ->toArray();
+            /* [AI-2026-08] 计划明细标准圆钢 DTO，历史错误拼写双写兼容 */
+            foreach ($content as &$detailRow) {
+                if (
+                    (int) ($detailRow['is_delete'] ?? 0) !== 0
+                    || trim((string) ($detailRow['material_property'] ?? '')) !== '圆钢'
+                ) {
+                    continue;
+                }
+                $dto = MaterialSearchHelper::roundSteelDto($detailRow);
+                $detailRow = array_merge($detailRow, $dto, [
+                    'y_mateial_name' => $dto['y_material_name'],
+                    'y_mateial_manufacturer' => $dto['y_material_manufacturer'],
+                    'y_mateial_spec' => $dto['y_material_spec'],
+                    'y_mateial_model' => $dto['y_material_model'],
+                ]);
+            }
+            unset($detailRow);
             $info['content'] = $content;
             $info['punch_devices'] = ProductionPunchDeviceService::listByPlanCode($info['production_plan_code']);
             $info = $info->toArray();
+            $materialMap = MaterialSearchHelper::roundSteelMaterialsByPlanCodes([
+                (string) ($info['production_plan_code'] ?? ''),
+            ]);
+            $info = self::applyRoundSteelDtosToProductionRows([$info], $materialMap)[0];
         }
         /*生成调试单号*/
         return $info;

@@ -1,6 +1,7 @@
 const util = require("../../../utils/util.js");
 import Toast from '@vant/weapp/toast/toast';
 
+// [AI-2026-08] 报工页圆钢字段绑定统一为名称、厂商、材质、型号。
 Page({
     data: {
         statusBarHeight: 0,
@@ -14,6 +15,10 @@ Page({
         routing_name: '', // 从接口获取的工艺名称
         process_code: '', // 从接口获取的工序编码
         processes_name: '', // 工序名称
+        y_material_name: '',
+        y_material_manufacturer: '',
+        y_material_spec: '',
+        y_material_model: '',
         report_num: '', // 报工数量
         remark: '', // 备注
 
@@ -645,7 +650,9 @@ Page({
                         c_material_name: taskInfo.c_material_name || '',
                         c_material_spec: taskInfo.c_material_spec || '',
                         y_material_name: taskInfo.y_material_name || '',
+                        y_material_manufacturer: taskInfo.y_material_manufacturer || '',
                         y_material_spec: taskInfo.y_material_spec || '',
+                        y_material_model: taskInfo.y_material_model || '',
                         c_material_model: taskInfo.c_material_model || '',
                         processes_name: processesName,
                         process_code: processCode,
@@ -966,7 +973,11 @@ Page({
                     const materialInfo = res.data.data;
                     this.setData({
                         materialName: materialInfo.material_name || '',
-                        materialSpec: materialInfo.material_spec || ''
+                        materialSpec: materialInfo.material_spec || '',
+                        y_material_name: this.data.y_material_name || materialInfo.material_name || '',
+                        y_material_manufacturer: this.data.y_material_manufacturer || materialInfo.manufacturer || '',
+                        y_material_spec: this.data.y_material_spec || materialInfo.material_spec || '',
+                        y_material_model: this.data.y_material_model || materialInfo.material_model || ''
                     });
                 }
             })

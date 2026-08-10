@@ -16,9 +16,12 @@ class InStockModel extends Model
         return $this->hasOne(MaterialModel::class, 'id', 'material_id')
             ->bind(
                 [
+                    // [AI-2026-08] 仓储圆钢标准四字段，保留 material_* 兼容
                     'material_name' => 'material_name',
                     'material_spec' => 'material_spec',
                     'material_model' => 'material_model',
+                    'manufacturer' => 'manufacturer',
+                    'material_property' => 'material_property',
                 ]
             );
     }

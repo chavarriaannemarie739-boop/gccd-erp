@@ -1,0 +1,20 @@
+{
+  "format": "round-steel-archive-map/v1",
+  "description": "[AI-2026-08] 将确认后的 example_record 复制到 records；expected 必须与执行时圆钢档案旧值一致。",
+  "records": [],
+  "example_record": {
+    "material_id": 123,
+    "expected": {
+      "material_name": "旧名称",
+      "manufacturer": "旧厂商或空字符串",
+      "material_spec": "旧规格",
+      "material_model": "旧型号"
+    },
+    "target": {
+      "material_name": "标准名称",
+      "manufacturer": "标准厂商",
+      "material_spec": "标准规格",
+      "material_model": "标准型号"
+    }
+  }
+}

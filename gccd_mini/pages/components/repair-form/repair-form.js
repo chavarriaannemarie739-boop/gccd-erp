@@ -34,11 +34,14 @@ Component({
       },
     ],
     reasonList: [], // 完整的原因列表
+    reasonListLoaded: false,
   },
 
-  lifetimes: {
-    attached() {
-      this.getReasonList();
+  observers: {
+    show(show) {
+      if (show && !this.data.reasonListLoaded) {
+        this.getReasonList();
+      }
     },
   },
 
@@ -69,6 +72,7 @@ Component({
             const pickerValues = reasons.map((item) => item.repair_name);
             this.setData({
               reasonList: reasons,
+              reasonListLoaded: true,
               reasonColumns: [
                 {
                   values: pickerValues,

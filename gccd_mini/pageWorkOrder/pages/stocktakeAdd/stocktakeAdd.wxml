@@ -1,3 +1,4 @@
+<!-- [AI-2026-08] 圆钢选择顺序：名称、厂商、材质、型号。 -->
 <view class="page-stocktake-root">
   <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
     <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
@@ -247,7 +248,7 @@
         <input
           class="search-input"
           type="text"
-          placeholder="输入关键字搜索（如型号、名称）"
+          placeholder="搜索名称、厂商、材质、型号"
           value="{{materialSearch}}"
           bindinput="onMaterialSearchInput"
           confirm-type="search"
@@ -269,7 +270,8 @@
         >
           <view class="search-item-main">
             <text class="search-item-label">{{item.y_material_name}}</text>
-            <text class="search-item-sub">{{item.y_material_spec}}</text>
+            <text class="search-item-sub">{{item.y_material_manufacturer || '—'}}</text>
+            <text class="search-item-sub">{{item.y_material_spec || '—'}}</text>
             <text class="search-item-sub" wx:if="{{item.y_material_model}}">{{item.y_material_model}}</text>
           </view>
         </view>

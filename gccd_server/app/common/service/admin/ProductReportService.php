@@ -26,6 +26,7 @@ use app\common\model\admin\UserWageModel;
 use app\common\model\admin\WageModel;
 use app\common\model\system\UserModel;
 use app\common\service\admin\DailySummaryService;
+use app\common\service\utils\MaterialSearchHelper;
 use app\common\service\wechat\Exception;
 use think\console\output\Ask;
 use think\facade\App;
@@ -76,14 +77,38 @@ class ProductReportService
         'production_plan_name' => '',  // 生产计划名称
         'create_name' => '',           // 创建人姓名
         'c_material_spec' => '',       // 成品物料规格
+        'y_material_name' => '',       // 圆钢名称
+        'y_material_manufacturer' => '', // 圆钢厂商
         'y_material_spec' => '',       // 原料物料规格
         'c_material_model' => '',      // 成品物料型号
         'y_material_model' => '',      // 原料物料型号
+        'y_mateial_name' => '',        // 历史拼写读兼容
+        'y_mateial_manufacturer' => '',
+        'y_mateial_spec' => '',
+        'y_mateial_model' => '',
         'create_start_date' => '',
         'create_end_date' => '',
         'report_date_start' => '',
         'report_date_end' => '',
         'create_uid' => ''
+    ];
+
+    /**
+     * 能耗列表检索字段。能耗表不关联生产任务，不声明圆钢筛选参数。
+     *
+     * @var array<string,mixed>
+     */
+    public static $powerSearchField = [
+        'routing_code' => '',
+        'relation_code' => '',
+        'class' => '',
+        'device_code' => '',
+        'device_name' => '',
+        'processes_name' => '',
+        'create_start_date' => '',
+        'create_end_date' => '',
+        'report_date_start' => '',
+        'report_date_end' => '',
     ];
 
     /**
@@ -97,7 +122,14 @@ class ProductReportService
      *
      * @return array
      */
-    public static function list($where = [], $page = 1, $limit = 10, $order = [], $field = [])
+    public static function list(
+        $where = [],
+        $page = 1,
+        $limit = 10,
+        $order = [],
+        $field = [],
+        array $roundFilters = []
+    )
     {
         $model = new ProductReportModel();
         $pk = $model->getPk();
@@ -105,21 +137,186 @@ class ProductReportService
             $order = ['create_time' => 'desc'];
         }
         if ($page == 0 || $limit == 0) {
-            return $model->where($where)->order($order)->select()->toArray();
+            $query = $model->alias('pr')->field('pr.*')->where($where);
+            MaterialSearchHelper::applyProductReportRoundSteelFilters(
+                $query,
+                $roundFilters,
+                'pr'
+            );
+            $list = $query->with(['getProcess','getTask','getPlan','getMaterial','getYMaterial'])
+                ->order($order)
+                ->select()
+                ->toArray();
+            return self::enrichReportListBatch($list);
         }
-        $count = $model->where($where)->count();
-        $pages = ceil($count / $limit);
-        $list = $model->with(['getProcess','getTask','getPlan','getMaterial','getYMaterial'])->where($where)->page($page)->limit($limit)->order($order)->select()->toArray();
+
+        // [AI-2026-06] 日工同批合并后再分页，避免每页条数不足
+        $groupResult = self::buildMergedDisplayGroups(
+            $where,
+            $order,
+            $roundFilters,
+            $page,
+            $limit
+        );
+        $count = $groupResult['count'];
+        $pages = $limit > 0 ? (int) ceil($count / $limit) : 0;
+        $pageGroups = $groupResult['groups'];
+
+        if ($pageGroups === []) {
+            return [
+                'count' => $count,
+                'pages' => $pages,
+                'page' => $page,
+                'limit' => $limit,
+                'list' => [],
+            ];
+        }
+
+        $fetchIds = [];
+        foreach ($pageGroups as $group) {
+            foreach ($group['ids'] as $id) {
+                $fetchIds[] = $id;
+            }
+        }
+        $fetchIds = array_values(array_unique($fetchIds));
+
+        $list = $model->with(['getProcess','getTask','getPlan','getMaterial','getYMaterial'])
+            ->whereIn('id', $fetchIds)
+            ->order($order)
+            ->select()
+            ->toArray();
+
+        $list = self::enrichReportListBatch($list);
+
+        $rowById = [];
+        foreach ($list as $row) {
+            $rowById[(int) ($row['id'] ?? 0)] = $row;
+        }
+
+        $mergedList = [];
+        foreach ($pageGroups as $group) {
+            $groupRows = [];
+            foreach ($group['ids'] as $id) {
+                if (isset($rowById[$id])) {
+                    $groupRows[] = $rowById[$id];
+                }
+            }
+            if ($groupRows === []) {
+                continue;
+            }
+            if ($group['is_daily_merge']) {
+                $dailyMerged = self::mergeDailyWorkListRows($groupRows);
+                if ($dailyMerged !== []) {
+                    $mergedList[] = $dailyMerged[0];
+                }
+            } else {
+                $mergedList[] = $groupRows[0];
+            }
+        }
+
+        $list = $mergedList;
+
+        return compact('count', 'pages', 'page', 'limit', 'list');
+    }
+
+    /**
+     * 按列表展示顺序构建分组：日工同批合并为一组，其它每条一组
+     *
+     * @param array $where
+     * @param array $order
+     * @param array $roundFilters
+     * @param int $page
+     * @param int $limit
+     * @return array{count:int,groups:array<int,array{ids:int[],is_daily_merge:bool}>}
+     */
+    private static function buildMergedDisplayGroups(
+        array $where,
+        array $order,
+        array $roundFilters,
+        int $page,
+        int $limit
+    ): array
+    {
+        $groups = [];
+        $selectedDailyGroupIndex = [];
+        $seenDailyKeys = [];
+        $groupCount = 0;
+        $pageStart = max(0, ($page - 1) * $limit);
+        $pageEnd = $pageStart + $limit;
+        $chunkSize = max(100, min(500, $limit * 10));
+        $offset = 0;
+        $chunkOrder = $order;
+        if (!isset($chunkOrder['id']) && !isset($chunkOrder['pr.id'])) {
+            $chunkOrder['pr.id'] = 'desc';
+        }
+
+        do {
+            $query = (new ProductReportModel())
+                ->alias('pr')
+                ->where($where);
+            MaterialSearchHelper::applyProductReportRoundSteelFilters(
+                $query,
+                $roundFilters,
+                'pr'
+            );
+            $rows = $query
+                ->order($chunkOrder)
+                ->field('pr.id,pr.is_daily_work,pr.create_time,pr.create_uid')
+                ->limit($offset, $chunkSize)
+                ->select()
+                ->toArray();
+            foreach ($rows as $row) {
+                $id = (int) ($row['id'] ?? 0);
+                if ($id <= 0) {
+                    continue;
+                }
+                if (!empty($row['is_daily_work']) && (int) $row['is_daily_work'] === 1) {
+                    $groupKey = ($row['create_time'] ?? '') . '_' . ($row['create_uid'] ?? '');
+                    if (isset($seenDailyKeys[$groupKey])) {
+                        if (isset($selectedDailyGroupIndex[$groupKey])) {
+                            $groups[$selectedDailyGroupIndex[$groupKey]]['ids'][] = $id;
+                        }
+                        continue;
+                    }
+                    $seenDailyKeys[$groupKey] = true;
+                    if ($groupCount >= $pageStart && $groupCount < $pageEnd) {
+                        $selectedDailyGroupIndex[$groupKey] = count($groups);
+                        $groups[] = ['ids' => [$id], 'is_daily_merge' => true];
+                    }
+                    $groupCount++;
+                    continue;
+                }
+                if ($groupCount >= $pageStart && $groupCount < $pageEnd) {
+                    $groups[] = ['ids' => [$id], 'is_daily_merge' => false];
+                }
+                $groupCount++;
+            }
+            $offset += count($rows);
+        } while (count($rows) === $chunkSize);
+
+        return ['count' => $groupCount, 'groups' => $groups];
+    }
+
+    /**
+     * 报工列表批量 enrichment（工资、日工、物料等）
+     *
+     * @param array $list
+     * @return array
+     */
+    private static function enrichReportListBatch(array $list): array
+    {
+        if ($list === []) {
+            return [];
+        }
+
         $usermodel = new UserModel();
         $allReportCodes = array_filter(array_column($list, 'report_code'));
         $allCreateUids = array_unique(array_filter(array_column($list, 'create_uid')));
-        /*批量预查创建人信息*/
         $uidNicknameMap = [];
         if (!empty($allCreateUids)) {
-            $uidRows = $usermodel->whereIn('user_id', $allCreateUids)->column('nickname', 'user_id');
-            $uidNicknameMap = $uidRows;
+            $uidNicknameMap = $usermodel->whereIn('user_id', $allCreateUids)->column('nickname', 'user_id');
         }
-        /*批量预查工资明细：按report_code一次查出，避免N+1循环查库*/
+
         $wageByReportCode = [];
         if (!empty($allReportCodes)) {
             $wageRows = Db::name('user_wage_details')
@@ -129,11 +326,11 @@ class ProductReportService
                 ->select()
                 ->toArray();
             foreach ($wageRows as $wr) {
-                $rc = (string)$wr['relation_code'];
+                $rc = (string) $wr['relation_code'];
                 $wageByReportCode[$rc][] = $wr;
             }
         }
-        /* [AI-2026-06] data 无 device_name 时按 device_code 批量补设备名（断钢合并镜像等） */
+
         $deviceNameByCode = [];
         $codesNeedName = [];
         foreach ($list as $row) {
@@ -153,30 +350,48 @@ class ProductReportService
                 ->column('device_name', 'device_code');
         }
 
+        $dailyWorkUserByReportId = [];
+        $dailyReportIds = [];
+        foreach ($list as $dailyRow) {
+            if (!empty($dailyRow['is_daily_work']) && (int) $dailyRow['is_daily_work'] === 1) {
+                $dailyReportIds[] = (int) $dailyRow['id'];
+            }
+        }
+        if ($dailyReportIds !== []) {
+            $dailyWorkRows = Db::name('daily_work')
+                ->whereIn('report_id', $dailyReportIds)
+                ->field('report_id,user_id')
+                ->select()
+                ->toArray();
+            foreach ($dailyWorkRows as $dailyWorkRow) {
+                $reportId = (int) ($dailyWorkRow['report_id'] ?? 0);
+                $workerId = (int) ($dailyWorkRow['user_id'] ?? 0);
+                if ($reportId > 0 && $workerId > 0) {
+                    $dailyWorkUserByReportId[$reportId] = user_name($workerId);
+                }
+            }
+        }
+
         foreach ($list as $k => &$v) {
             self::enrichReportListRow($v);
             $v['create_name'] = $uidNicknameMap[$v['create_uid']] ?? '';
-            /*处理data的json信息*/
             $arr = json_decode($v['data'], true);
-            /*添加生产人员*/
             if (isset($arr['product_user']) && is_array($arr['product_user'])) {
                 $v['product_user'] = PublicService::ArrayToString($arr['product_user']);
             } else {
                 $v['product_user'] = '';
             }
-            /*添加开车人员*/
             if (isset($arr['card_user']) && is_array($arr['card_user'])) {
                 $v['card_user'] = PublicService::ArrayToString($arr['card_user']);
             } else {
                 $v['card_user'] = '';
             }
-            /*工资：直接按report_code从预查结果汇总所有工资明细，不再按人名逐个查库*/
             $wageTotal = 0.0;
             $wageParts = [];
-            $rc = (string)$v['report_code'];
+            $rc = (string) $v['report_code'];
             if (!empty($wageByReportCode[$rc])) {
                 foreach ($wageByReportCode[$rc] as $wd) {
-                    $w = (float)($wd['wage'] ?? 0);
+                    $w = (float) ($wd['wage'] ?? 0);
                     $userName = !empty($wd['username']) ? $wd['username'] : 'uid:' . $wd['user_id'];
                     $wageParts[] = $userName . ':' . number_format($w, 2, '.', '');
                     $wageTotal += $w;
@@ -193,30 +408,31 @@ class ProductReportService
                     ? (string) $deviceNameByCode[$dc]
                     : '';
             }
-            /*不良品项需要处理*/
-            $v['defective'] = json_decode($v['defective']);
-            if (is_array($v['defective'])) {
-                $name = '';
-                foreach ($v['defective'] as $k2 => $v2) {
-                    $v2 = (array)$v2;
-                    if (count($v['defective']) > 0) {
-                        if (isset($v2['name'])) {
-                            $name = $v2['name'] . ':' . $v2['num'];
-                        }
-                    } else {
-                        $name .= ',' . $v2['name'] . ':' . $v2['num'];
+            $name = '';
+            $defectiveData = json_decode($v['defective']);
+            if (is_array($defectiveData)) {
+                foreach ($defectiveData as $k2 => $v2) {
+                    $v2 = (array) $v2;
+                    if (!isset($v2['name'])) {
+                        continue;
                     }
+                    $part = $v2['name'] . ':' . ($v2['num'] ?? '');
+                    $name = ($name === '') ? $part : ($name . ',' . $part);
                 }
             }
             $v['defective'] = $name;
 
-            // 如果是日工记录，特殊处理
             if (!empty($v['is_daily_work']) && $v['is_daily_work'] == 1) {
                 $v['production_plan_name'] = '日工';
+                $v['plan_code'] = '';
+                $v['y_material_name'] = '';
+                $v['y_material_manufacturer'] = '';
                 $v['y_material_spec'] = '';
                 $v['y_material_model'] = '';
                 $v['c_material_spec'] = '';
                 $v['c_material_model'] = '';
+                $v['processes_name'] = ProductionConfig::PROCESS_NAME_PUNCH;
+                $v['processes_code'] = 'daily_work';
 
                 $data = json_decode($v['data'], true);
                 $v['work_type'] = $data['work_type'] ?? 1;
@@ -224,9 +440,98 @@ class ProductReportService
                 $v['daily_wage'] = $data['daily_wage'] ?? 0;
                 $v['allowance'] = $data['allowance'] ?? 0;
                 $v['remark'] = $data['remark'] ?? '';
+                $v['work_type_label'] = ((int) $v['work_type'] === 2) ? '半天日工' : '全天日工';
+
+                $reportId = (int) ($v['id'] ?? 0);
+                $v['daily_work_user_name'] = $dailyWorkUserByReportId[$reportId] ?? '';
             }
         }
-        return compact('count', 'pages', 'page', 'limit', 'list');
+        unset($v);
+
+        return $list;
+    }
+
+    /**
+     * 日工报工：同一次提交（相同提交时间+提交人）合并为一条，生产人员并列展示
+     *
+     * @param array $list
+     * @return array
+     */
+    private static function mergeDailyWorkListRows(array $list): array
+    {
+        $result = [];
+        $groupIndex = [];
+
+        foreach ($list as $row) {
+            if (empty($row['is_daily_work']) || (int) $row['is_daily_work'] !== 1) {
+                $result[] = $row;
+                continue;
+            }
+
+            $groupKey = ($row['create_time'] ?? '') . '_' . ($row['create_uid'] ?? '');
+            $workerName = trim((string) ($row['daily_work_user_name'] ?? ''));
+
+            if (!isset($groupIndex[$groupKey])) {
+                $row['_dailyUserNames'] = $workerName !== '' ? [$workerName] : [];
+                $row['_mergedWageTotal'] = (float) ($row['wage_total'] ?? 0);
+                $row['_mergedWageDetail'] = (string) ($row['wage_detail'] ?? '');
+                $row['_mergedReportCodes'] = [];
+                $reportCode = trim((string) ($row['report_code'] ?? ''));
+                if ($reportCode !== '') {
+                    $row['_mergedReportCodes'][] = $reportCode;
+                }
+                $groupIndex[$groupKey] = count($result);
+                $result[] = $row;
+                continue;
+            }
+
+            $idx = $groupIndex[$groupKey];
+            if ($workerName !== '' && !in_array($workerName, $result[$idx]['_dailyUserNames'], true)) {
+                $result[$idx]['_dailyUserNames'][] = $workerName;
+            }
+            $result[$idx]['_mergedWageTotal'] += (float) ($row['wage_total'] ?? 0);
+            $detail = trim((string) ($row['wage_detail'] ?? ''));
+            if ($detail !== '') {
+                $existingDetail = trim((string) ($result[$idx]['_mergedWageDetail'] ?? ''));
+                $result[$idx]['_mergedWageDetail'] = $existingDetail === ''
+                    ? $detail
+                    : ($existingDetail . ';' . $detail);
+            }
+            $mergedCode = trim((string) ($row['report_code'] ?? ''));
+            if ($mergedCode !== '') {
+                $result[$idx]['_mergedReportCodes'][] = $mergedCode;
+            }
+        }
+
+        foreach ($result as &$row) {
+            if (empty($row['is_daily_work']) || (int) $row['is_daily_work'] !== 1) {
+                continue;
+            }
+            if (!empty($row['_dailyUserNames'])) {
+                $mergedNames = implode('、', $row['_dailyUserNames']);
+                $row['product_user'] = $mergedNames;
+                $row['daily_work_user_name'] = $mergedNames;
+            }
+            if (isset($row['_mergedWageTotal'])) {
+                $row['wage_total'] = round((float) $row['_mergedWageTotal'], 2);
+                $row['wage'] = $row['wage_total'];
+            }
+            if (isset($row['_mergedWageDetail'])) {
+                $row['wage_detail'] = $row['_mergedWageDetail'];
+            }
+            if (!empty($row['_mergedReportCodes'])) {
+                $row['merged_report_codes'] = array_values(array_unique($row['_mergedReportCodes']));
+            }
+            unset(
+                $row['_dailyUserNames'],
+                $row['_mergedWageTotal'],
+                $row['_mergedWageDetail'],
+                $row['_mergedReportCodes']
+            );
+        }
+        unset($row);
+
+        return $result;
     }
     public static function powerlist($where = [], $page = 1, $limit = 10, $order = [], $field = [])
     {
@@ -1319,11 +1624,16 @@ class ProductReportService
 
         $yMid = (int) ($taskRow['material_id'] ?? 0);
         if ($yMid > 0) {
-            $yMat = Db::name('material')->where('id', $yMid)->find();
+            $yMat = Db::name('material')
+                ->where('id', $yMid)
+                ->where('is_delete', 0)
+                ->where('material_property', '圆钢')
+                ->find();
             if (!empty($yMat)) {
                 $row['y_material_spec'] = (string) ($yMat['material_spec'] ?? '');
                 $row['y_material_model'] = (string) ($yMat['material_model'] ?? '');
                 $row['y_material_name'] = (string) ($yMat['material_name'] ?? '');
+                $row['y_material_manufacturer'] = (string) ($yMat['manufacturer'] ?? '');
             }
         }
 
@@ -1956,6 +2266,24 @@ class ProductReportService
     }
 
     /**
+     * 圆钢计件段：型号优先，依次回退材质和成品规格。
+     *
+     * @param array<string,mixed> $taskData
+     * @return string
+     */
+    public static function resolveRoundSteelWageSegment(array $taskData): string
+    {
+        foreach (['y_material_model', 'y_material_spec', 'c_material_spec'] as $field) {
+            $value = trim((string) ($taskData[$field] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * 根据工序计算工资
      * @param $param
      * @param $process
@@ -1982,24 +2310,12 @@ class ProductReportService
                 if (!empty($param['wage_material_spec'])) {
                     $param['material_spec'] = trim((string) $param['wage_material_spec']);
                 } else {
-                    /* 断钢计件按圆钢（原料）型号 y_material_model；空则回退 y_material_spec，再回退成品规格（兼容旧任务） */
-                    $param['material_spec'] = $data['y_material_model'] ?? '';
-                    if (($param['material_spec'] === '' || $param['material_spec'] === null) && !empty($data['y_material_spec'])) {
-                        $param['material_spec'] = $data['y_material_spec'];
-                    }
-                    if (($param['material_spec'] === '' || $param['material_spec'] === null) && !empty($data['c_material_spec'])) {
-                        $param['material_spec'] = $data['c_material_spec'];
-                    }
+                    /* [AI-2026-08] 保持型号→材质→成品规格回退链 */
+                    $param['material_spec'] = self::resolveRoundSteelWageSegment($data);
                 }
             } elseif ($processName === '穿孔') {
-                /* 穿孔计件按圆钢（原料）型号 y_material_model，与断钢一致；空则回退 y_material_spec，再回退成品规格（兼容旧任务） */
-                $param['material_spec'] = $data['y_material_model'] ?? '';
-                if (($param['material_spec'] === '' || $param['material_spec'] === null) && !empty($data['y_material_spec'])) {
-                    $param['material_spec'] = $data['y_material_spec'];
-                }
-                if (($param['material_spec'] === '' || $param['material_spec'] === null) && !empty($data['c_material_spec'])) {
-                    $param['material_spec'] = $data['c_material_spec'];
-                }
+                /* [AI-2026-08] 穿孔保持与断钢相同回退链 */
+                $param['material_spec'] = self::resolveRoundSteelWageSegment($data);
             } else {
                 $param['material_spec'] = $data['c_material_spec'] ?? '';
             }
@@ -2740,7 +3056,8 @@ class ProductReportService
     }
 
     /**
-     * 计算工单状态：所有工序报工量均 >= 计划量×97% 则自动完成(2)，否则生产中(1)
+     * 计算工单状态：穿孔/球化/矫直/酸洗报工均 >= 计划×97% 且 <= 计划则自动完成(2)，否则生产中(1)。
+     * [AI-2026-08] 断钢不参与完成门槛（合并报工后不宜按单卡断钢）；与盘点折算无关。
      */
     private static function calcTaskStatus(array $taskData, string $taskCode): int
     {
@@ -2748,21 +3065,32 @@ class ProductReportService
         if ($taskNum <= 0) {
             return 1;
         }
-        $minRatio = 0.97;
-        $threshold = round($taskNum * $minRatio, 3);
-        // 获取该工单工艺路线下所有工序
+        $threshold = round($taskNum * ProductionConfig::PLAN_COMPLETE_RATIO, 3);
         $routingCode = $taskData['routing_code'] ?? '';
         if (empty($routingCode)) {
             return 1;
         }
         $detailModel = new RoutingDetailModel();
-        $processCodes = $detailModel->where('routing_code', $routingCode)
+        $routeProcessCodes = $detailModel->where('routing_code', $routingCode)
             ->where('is_delete', 0)
             ->column('process_code');
-        if (empty($processCodes)) {
+        if (empty($routeProcessCodes)) {
             return 1;
         }
-        // 重新读取最新report数据
+        $routeSet = [];
+        foreach ($routeProcessCodes as $code) {
+            $routeSet[(string) $code] = true;
+        }
+        $requiredCodes = [];
+        foreach (ProductionConfig::planCompleteProcessNames() as $processName) {
+            $code = RoutingProcessHelper::getProcessCodeByName($processName);
+            if ($code !== '' && isset($routeSet[$code])) {
+                $requiredCodes[] = $code;
+            }
+        }
+        if ($requiredCodes === []) {
+            return 1;
+        }
         $taskModel = new ProductTaskModel();
         $latestTask = $taskModel->where('task_code', $taskCode)
             ->where('material_id', $taskData['material_id'] ?? '')
@@ -2774,8 +3102,7 @@ class ProductReportService
         if (!is_array($report)) {
             return 1;
         }
-        // 检查每个工序是否达标（未报工的工序在 JSON 中可能无键，避免 Undefined array key）
-        foreach ($processCodes as $pc) {
+        foreach ($requiredCodes as $pc) {
             $row = isset($report[$pc]) && is_array($report[$pc]) ? $report[$pc] : [];
             $rn = (float)($row['report_num'] ?? 0);
             if ($rn < $threshold || $rn > $taskNum) {

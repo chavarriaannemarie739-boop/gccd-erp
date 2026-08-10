@@ -2,27 +2,15 @@
 
 namespace app\admin\controller;
 
-use app\common\controller\Backend;
+use app\common\controller\BaseController;
 use app\common\service\admin\DailyWorkService;
-use think\facade\Db;
+use app\common\service\admin\PublicService;
 
 /**
  * 日工管理
  */
-class DailyWork extends Backend
+class DailyWork extends BaseController
 {
-    protected $model = null;
-
-    /**
-     * 初始化
-     */
-    protected function _initialize()
-    {
-        parent::_initialize();
-        // 权限检查
-        $this->auth->check('daily_work');
-    }
-
     /**
      * 日工报工
      */
@@ -30,7 +18,8 @@ class DailyWork extends Backend
     {
         $param = $this->request->param();
         $result = DailyWorkService::report($param);
-        $this->success('报工成功', $result);
+
+        return success($result, '报工成功');
     }
 
     /**
@@ -42,11 +31,12 @@ class DailyWork extends Backend
         $param = $this->request->param();
 
         if ($id <= 0) {
-            $this->error('参数错误');
+            return error('参数错误');
         }
 
         $result = DailyWorkService::update($id, $param);
-        $this->success('修改成功', $result);
+
+        return success($result, '修改成功');
     }
 
     /**
@@ -57,11 +47,12 @@ class DailyWork extends Backend
         $id = (int) $this->request->param('id', 0);
 
         if ($id <= 0) {
-            $this->error('参数错误');
+            return error('参数错误');
         }
 
         DailyWorkService::delete($id);
-        $this->success('删除成功');
+
+        return success([], '删除成功');
     }
 
     /**
@@ -71,10 +62,11 @@ class DailyWork extends Backend
     {
         $page = (int) $this->request->param('page', 1);
         $limit = (int) $this->request->param('limit', 10);
-        $where = $this->request->param('where', 'json');
+        $where = $this->request->param('where/a', []);
 
         $result = DailyWorkService::list($where, $page, $limit);
-        $this->success('获取成功', $result);
+
+        return success($result, '获取成功');
     }
 
     /**
@@ -82,9 +74,10 @@ class DailyWork extends Backend
      */
     public function stat()
     {
-        $where = $this->request->param('where', 'json');
+        $where = $this->request->param('where/a', []);
         $result = DailyWorkService::stat($where);
-        $this->success('获取成功', $result);
+
+        return success($result, '获取成功');
     }
 
     /**
@@ -109,12 +102,12 @@ class DailyWork extends Backend
             $totalAllowance += (float) ($r['team_leader_allowance'] ?? 0);
         }
 
-        $this->success('获取成功', [
+        return success([
             'records' => $records['list'],
             'total_daily_wage' => round($totalDailyWage, 2),
             'total_allowance' => round($totalAllowance, 2),
             'total_wage' => round($totalDailyWage + $totalAllowance, 2),
-        ]);
+        ], '获取成功');
     }
 
     /**
@@ -123,7 +116,8 @@ class DailyWork extends Backend
     public function checkLeader()
     {
         $userId = user_id();
-        $isTeamLeader = \app\common\service\admin\PublicService::is_class($userId);
-        $this->success('获取成功', ['isTeamLeader' => $isTeamLeader]);
+        $isTeamLeader = PublicService::is_class($userId);
+
+        return success(['isTeamLeader' => $isTeamLeader], '获取成功');
     }
 }

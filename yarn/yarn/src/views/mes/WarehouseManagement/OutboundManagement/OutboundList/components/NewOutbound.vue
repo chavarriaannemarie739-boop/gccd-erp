@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 出库选料圆钢统一名称、厂商、材质、型号 -->
   <div class="app-drawer-form-panel">
     <!-- 布局类名见 styles/drawer-form-layout.scss -->
     <el-form
@@ -9,7 +10,12 @@
       :rules="handleRules"
     >
       <el-form-item label="出库编号" class="app-drawer-form-row--tight">
-        <el-input v-model="routing_name" disabled placeholder="请输入" class="new-outbound-input-code" />
+        <el-input
+          v-model="routing_name"
+          disabled
+          placeholder="请输入"
+          class="new-outbound-input-code"
+        />
       </el-form-item>
       <el-form-item label="物料内容" prop="material_spec" class="app-drawer-form-row--actions">
         <el-button type="primary" size="small" @click="addOrderMatter">添加物料</el-button>
@@ -25,16 +31,54 @@
             :cell-style="{ 'text-align': 'center' }"
           >
             <el-table-column type="index" label="序号" width="55" />
-            <el-table-column prop="material_batch" label="批次号" min-width="120" show-overflow-tooltip />
-            <el-table-column prop="material_name" label="物料名称" min-width="100" show-overflow-tooltip />
-            <el-table-column prop="material_spec" label="物料规格" min-width="100" show-overflow-tooltip />
+            <el-table-column
+              prop="material_batch"
+              label="批次号"
+              min-width="120"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="material_name"
+              :label="materialNameLabel"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              v-if="isRoundSteel"
+              prop="manufacturer"
+              label="厂商"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="material_spec"
+              :label="materialSpecLabel"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="material_model"
+              :label="materialModelLabel"
+              min-width="100"
+              show-overflow-tooltip
+            />
             <el-table-column prop="supplier" label="供应商" min-width="88" show-overflow-tooltip />
             <el-table-column prop="location" label="库位" min-width="88" show-overflow-tooltip />
             <el-table-column prop="warehouse" label="仓库" min-width="88" show-overflow-tooltip />
-            <el-table-column prop="material_num" :label="stockQtyColumnLabel" width="100" show-overflow-tooltip />
+            <el-table-column
+              prop="material_num"
+              :label="stockQtyColumnLabel"
+              width="100"
+              show-overflow-tooltip
+            />
             <el-table-column prop="money" label="单价" min-width="88" show-overflow-tooltip />
             <el-table-column prop="sum" label="总价" min-width="88" show-overflow-tooltip />
-            <el-table-column prop="create_time" label="入库时间" min-width="150" show-overflow-tooltip />
+            <el-table-column
+              prop="create_time"
+              label="入库时间"
+              min-width="150"
+              show-overflow-tooltip
+            />
             <el-table-column prop="out_num" label="出库数量" width="120">
               <template #default="{ row }">
                 <el-input v-model="row.out_num" placeholder="请输入" style="width: 100px" />
@@ -68,12 +112,17 @@
     >
       <el-row :gutter="24">
         <el-col :span="6">
-          <el-form-item label="物料名称：">
+          <el-form-item :label="`${materialNameLabel}：`">
             <el-input style="width: 260px" placeholder="请输入" v-model="query.material_name" />
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="物料规格：">
+          <el-form-item v-if="isRoundSteel" label="厂商：">
+            <el-input style="width: 260px" placeholder="请输入" v-model="query.manufacturer" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item :label="`${materialSpecLabel}：`">
             <el-input
               style="width: 260px"
               placeholder="请输入"
@@ -114,8 +163,15 @@
         <el-table-column show-overflow-tooltip :reserve-selection="true" type="selection" />
         <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
         <el-table-column prop="material_batch" label="批次号" show-overflow-tooltip />
-        <el-table-column prop="material_name" label="物料名称" show-overflow-tooltip />
-        <el-table-column prop="material_spec" label="物料规格" show-overflow-tooltip />
+        <el-table-column prop="material_name" :label="materialNameLabel" show-overflow-tooltip />
+        <el-table-column
+          v-if="isRoundSteel"
+          prop="manufacturer"
+          label="厂商"
+          show-overflow-tooltip
+        />
+        <el-table-column prop="material_spec" :label="materialSpecLabel" show-overflow-tooltip />
+        <el-table-column prop="material_model" :label="materialModelLabel" show-overflow-tooltip />
         <el-table-column prop="supplier" label="供应商" show-overflow-tooltip />
         <el-table-column prop="location" label="库位" show-overflow-tooltip />
         <el-table-column prop="warehouse" label="仓库" show-overflow-tooltip />
@@ -226,7 +282,9 @@ export default {
         page: 1,
         limit: 30,
         material_name: '',
+        manufacturer: '',
         material_spec: '',
+        material_model: '',
         material_batch: '',
         warehouse: ''
       },
@@ -239,11 +297,24 @@ export default {
     /** 与物料库存-配件库表头一致：库存数量；圆钢库（原原料库）表头为「数量」 */
     stockQtyColumnLabel() {
       return this.outboundTab === '圆钢仓库' ? '数量' : '库存数量'
+    },
+    isRoundSteel() {
+      return this.outboundTab === '圆钢仓库'
+    },
+    materialNameLabel() {
+      return this.isRoundSteel ? '圆钢名称' : '物料名称'
+    },
+    materialSpecLabel() {
+      return this.isRoundSteel ? '材质' : '物料规格'
+    },
+    materialModelLabel() {
+      return this.isRoundSteel ? '型号' : '物料型号'
     }
   },
   methods: {
     syncMateiallistWarehouse() {
-      this.query.warehouse = MATEIALLIST_WAREHOUSE[this.outboundTab] ?? MATEIALLIST_WAREHOUSE['配件仓库']
+      this.query.warehouse =
+        MATEIALLIST_WAREHOUSE[this.outboundTab] ?? MATEIALLIST_WAREHOUSE['配件仓库']
     },
     addOrderMatter() {
       this.query.page = 1
@@ -268,7 +339,9 @@ export default {
     },
     handleGoods() {
       this.query.material_name = ''
+      this.query.manufacturer = ''
       this.query.material_spec = ''
+      this.query.material_model = ''
       this.query.material_batch = ''
       this.query.page = 1
       this.syncMateiallistWarehouse()
@@ -283,7 +356,9 @@ export default {
         material_id: item.material_id,
         material_batch: item.material_batch,
         material_name: item.material_name,
+        manufacturer: item.manufacturer,
         material_spec: item.material_spec,
+        material_model: item.material_model,
         supplier: item.supplier,
         location: item.location,
         warehouse: item.warehouse,
@@ -355,7 +430,9 @@ export default {
             params.list.content.push({
               material_id: item.material_id,
               material_name: item.material_name,
+              manufacturer: item.manufacturer,
               material_spec: item.material_spec,
+              material_model: item.material_model,
               material_batch: item.material_batch ?? '',
               remark: item.remark,
               out_num: item.out_num

@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 生产计划详情圆钢统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px">
@@ -21,8 +22,9 @@
         >
           <el-table-column type="index" label="序号" width="55" />
           <el-table-column prop="material_name" label="圆钢名称" />
-          <el-table-column prop="material_spec" label="圆钢规格" />
-          <el-table-column prop="material_model" label="圆钢型号" />
+          <el-table-column prop="manufacturer" label="厂商" />
+          <el-table-column prop="material_spec" label="材质" />
+          <el-table-column prop="material_model" label="型号" />
           <el-table-column prop="plan_num" label="计划数量" />
           <el-table-column prop="remark" label="备注" />
         </el-table>

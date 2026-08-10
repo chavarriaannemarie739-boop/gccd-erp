@@ -4,6 +4,7 @@ import Toast from "@vant/weapp/toast/toast";
 const CI_SUB_TYPES = ["退回带油管", "成品夹灰"];
 const BAN_SUB_TYPES = ["半成品夹灰", "半成品翘皮"];
 
+// [AI-2026-08] 圆钢匹配优先 material_id；无 ID 时使用名称、厂商、材质、型号。
 const emptyLineRow = () => ({
   rowKey: `line-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
   mat: null,
@@ -309,16 +310,21 @@ Page({
     const seen = new Map();
     list.forEach((row) => {
       const yName = (row.material_name || "").trim();
+      const yManufacturer = (row.manufacturer || "").trim();
       const ySpec = (row.material_spec || "").trim();
       const yModel = (row.material_model || "").trim();
-      if (!yName && !ySpec && !yModel) return;
-      const key = `${row.id ?? ""}|${yName}|${ySpec}|${yModel}`;
+      if (!yName && !yManufacturer && !ySpec && !yModel) return;
+      const materialId = parseInt(row.id, 10) || 0;
+      const key = materialId > 0
+        ? `id|${materialId}`
+        : `fields|${yName}|${yManufacturer}|${ySpec}|${yModel}`;
       if (!seen.has(key)) {
         seen.set(key, {
-          uniqKey: `rg-${row.id ?? key}`,
-          material_id: row.id,
-          label: [yName, ySpec, yModel].filter(Boolean).join(" / "),
+          uniqKey: `rg-${materialId || key}`,
+          material_id: materialId,
+          label: [yName, yManufacturer, ySpec, yModel].filter(Boolean).join(" / "),
           y_material_name: yName,
+          y_material_manufacturer: yManufacturer,
           y_material_spec: ySpec,
           y_material_model: yModel,
         });
@@ -351,7 +357,7 @@ Page({
 
   /**
    * 修复自动预填行的 material_id（auto-fill 时 material_id 为 0）
-   * 圆钢档案加载完成后调用，按名称+规格匹配补上正确的 ID
+   * 圆钢档案加载完成后调用，优先 ID，无 ID 时按四字段匹配。
    */
   _fixAutoFillMaterialIds() {
     const lines = [...this.data.lines];
@@ -359,22 +365,24 @@ Page({
     let changed = false;
     lines.forEach((line) => {
       if (!line.mat) return;
-      if (!line.mat.material_id && line.mat.y_material_name) {
+      if (line.mat.material_id) {
+        const foundById = materials.find(
+          (m) => Number(m.material_id || 0) === Number(line.mat.material_id),
+        );
+        if (foundById) {
+          line.mat = { ...foundById };
+          changed = true;
+        }
+      } else if (line.mat.y_material_name) {
         const found = materials.find(
           (m) =>
             m.y_material_name === line.mat.y_material_name &&
+            m.y_material_manufacturer === line.mat.y_material_manufacturer &&
             m.y_material_spec === line.mat.y_material_spec &&
             m.y_material_model === line.mat.y_material_model
         );
         if (found && found.material_id) {
           line.mat.material_id = found.material_id;
-          changed = true;
-        }
-      }
-      if (line.mat.material_id && !line.mat.y_material_name) {
-        const found = materials.find((m) => (m.material_id || 0) === line.mat.material_id);
-        if (found) {
-          line.mat = { ...found };
           changed = true;
         }
       }
@@ -725,8 +733,16 @@ Page({
     if (!isDuanGangStyle && !this.data.isDuanGangManualProduct && !isSpecInputMode && !line.product) return null;
     let yModel = mat.y_material_model || "";
     let foundMatId = 0;
-    if ((!yModel || !mat.material_id) && mat.y_material_name && mat.y_material_spec) {
-      const found = this.data._allMaterials && this.data._allMaterials.find(m => m.y_material_name === mat.y_material_name && m.y_material_spec === mat.y_material_spec && m.y_material_model === mat.y_material_model);
+    if (mat.material_id) {
+      foundMatId = mat.material_id;
+    } else if (mat.y_material_name && mat.y_material_spec) {
+      const found = this.data._allMaterials && this.data._allMaterials.find(
+        (m) =>
+          m.y_material_name === mat.y_material_name &&
+          m.y_material_manufacturer === mat.y_material_manufacturer &&
+          m.y_material_spec === mat.y_material_spec &&
+          m.y_material_model === mat.y_material_model,
+      );
       if (found) {
         yModel = yModel || found.y_material_model || "";
         foundMatId = found.material_id || 0;
@@ -736,6 +752,7 @@ Page({
     return {
       material_id: mat.material_id || foundMatId,
       y_material_name: mat.y_material_name,
+      y_material_manufacturer: mat.y_material_manufacturer || "",
       y_material_spec: mat.y_material_spec,
       y_material_model: yModel,
       c_material_spec: isSpecInputMode ? cProductSpec : (mat.c_material_spec || cProductSpec),
@@ -762,7 +779,10 @@ Page({
     }
     const mat = line.mat;
     if (!mat) return "";
-    const a = `${mat.y_material_name}|${mat.y_material_spec}|${mat.y_material_model}`;
+    const materialId = parseInt(mat.material_id, 10) || 0;
+    const a = materialId > 0
+      ? `id|${materialId}`
+      : `fields|${mat.y_material_name}|${mat.y_material_manufacturer || ""}|${mat.y_material_spec}|${mat.y_material_model}`;
     if (isDuanGangStyle) return a;
     if (this.data.isDuanGangManualProduct) {
       const p = String(line.manualProduct || "").trim();
@@ -999,6 +1019,7 @@ Page({
       items: items.map((it) => ({
         material_id: it.material_id || 0,
         y_material_name: it.y_material_name,
+        y_material_manufacturer: it.y_material_manufacturer || "",
         y_material_spec: it.y_material_spec,
         y_material_model: it.y_material_model || "",
         c_material_spec: it.c_material_spec || "",
@@ -1128,6 +1149,7 @@ Page({
                   .filter(Boolean)
                   .join(" / "),
               y_material_name: it.y_material_name || "",
+              y_material_manufacturer: it.y_material_manufacturer || "",
               y_material_spec: it.y_material_spec || "",
               y_material_model: it.y_material_model || "",
               c_material_spec: it.c_material_spec || "",
@@ -1165,7 +1187,8 @@ Page({
   },
 
   _parseCalcMaterialFields(it) {
-    let category = (it.material_name || "").trim();
+    let category = (it.y_material_name || it.material_name || "").trim();
+    const manufacturer = (it.y_material_manufacturer || it.manufacturer || "").trim();
     let spec = (it.y_material_spec || "").trim();
     let model = (it.y_material_model || "").trim();
     const legacy = category.match(/^(.+)[｜|](.+)$/);
@@ -1180,58 +1203,58 @@ Page({
       category = "溯源";
     }
     let materialId = parseInt(it.material_id, 10) || 0;
-    return { category, spec, model, materialId };
+    return { category, manufacturer, spec, model, materialId };
   },
 
   _autoFillLineKey(it, flags) {
     const { isDuanGangStyle, isDuanGangManualProduct, isSpecInputMode } = flags;
     if (isDuanGangStyle) {
       const p = this._parseCalcMaterialFields(it);
-      return `rg|${p.spec}|${p.model}`;
+      return p.materialId > 0
+        ? `rg|id|${p.materialId}`
+        : `rg|fields|${p.category}|${p.manufacturer}|${p.spec}|${p.model}`;
     }
     if (isDuanGangManualProduct || isSpecInputMode) {
       const p = this._parseCalcMaterialFields(it);
-      return `proc|${p.category}|${p.spec}|${p.model}|${it.c_material_spec || ""}`;
+      return `proc|${p.materialId || `${p.category}|${p.manufacturer}|${p.spec}|${p.model}`}|${it.c_material_spec || ""}`;
     }
     const p = this._parseCalcMaterialFields(it);
-    return `full|${p.category}|${p.spec}|${p.model}|${it.c_material_spec || ""}|${it.c_product_spec || ""}`;
+    return `full|${p.materialId || `${p.category}|${p.manufacturer}|${p.spec}|${p.model}`}|${it.c_material_spec || ""}|${it.c_product_spec || ""}`;
   },
 
   _resolveAutoFillMat(it, index) {
     const materials = this.data._allMaterials || [];
-    const { category, spec, model, materialId } = this._parseCalcMaterialFields(it);
+    const { category, manufacturer, spec, model, materialId } = this._parseCalcMaterialFields(it);
 
     if (!spec && !model && !category) {
       return null;
     }
 
+    if (materialId > 0) {
+      const byId = materials.find((m) => Number(m.material_id || 0) === materialId);
+      if (byId) {
+        return byId;
+      }
+    }
+
     const bySpecModel = materials.find(
       (m) =>
+        (m.y_material_name || "") === category &&
+        (m.y_material_manufacturer || "") === manufacturer &&
         (m.y_material_spec || "") === spec &&
-        (m.y_material_model || "") === model &&
-        (!category || (m.y_material_name || "") === category)
+        (m.y_material_model || "") === model
     );
     if (bySpecModel) {
       return bySpecModel;
-    }
-
-    if (materialId > 0) {
-      const byId = materials.find((m) => (m.material_id || 0) === materialId);
-      if (
-        byId &&
-        (byId.y_material_spec || "") === spec &&
-        (byId.y_material_model || "") === model
-      ) {
-        return byId;
-      }
     }
 
     const yName = category || "溯源";
     return {
       uniqKey: `rg-auto-${index}-${spec}-${model}`,
       material_id: materialId,
-      label: [yName, spec, model].filter(Boolean).join(" / "),
+      label: [yName, manufacturer, spec, model].filter(Boolean).join(" / "),
       y_material_name: yName,
+      y_material_manufacturer: manufacturer,
       y_material_spec: spec,
       y_material_model: model,
     };

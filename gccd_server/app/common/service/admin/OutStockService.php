@@ -13,6 +13,8 @@ namespace app\common\service\admin;
 use app\common\model\admin\InStockModel;
 use app\common\model\admin\OutStockModel;
 use app\common\model\admin\StockMaterialModel;
+// [AI-2026-08] 圆钢四字段仅限圆钢档案
+use app\common\service\utils\MaterialSearchHelper;
 use think\facade\Db;
 use think\facade\Filesystem;
 
@@ -36,11 +38,21 @@ class OutStockService
     /*搜索的字段内容获取*/
     public static $search_field = [
         'material_name' => '', //物料名称
+        'manufacturer' => '', // [AI-2026-08] 厂商
         'material_spec' => '', //物料规格
         'out_code' => '', //入库编码
         'relation_code' => '', //关联编码
         'material_batch' => '',
         'warehouse' => '',
+        'material_model' => '',
+        'y_material_name' => '',
+        'y_material_manufacturer' => '',
+        'y_material_spec' => '',
+        'y_material_model' => '',
+        'y_mateial_name' => '',
+        'y_mateial_manufacturer' => '',
+        'y_mateial_spec' => '',
+        'y_mateial_model' => '',
         'create_start_date' => '',
         'create_end_date' => '',
     ];
@@ -63,11 +75,13 @@ class OutStockService
             $order = ['create_time' => 'desc'];
         }
         if ($page == 0 || $limit == 0) {
-            return $model->with(['getMaterial','getStock'])->where($where)->order($order)->select()->toArray();
+            $list = $model->with(['getMaterial','getStock'])->where($where)->order($order)->select()->toArray();
+            return MaterialSearchHelper::enrichRoundSteelArchiveRows($list);
         }
         $count = $model->where($where)->count();
         $pages = ceil($count / $limit);
         $list = $model->with(['getMaterial','getStock'])->where($where)->page($page)->limit($limit)->order($order)->select()->toArray();
+        $list = MaterialSearchHelper::enrichRoundSteelArchiveRows($list);
         foreach ($list as $k => &$v) {
             $v['create_name'] = user_name($v['create_uid']);
         }
@@ -98,7 +112,7 @@ class OutStockService
                 return [];
             }
             $content = $model->with(['getMaterial'])->where('out_code', $info['out_code'])->select()->toArray();
-            $info['content'] =  $content;
+            $info['content'] = MaterialSearchHelper::enrichRoundSteelArchiveRows($content);
             $info = $info->toArray();
         }
         /*生成调试单号*/

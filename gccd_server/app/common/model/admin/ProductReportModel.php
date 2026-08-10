@@ -29,7 +29,9 @@ class ProductReportModel extends Model
         return $this->hasOne(MaterialModel::class, 'id', 'material_id')
             ->bind(
                 [
+                    // [AI-2026-08] 圆钢标准四字段 DTO
                     'y_material_name' => 'material_name',
+                    'y_material_manufacturer' => 'manufacturer',
                     'y_material_spec' => 'material_spec',
                     'y_material_model' => 'material_model',
                 ]

@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 圆钢详情统一展示名称、厂商、材质、型号 -->
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px" :model="userForm" :rules="handleRules">
@@ -10,10 +11,26 @@
           style="width: 300px"
         />
       </el-form-item>
-      <el-form-item label="圆钢规格：" prop="material_spec">
+      <el-form-item label="厂商：" prop="manufacturer">
+        <el-input
+          disabled
+          v-model="userForm.manufacturer"
+          placeholder="请输入"
+          style="width: 300px"
+        />
+      </el-form-item>
+      <el-form-item label="材质：" prop="material_spec">
         <el-input
           disabled
           v-model="userForm.material_spec"
+          placeholder="请输入"
+          style="width: 300px"
+        />
+      </el-form-item>
+      <el-form-item label="型号：" prop="material_model">
+        <el-input
+          disabled
+          v-model="userForm.material_model"
           placeholder="请输入"
           style="width: 300px"
         />
@@ -52,8 +69,10 @@ export default {
       ],
       processes_code: '后台自动生成',
       userForm: {
-        processes_name: '',
-        processes_code: '',
+        material_name: '',
+        manufacturer: '',
+        material_spec: '',
+        material_model: '',
         is_finnally: 0
       }
     }
@@ -65,7 +84,6 @@ export default {
     async info() {
       const resp = await info({ id: this.view.id })
       this.userForm = resp.data
-      console.log(resp, '12312')
     },
     // 关闭
     hanleAddDialogClose() {

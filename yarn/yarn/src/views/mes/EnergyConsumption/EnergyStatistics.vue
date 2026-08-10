@@ -190,8 +190,6 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
-
-    <router-view />
   </div>
 </template>
 
@@ -235,6 +233,10 @@ export default {
       /** 条形图是否正在使用前端虚拟数据 */
       chartUsesMock: false
     }
+  },
+  // [AI-2026-07] keep-alive 白名单外首次进入不触发 activated，需 mounted 拉数
+  mounted() {
+    this.loadData()
   },
   activated() {
     this.loadData()

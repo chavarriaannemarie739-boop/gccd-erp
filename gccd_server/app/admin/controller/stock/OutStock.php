@@ -15,6 +15,7 @@ use app\common\model\admin\MaterialModel;
 use app\common\service\admin\OutStockService;
 use app\common\service\admin\TraceabilityService;
 use app\common\service\admin\PublicService;
+use app\common\service\utils\MaterialSearchHelper;
 use app\common\validate\system\OutValidate;
 use app\Request;
 use hg\apidoc\annotation as Apidoc;
@@ -61,14 +62,46 @@ class OutStock extends BaseController
             $where[] = ['create_time', '<=', $param['create_end_date'] . ' ' . '23:59:59'];
         }
         $tabWh = trim((string) ($param['warehouse'] ?? ''));
+        /* [AI-2026-08] 出库 Tab → 标准仓类型并校验权限 */
+        $scopeType = null;
+        if ($tabWh !== '') {
+            if ($tabWh === '原材料' || $tabWh === '圆钢') {
+                $scopeType = \app\common\service\admin\WarehouseScopeService::TYPE_ROUND;
+            } elseif ($tabWh === '配件') {
+                $scopeType = \app\common\service\admin\WarehouseScopeService::TYPE_ACCESSORY;
+            } elseif ($tabWh === '成品') {
+                $scopeType = \app\common\service\admin\WarehouseScopeService::TYPE_PRODUCT;
+            } else {
+                $scopeType = \app\common\service\admin\WarehouseScopeService::normalizeType($tabWh);
+            }
+            if ($scopeType === null || !\app\common\service\admin\WarehouseScopeService::allows(
+                \app\common\service\admin\WarehouseScopeService::ACTION_OUTBOUND,
+                $scopeType
+            )) {
+                return success([
+                    'count' => 0,
+                    'pages' => 0,
+                    'page' => $this->page(),
+                    'limit' => $this->limit(),
+                    'list' => [],
+                ]);
+            }
+        }
         $hasMatName = !empty($param['material_name']);
+        $hasManufacturer = !empty($param['manufacturer']);
         $hasMatSpec = !empty($param['material_spec']);
         $hasMatModel = !empty($param['material_model']);
-        $hasTab = ($tabWh === '配件' || $tabWh === '原材料');
-        if ($hasMatName || $hasMatSpec || $hasMatModel || $hasTab) {
-            $matQuery = (new MaterialModel())->where('is_delete', 0);
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        $hasRoundFilters = MaterialSearchHelper::hasRoundSteelFilters($roundFilters);
+        $hasTab = ($tabWh === '配件' || $tabWh === '原材料' || $tabWh === '成品' || $tabWh === '圆钢');
+        if ($hasMatName || $hasManufacturer || $hasMatSpec || $hasMatModel || $hasRoundFilters || $hasTab) {
+            $matQuery = (new MaterialModel())->alias('m')->where('m.is_delete', 0);
             if ($hasMatName) {
                 $matQuery->whereLike('material_name', '%' . $param['material_name'] . '%');
+            }
+            /* [AI-2026-08] 厂商筛选与出库列表展示字段保持一致 */
+            if ($hasManufacturer) {
+                $matQuery->whereLike('manufacturer', '%' . $param['manufacturer'] . '%');
             }
             if ($hasMatSpec) {
                 $matQuery->whereLike('material_spec', '%' . $param['material_spec'] . '%');
@@ -76,13 +109,20 @@ class OutStock extends BaseController
             if ($hasMatModel) {
                 $matQuery->whereLike('material_model', '%' . $param['material_model'] . '%');
             }
-            if ($tabWh === '配件') {
+            if ($hasRoundFilters) {
+                /* [AI-2026-08] 出库圆钢四字段组合检索 */
+                MaterialSearchHelper::applyRoundSteelFilters($matQuery, $roundFilters, 'm');
+                $matQuery->where('m.material_property', 'like', '%圆钢%');
+            }
+            if ($tabWh === '配件' || $scopeType === \app\common\service\admin\WarehouseScopeService::TYPE_ACCESSORY) {
                 $matQuery->whereLike('material_property', '%配件%');
-            } elseif ($tabWh === '原材料') {
+            } elseif ($tabWh === '原材料' || $tabWh === '圆钢' || $scopeType === \app\common\service\admin\WarehouseScopeService::TYPE_ROUND) {
                 $matQuery->where(function ($sub) {
                     $sub->whereLike('material_property', '%原材料%')
                         ->whereOr('material_property', 'like', '%圆钢%');
                 });
+            } elseif ($tabWh === '成品' || $scopeType === \app\common\service\admin\WarehouseScopeService::TYPE_PRODUCT) {
+                $matQuery->whereLike('material_property', '%成品%');
             }
             $matIds = $matQuery->column('id');
             if (empty($matIds)) {

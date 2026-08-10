@@ -1,13 +1,5 @@
 <view class="workorder-shell">
-  <!-- 圆钢：规格+型号拼接展示（与 material 表 material_spec、material_model 一致） -->
-  <wxs module="ySteel">
-function joinRoundSteel(spec, model) {
-  var s = spec == null ? '' : ('' + spec);
-  var m = model == null ? '' : ('' + model);
-  return s + m;
-}
-module.exports.joinRoundSteel = joinRoundSteel;
-  </wxs>
+  <!-- [AI-2026-08] 圆钢四字段展示筛选；打印入口与参数保持不变。 -->
   <!-- 自定义导航栏 -->
   <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
     <view class="navbar-left">
@@ -25,7 +17,16 @@ module.exports.joinRoundSteel = joinRoundSteel;
     <!-- 检索条件 -->
     <view class="filter-bar">
       <view class="filter-item">
-        <input class="filter-input" placeholder="圆钢型号" value="{{filterYSpec}}" bindinput="onFilterInput" data-field="filterYSpec" />
+        <input class="filter-input" placeholder="圆钢名称" value="{{y_material_name}}" bindinput="onFilterInput" data-field="y_material_name" />
+      </view>
+      <view class="filter-item">
+        <input class="filter-input" placeholder="圆钢厂商" value="{{y_material_manufacturer}}" bindinput="onFilterInput" data-field="y_material_manufacturer" />
+      </view>
+      <view class="filter-item">
+        <input class="filter-input" placeholder="圆钢材质" value="{{y_material_spec}}" bindinput="onFilterInput" data-field="y_material_spec" />
+      </view>
+      <view class="filter-item">
+        <input class="filter-input" placeholder="圆钢型号" value="{{y_material_model}}" bindinput="onFilterInput" data-field="y_material_model" />
       </view>
       <view class="filter-item">
         <input class="filter-input" placeholder="断钢型号" value="{{filterCSpec}}" bindinput="onFilterInput" data-field="filterCSpec" />
@@ -33,7 +34,7 @@ module.exports.joinRoundSteel = joinRoundSteel;
       <view class="filter-item">
         <input class="filter-input" placeholder="成品型号" value="{{filterCModel}}" bindinput="onFilterInput" data-field="filterCModel" />
       </view>
-      <view class="filter-reset" wx:if="{{filterYSpec || filterCSpec || filterCModel}}" bindtap="onFilterReset">重置</view>
+      <view class="filter-reset" wx:if="{{y_material_name || y_material_manufacturer || y_material_spec || y_material_model || filterCSpec || filterCModel}}" bindtap="onFilterReset">重置</view>
     </view>
 
     <van-tabs active="{{activeTab}}" bind:change="switchTab" color="#0d9488">
@@ -64,14 +65,19 @@ module.exports.joinRoundSteel = joinRoundSteel;
                 <view class="card-body">
                   <view class="info-row-group">
                     <view class="info-row-half">
-                      <text class="info-label">圆钢型号:</text>
-                      <text class="info-value">{{ySteel.joinRoundSteel(item.y_material_spec, item.y_material_model)}}</text>
+                      <text class="info-label">圆钢名称:</text>
+                      <text class="info-value">{{item.y_material_name || '—'}}</text>
                     </view>
                     <view class="info-row-half">
-                      <text class="info-label">断钢型号:</text>
-                      <text class="info-value">{{item.c_material_spec}}</text>
+                      <text class="info-label">圆钢厂商:</text>
+                      <text class="info-value">{{item.y_material_manufacturer || '—'}}</text>
                     </view>
                   </view>
+                  <view class="info-row-group">
+                    <view class="info-row-half"><text class="info-label">圆钢材质:</text><text class="info-value">{{item.y_material_spec || '—'}}</text></view>
+                    <view class="info-row-half"><text class="info-label">圆钢型号:</text><text class="info-value">{{item.y_material_model || '—'}}</text></view>
+                  </view>
+                  <view class="info-row"><text class="info-label">断钢型号:</text><text class="info-value">{{item.c_material_spec}}</text></view>
                   <view class="info-row">
                     <text class="info-label">成品型号:</text>
                     <text class="info-value">{{item.c_material_model}}</text>
@@ -99,6 +105,9 @@ module.exports.joinRoundSteel = joinRoundSteel;
                 </view>
 
                 <view class="card-footer">
+                  <van-button type="info" size="small" catch:tap="onPrintTap" data-plan-id="{{item.production_plan_id}}" data-material-id="{{item.material_id}}" custom-style="margin-right: 8px; background: #0d9488; border-color: #0d9488;" round>
+                    打印
+                  </van-button>
                   <van-button type="warning" size="small" catch:tap="workOrderSubmit" data-routing_code="{{item.routing_code}}" data-id="{{item.id}}" round>
                     报工
                   </van-button>
@@ -147,14 +156,19 @@ module.exports.joinRoundSteel = joinRoundSteel;
                 <view class="card-body">
                   <view class="info-row-group">
                     <view class="info-row-half">
-                      <text class="info-label">圆钢型号:</text>
-                      <text class="info-value">{{ySteel.joinRoundSteel(item.y_material_spec, item.y_material_model)}}</text>
+                      <text class="info-label">圆钢名称:</text>
+                      <text class="info-value">{{item.y_material_name || '—'}}</text>
                     </view>
                     <view class="info-row-half">
-                      <text class="info-label">断钢型号:</text>
-                      <text class="info-value">{{item.c_material_spec}}</text>
+                      <text class="info-label">圆钢厂商:</text>
+                      <text class="info-value">{{item.y_material_manufacturer || '—'}}</text>
                     </view>
                   </view>
+                  <view class="info-row-group">
+                    <view class="info-row-half"><text class="info-label">圆钢材质:</text><text class="info-value">{{item.y_material_spec || '—'}}</text></view>
+                    <view class="info-row-half"><text class="info-label">圆钢型号:</text><text class="info-value">{{item.y_material_model || '—'}}</text></view>
+                  </view>
+                  <view class="info-row"><text class="info-label">断钢型号:</text><text class="info-value">{{item.c_material_spec}}</text></view>
                   <view class="info-row">
                     <text class="info-label">成品型号:</text>
                     <text class="info-value">{{item.c_material_model}}</text>
@@ -181,7 +195,11 @@ module.exports.joinRoundSteel = joinRoundSteel;
                   </view>
                 </view>
 
-                <!-- 已完成的工单不显示报工按钮 -->
+                <view class="card-footer">
+                  <van-button type="info" size="small" catch:tap="onPrintTap" data-plan-id="{{item.production_plan_id}}" data-material-id="{{item.material_id}}" custom-style="background: #0d9488; border-color: #0d9488;" round>
+                    打印
+                  </van-button>
+                </view>
               </view>
             </view>
 
@@ -223,4 +241,5 @@ module.exports.joinRoundSteel = joinRoundSteel;
   </view>
 
   <van-dialog id="van-dialog" />
+  <print-flow-card show="{{showPrintPopup}}" planId="{{printPlanId}}" materialId="{{printMaterialId}}" bind:close="closePrintPopup" />
 </view>

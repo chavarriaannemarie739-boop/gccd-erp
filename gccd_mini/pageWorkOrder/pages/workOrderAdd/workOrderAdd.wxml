@@ -1,3 +1,4 @@
+<!-- [AI-2026-08] 纠正圆钢四字段标签与绑定。 -->
 <!-- 自定义导航栏 -->
 <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
   <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
@@ -12,8 +13,10 @@
     <van-field label="关联单号" placeholder="无" value="{{relation_code}}" disabled required />
     <van-field label="工序名称" placeholder="无" value="{{processes_name}}（{{process_code}}）" readonly required />
     <van-field label="工艺名称" placeholder="无" value="{{routing_name}}（{{routing_code}}）" readonly required />
-    <!-- <van-field label="物料名称" type="text" value="{{materialName}}({{materialSpec}})" readonly required /> -->
-    <van-field label="圆钢型号" type="text" value="{{y_material_name}}({{y_material_spec}})" readonly required />
+    <van-field label="圆钢名称" type="text" value="{{y_material_name}}" readonly required />
+    <van-field label="圆钢厂商" type="text" value="{{y_material_manufacturer}}" readonly />
+    <van-field label="圆钢材质" type="text" value="{{y_material_spec}}" readonly required />
+    <van-field label="圆钢型号" type="text" value="{{y_material_model}}" readonly required />
     <van-field label="断钢型号" type="text" value="{{c_material_spec}}" readonly required />
     <van-field label="成品型号" type="text" value="{{c_material_model}}" readonly required />
     <van-field label="已报工吨数" type="text" value="{{reportNum}}" readonly required />

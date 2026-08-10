@@ -111,6 +111,17 @@ export function stockAlertSummary(data) {
 }
 
 /**
+ * [AI-2026-08] 按物料与仓库范围批量设置最低库存。
+ */
+export function batchUpdateStockThreshold(data) {
+  return request({
+    url: url + 'batchUpdateStockThreshold',
+    method: 'post',
+    data
+  })
+}
+
+/**
  * 成品库操作权限
  */
 export function stockActionPermissions(data) {

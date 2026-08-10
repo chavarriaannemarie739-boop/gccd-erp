@@ -22,6 +22,12 @@
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
+  "preloadRule": {
+    "pages/workbench/workbench": {
+      "network": "all",
+      "packages": ["pageMine"]
+    }
+  },
   "tabBar": {
     "color": "#9ca3af",
     "selectedColor": "#0f766e",

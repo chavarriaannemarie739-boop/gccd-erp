@@ -34,21 +34,10 @@ const breadcrumbs = ref([])
 
 function getBreadcrumb() {
   let matched = currentRoute.matched.filter((item) => item.meta && item.meta.title)
-  const first = matched[0]
-  if (!isDashboard(first)) {
-    matched = [{ path: '/dashboard', meta: { title: 'dashboard' } }].concat(matched)
-  }
+  // [AI-2026-08] 首页改为角色授权后，不再强制拼接驾驶舱面包屑
   breadcrumbs.value = matched.filter((item) => {
     return item.meta && item.meta.title && item.meta.breadcrumb !== false
   })
-}
-
-function isDashboard(route) {
-  const name = route && route.name
-  if (!name) {
-    return false
-  }
-  return name.toString().trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
 }
 
 function handleLink(item) {

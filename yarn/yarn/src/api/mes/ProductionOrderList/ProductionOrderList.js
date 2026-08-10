@@ -1,7 +1,6 @@
 import request from '@/utils/request'
 
 const url = '/admin/production.Production/'
-const urlGoods = '/admin/message.Message/'
 
 /**
  * 生产订单列表
@@ -82,18 +81,6 @@ export function push(data) {
 export function getProcess(data) {
   return request({
     url: url + 'getProcess',
-    method: 'post',
-    data
-  })
-}
-
-/**
- * 导出
- * @param {array} data 请求数据
- */
-export function exportExcel(data) {
-  return request({
-    url: urlGoods + 'exportExcel',
     method: 'post',
     data
   })

@@ -1,25 +1,19 @@
 <template>
+  <!-- [AI-2026-08] 圆钢新增按名称、厂商、材质、型号录入并必填 -->
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px" :model="userForm" :rules="handleRules">
       <el-form-item label="圆钢名称：" prop="material_name">
         <el-input v-model="userForm.material_name" placeholder="请输入" style="width: 300px" />
       </el-form-item>
-      <el-form-item label="圆钢规格：" prop="material_spec">
+      <el-form-item label="厂商：" prop="manufacturer">
+        <el-input v-model="userForm.manufacturer" placeholder="请输入" style="width: 300px" />
+      </el-form-item>
+      <el-form-item label="材质：" prop="material_spec">
         <el-input v-model="userForm.material_spec" placeholder="请输入" style="width: 300px" />
       </el-form-item>
-      <el-form-item label="圆钢型号：" prop="material_model">
+      <el-form-item label="型号：" prop="material_model">
         <el-input v-model="userForm.material_model" placeholder="请输入" style="width: 300px" />
-      </el-form-item>
-      <el-form-item label="最低库存阈值：" prop="min_stock_qty">
-        <el-input-number
-          v-model="userForm.min_stock_qty"
-          :min="0"
-          :precision="3"
-          :controls="true"
-          placeholder="不填则不预警"
-          style="width: 300px"
-        />
       </el-form-item>
       <el-form-item label="是否为生产原料：" prop="is_product">
         <el-select v-model="userForm.is_product" placeholder="请选择" style="width: 300px">
@@ -62,16 +56,17 @@ export default {
       processes_code: '后台自动生成',
       userForm: {
         material_name: '',
+        manufacturer: '',
         material_spec: '',
         material_model: '',
         material_property: '圆钢',
-        min_stock_qty: null,
         is_product: 0
       },
       handleRules: {
         material_name: [{ required: true, message: '圆钢名称不能为空', trigger: 'blur' }],
-        material_spec: [{ required: true, message: '圆钢规格不能为空', trigger: 'blur' }],
-        // material_model: [{ required: true, message: '型号不能为空', trigger: 'blur' }],
+        manufacturer: [{ required: true, message: '厂商不能为空', trigger: 'blur' }],
+        material_spec: [{ required: true, message: '材质不能为空', trigger: 'blur' }],
+        material_model: [{ required: true, message: '型号不能为空', trigger: 'blur' }]
         // material_property: [{ required: true, message: '物料属性不能为空', trigger: 'blur' }]
       }
     }
@@ -90,7 +85,11 @@ export default {
         // 判断
         if (!value) return
         try {
-          this.userForm.material_property = (this.materialProperty || this.userForm.material_property || '圆钢').trim()
+          this.userForm.material_property = (
+            this.materialProperty ||
+            this.userForm.material_property ||
+            '圆钢'
+          ).trim()
           // 调接口发请求
           await add(this.userForm)
           this.$emit('list')

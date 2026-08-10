@@ -1,6 +1,7 @@
 const util = require("../../../utils/util.js");
 import Toast from '@vant/weapp/toast/toast';
 
+// [AI-2026-08] 工单详情纠正圆钢四字段标签与绑定。
 Page({
     data: {
         statusBarHeight: 0,
@@ -22,7 +23,10 @@ Page({
         c_material_name:'',
         c_material_spec:'',
         c_material_model:'',
+        y_material_name:'',
+        y_material_manufacturer:'',
         y_material_spec:'',
+        y_material_model:'',
         // 按钮样式
         btnPosition: {
             top: 0,
@@ -101,7 +105,10 @@ Page({
                         statusText: statusText,
                         create_time: data.create_time,
                         production_plan_name: data.production_plan_name,
-                        y_material_spec: data.y_material_spec,
+                        y_material_name: data.y_material_name || '',
+                        y_material_manufacturer: data.y_material_manufacturer || '',
+                        y_material_spec: data.y_material_spec || '',
+                        y_material_model: data.y_material_model || '',
                         c_material_name: data.c_material_name,
                         c_material_spec: data.c_material_spec,
                         c_material_model: data.c_material_model,
@@ -131,9 +138,13 @@ Page({
             .then(res => {
                 if (res.data.code === 200 && res.data.data) {
                     const materialInfo = res.data.data;
-                    const materialName = `${materialInfo.material_name || ''}（ ${materialInfo. material_spec || ''}）`.trim();
+                    const materialName = `${materialInfo.material_name || ''}（ ${materialInfo.material_spec || ''}）`.trim();
                     this.setData({
-                        materialName
+                        materialName,
+                        y_material_name: this.data.y_material_name || materialInfo.material_name || '',
+                        y_material_manufacturer: this.data.y_material_manufacturer || materialInfo.manufacturer || '',
+                        y_material_spec: this.data.y_material_spec || materialInfo.material_spec || '',
+                        y_material_model: this.data.y_material_model || materialInfo.material_model || ''
                     });
                 }
             })

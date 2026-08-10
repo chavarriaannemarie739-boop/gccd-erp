@@ -88,7 +88,6 @@
           <InspectionDetails :view="view" v-model:is-show="processVisibleGoods" />
         </el-dialog>
       </div>
-    <router-view />
   </div>
 </template>
 
@@ -124,6 +123,10 @@ export default {
       tableList: [],
       loading: true
     }
+  },
+  // [AI-2026-07] keep-alive 白名单外首次进入不触发 activated，需 mounted 拉数
+  mounted() {
+    this.list()
   },
   activated() {
     this.list()

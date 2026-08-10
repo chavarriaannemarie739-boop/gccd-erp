@@ -10,9 +10,9 @@
         <view class="form-item">
             <van-cell-group>
                 <!-- 手机号 -->
-                <van-field value="{{ phone }}" placeholder="请输入您的账号" border="{{ false }}" left-icon="/images/login-phone.png" input-class="login-text" bind:change="onChange1" />
+                <van-field value="{{ phone }}" placeholder="请输入您的账号" border="{{ false }}" left-icon="phone-o" input-class="login-text" bind:change="onChange1" />
                 <!-- 验证码 -->
-                <van-field value="{{ verify_code }}" center clearable placeholder="请输入您的密码" border="{{ false }}" use-button-slot left-icon="/images/login-code.png" input-class="login-text" bind:change="onChange2" type="password">
+                <van-field value="{{ verify_code }}" center clearable placeholder="请输入您的密码" border="{{ false }}" use-button-slot left-icon="lock" input-class="login-text" bind:change="onChange2" type="password">
                 </van-field>
             </van-cell-group>
         </view>

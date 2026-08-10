@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 质检详情圆钢统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <el-card class="filter-card-compact" shadow="never">
       <el-form :model="query" class="filter-form-flex" @submit.prevent>
@@ -52,7 +53,7 @@
             <el-tag effect="light" round>{{ scope.row.process_name }}</el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column label="提报内容摘要" min-width="250">
           <template #default="scope">
             <div class="summary-cell">
@@ -63,10 +64,10 @@
                 </span>
                 <span v-else class="success-alert">（无不良品）</span>
               </span>
-              <el-button 
-                type="primary" 
-                link 
-                icon="View" 
+              <el-button
+                type="primary"
+                link
+                icon="View"
                 @click="showDetail(scope.row)"
                 class="view-btn"
               >
@@ -143,7 +144,18 @@
             <div class="card-title">
               <el-icon><Collection /></el-icon>
               <span>{{ item.y_material_name }}</span>
-              <span class="spec-tag">{{ item.y_material_spec }}</span>
+            </div>
+            <div class="card-info">
+              <span class="info-label">圆钢厂商：</span>
+              <span class="info-value">{{ item.y_material_manufacturer || '-' }}</span>
+            </div>
+            <div class="card-info">
+              <span class="info-label">圆钢材质：</span>
+              <span class="spec-tag">{{ item.y_material_spec || '-' }}</span>
+            </div>
+            <div class="card-info">
+              <span class="info-label">圆钢型号：</span>
+              <span class="info-value">{{ item.y_material_model || '-' }}</span>
             </div>
             <div class="card-info">
               <span class="info-label">成品型号：</span>
@@ -217,7 +229,13 @@ export default {
       this.getList()
     },
     handleReset() {
-      this.query = { page: 1, limit: 10, process_name: '', check_start_date: '', check_end_date: '' }
+      this.query = {
+        page: 1,
+        limit: 10,
+        process_name: '',
+        check_start_date: '',
+        check_end_date: ''
+      }
       this.dateRange = []
       this.handleSearch()
     },
@@ -229,7 +247,20 @@ export default {
       this.loading = true
       try {
         const resp = await list(this.query)
-        this.tableData = resp.data.list
+        // [AI-2026-08] 质量历史响应仅读取兼容旧拼写，页面统一输出标准四字段
+        this.tableData = (resp.data?.list || []).map((record) => ({
+          ...record,
+          items: (record.items || []).map((item) => {
+            const legacy = (field) => item[['y', 'mateial', field].join('_')]
+            return {
+              ...item,
+              y_material_name: item.y_material_name ?? legacy('name') ?? '',
+              y_material_manufacturer: item.y_material_manufacturer ?? legacy('manufacturer') ?? '',
+              y_material_spec: item.y_material_spec ?? legacy('spec') ?? '',
+              y_material_model: item.y_material_model ?? legacy('model') ?? ''
+            }
+          })
+        }))
         this.total = resp.data.count
       } catch (error) {
         console.error('获取质检列表失败', error)
@@ -346,7 +377,7 @@ export default {
   border-radius: 8px;
   padding: 15px 0;
   margin-bottom: 20px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
 }
 
 .stats-item {
@@ -380,7 +411,7 @@ export default {
 }
 
 .material-card:hover {
-  box-shadow: 0 4px 16px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 

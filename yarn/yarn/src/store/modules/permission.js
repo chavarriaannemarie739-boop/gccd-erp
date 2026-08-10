@@ -99,7 +99,7 @@ function pruneDuplicateRepairReportMenuEntries(routes) {
 
 /** 左侧一级菜单顺序（按路由顶层 path）；未列入的项排在后面 */
 const PRIMARY_MENU_PATH_ORDER = [
-  '/',
+  '/dashboard',
   '/ProductionOrderList',
   '/WarehouseManagement',
   '/inventory-check',

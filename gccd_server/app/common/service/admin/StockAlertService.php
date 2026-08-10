@@ -2,7 +2,6 @@
 
 namespace app\common\service\admin;
 
-use app\common\model\admin\MaterialModel;
 use app\common\model\admin\WmsMaterialModel;
 
 /**
@@ -48,12 +47,7 @@ class StockAlertService
      */
     public static function normalizeMinStockQty($raw): ?float
     {
-        if ($raw === null || $raw === '') {
-            return null;
-        }
-        $v = round((float) $raw, 3);
-
-        return $v > 0 ? $v : null;
+        return MaterialStockThresholdService::normalizeMinStockQty($raw);
     }
 
     /**
@@ -111,34 +105,21 @@ class StockAlertService
      */
     public static function alertMaterialIds(string $materialProperty, string $warehouseKeyword): array
     {
-        if ($warehouseKeyword === '') {
+        $scope = MaterialStockThresholdService::normalizeScope($warehouseKeyword);
+        if ($scope === '' || $scope !== trim($materialProperty)) {
             return [];
         }
-        $likes = InStockService::warehouseSearchOrLikesFromTabKeyword($warehouseKeyword);
-        if ($likes === null || $likes === []) {
+        /* [AI-2026-08] 运行时仅从新阈值表读取，库存仍按对应仓库范围汇总。 */
+        $thresholds = MaterialStockThresholdService::activeThresholds($scope);
+        if ($thresholds === []) {
             return [];
         }
-        $materialModel = new MaterialModel();
-        $rows = $materialModel
-            ->where('is_delete', 0)
-            ->where('material_property', $materialProperty)
-            ->whereNotNull('min_stock_qty')
-            ->where('min_stock_qty', '>', 0)
-            ->field('id, min_stock_qty')
-            ->select()
-            ->toArray();
-        if ($rows === []) {
-            return [];
-        }
-        $ids = array_map(static function (array $row): int {
-            return (int) $row['id'];
-        }, $rows);
-        $totals = self::sumStockByMaterialIds($ids, $warehouseKeyword);
+        $ids = array_keys($thresholds);
+        $totals = self::sumStockByMaterialIds($ids, $scope);
         $alertIds = [];
-        foreach ($rows as $row) {
-            $id = (int) $row['id'];
+        foreach ($thresholds as $id => $minStockQty) {
             $total = $totals[$id] ?? 0.0;
-            if (self::isStockAlert($total, $row['min_stock_qty'])) {
+            if (self::isStockAlert($total, $minStockQty)) {
                 $alertIds[] = $id;
             }
         }
@@ -167,11 +148,14 @@ class StockAlertService
             return (int) ($row['id'] ?? 0);
         }, $list)));
         $totals = self::sumStockByMaterialIds($ids, $kw);
+        $thresholds = MaterialStockThresholdService::thresholdsByMaterialIds($ids, $kw);
         foreach ($list as &$row) {
             $id = (int) ($row['id'] ?? 0);
             $total = $totals[$id] ?? 0.0;
+            $min = $thresholds[$id] ?? null;
+            $row['min_stock_qty'] = $min;
             $row['total_stock'] = $total;
-            $row['is_stock_alert'] = self::isStockAlert($total, $row['min_stock_qty'] ?? null) ? 1 : 0;
+            $row['is_stock_alert'] = self::isStockAlert($total, $min) ? 1 : 0;
         }
         unset($row);
 
@@ -196,12 +180,12 @@ class StockAlertService
         }
         $ids = array_keys($materialIds);
         $totals = self::sumStockByMaterialIds($ids, $warehouseKeyword);
-        $materialModel = new MaterialModel();
-        $materials = $ids === [] ? [] : $materialModel->whereIn('id', $ids)->column('min_stock_qty', 'id');
+        /* [AI-2026-08] 同一物料可按配件/圆钢 scope 拥有隔离阈值。 */
+        $thresholds = MaterialStockThresholdService::thresholdsByMaterialIds($ids, $warehouseKeyword);
         foreach ($list as &$row) {
             $mid = (int) ($row['material_id'] ?? 0);
             $total = $totals[$mid] ?? 0.0;
-            $min = $materials[$mid] ?? null;
+            $min = $thresholds[$mid] ?? null;
             $row['min_stock_qty'] = $min;
             $row['total_stock'] = $total;
             $row['is_stock_alert'] = self::isStockAlert($total, $min) ? 1 : 0;
@@ -212,17 +196,48 @@ class StockAlertService
     }
 
     /**
+     * @param array<string, int> $counts
+     * @param string[] $allowedTypes
      * @return array{accessory_count:int, round_steel_count:int, total_count:int}
      */
-    public static function summary(): array
+    public static function summaryForAllowedTypes(array $counts, array $allowedTypes): array
     {
-        $accessory = self::countAlertByProperty('配件');
-        $roundSteel = self::countAlertByProperty('圆钢');
+        $accessory = in_array(WarehouseScopeService::TYPE_ACCESSORY, $allowedTypes, true)
+            ? (int) ($counts[WarehouseScopeService::TYPE_ACCESSORY] ?? 0)
+            : 0;
+        $roundSteel = in_array(WarehouseScopeService::TYPE_ROUND, $allowedTypes, true)
+            ? (int) ($counts[WarehouseScopeService::TYPE_ROUND] ?? 0)
+            : 0;
 
         return [
             'accessory_count' => $accessory,
             'round_steel_count' => $roundSteel,
             'total_count' => $accessory + $roundSteel,
         ];
+    }
+
+    /**
+     * [AI-2026-08] 预警汇总仅统计当前用户可见的库存仓库范围。
+     *
+     * @return array{accessory_count:int, round_steel_count:int, total_count:int}
+     */
+    public static function summary(): array
+    {
+        $allowedTypes = WarehouseScopeService::allowedTypes(
+            WarehouseScopeService::ACTION_INVENTORY
+        );
+        $counts = [];
+        if (in_array(WarehouseScopeService::TYPE_ACCESSORY, $allowedTypes, true)) {
+            $counts[WarehouseScopeService::TYPE_ACCESSORY] = self::countAlertByProperty(
+                WarehouseScopeService::TYPE_ACCESSORY
+            );
+        }
+        if (in_array(WarehouseScopeService::TYPE_ROUND, $allowedTypes, true)) {
+            $counts[WarehouseScopeService::TYPE_ROUND] = self::countAlertByProperty(
+                WarehouseScopeService::TYPE_ROUND
+            );
+        }
+
+        return self::summaryForAllowedTypes($counts, $allowedTypes);
     }
 }

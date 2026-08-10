@@ -3,6 +3,7 @@ const mediaCompress = require('../../utils/mediaCompress.js');
 import Toast from '@vant/weapp/toast/toast';
 import Dialog from '@vant/weapp/dialog/dialog';
 
+// [AI-2026-08] 圆钢档案统一按名称、厂商、材质、型号展示与筛选。
 Page({
   data: {
     // 导航栏相关内容
@@ -19,7 +20,9 @@ Page({
     materialForm: {
       id: null,
       material_name: '',
+      manufacturer: '',
       material_spec: '',
+      material_model: '',
     },
     // 获取列表数据
     list: [],
@@ -43,9 +46,10 @@ Page({
     // 筛选参数
     searchParams: {
       material_name: '',
-      material_thickness: '',
-      material_model: '',
       manufacturer: '',
+      material_spec: '',
+      material_model: '',
+      material_thickness: '',
       supplier: '',
       // create_start_date: '',
       // create_end_date: ''
@@ -375,9 +379,10 @@ Page({
       {
         searchParams: {
           material_name: '',
-          material_thickness: '',
-          material_model: '',
           manufacturer: '',
+          material_spec: '',
+          material_model: '',
+          material_thickness: '',
           supplier: '',
           // create_start_date: '',
           // create_end_date: ''
@@ -449,23 +454,35 @@ Page({
     });
   },
 
-  // 物料型号变化
+  onMaterialManufacturerChange(e) {
+    this.setData({
+      'materialForm.manufacturer': e.detail,
+    });
+  },
+
   onMaterialSpecChange(e) {
     this.setData({
       'materialForm.material_spec': e.detail,
     });
   },
 
+  onMaterialModelChange(e) {
+    this.setData({
+      'materialForm.material_model': e.detail,
+    });
+  },
+
   // 提交物料表单
   submitMaterialForm() {
-    const { id, material_name, material_spec } = this.data.materialForm;
+    const { id, material_name, manufacturer, material_spec, material_model } =
+      this.data.materialForm;
 
     if (!material_name) {
       Toast.fail('请输入物料名称');
       return;
     }
     if (!material_spec) {
-      Toast.fail('请输入物料型号');
+      Toast.fail('请输入材质或规格');
       return;
     }
 
@@ -478,11 +495,15 @@ Page({
       ? {
           id,
           material_name,
+          manufacturer,
           material_spec,
+          material_model,
         }
       : {
           material_name,
+          manufacturer,
           material_spec,
+          material_model,
         };
 
     util

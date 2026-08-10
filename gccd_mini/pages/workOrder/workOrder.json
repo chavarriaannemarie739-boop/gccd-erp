@@ -12,6 +12,7 @@
         "van-empty": "@vant/weapp/empty/index",
         "scan-code": "/pages/components/scan-code/scan-code",
         "repair-form": "/pages/components/repair-form/repair-form",
+        "print-flow-card": "/pages/components/print-flow-card/print-flow-card",
         "van-uploader": "@vant/weapp/uploader/index"
     }
 }

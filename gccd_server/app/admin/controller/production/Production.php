@@ -61,8 +61,10 @@ class Production extends BaseController
         if (!empty($param['production_plan_code'])) {
             $where[] = ['production_plan_code', 'like', '%' . $param['production_plan_code'] . '%'];
         }
-        /*成品/圆钢规格型号搜索（MaterialSearchHelper，圆钢兼容 y_material_* 与 y_mateial_*） */
-        [$ySpec, $yModel] = MaterialSearchHelper::resolveRoundSteelFilter($param);
+        /* [AI-2026-08] 圆钢四字段组合搜索，兼容 y_mateial_* 读入 */
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        $ySpec = $roundFilters['spec'];
+        $yModel = $roundFilters['model'];
         $planCodeFilters = [];
         if (!empty($param['material_spec']) || !empty($param['material_model'])) {
             $planCodeFilters[] = MaterialSearchHelper::planCodesByFinishedMaterial(
@@ -70,8 +72,13 @@ class Production extends BaseController
                 (string) ($param['material_model'] ?? '')
             );
         }
-        if ($ySpec !== '' || $yModel !== '') {
-            $planCodeFilters[] = MaterialSearchHelper::planCodesByRawMaterial((string) $ySpec, (string) $yModel);
+        if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+            $planCodeFilters[] = MaterialSearchHelper::planCodesByRawMaterial(
+                $roundFilters['spec'],
+                $roundFilters['model'],
+                $roundFilters['name'],
+                $roundFilters['manufacturer']
+            );
         }
         if (!empty($planCodeFilters)) {
             $planCodes = MaterialSearchHelper::intersectPlanCodeGroups($planCodeFilters);
@@ -101,9 +108,11 @@ class Production extends BaseController
 
         /**/
         $listOptions = [];
-        if ($ySpec !== '' || $yModel !== '') {
-            $listOptions['yMaterialSpec'] = (string) $ySpec;
-            $listOptions['yMaterialModel'] = (string) $yModel;
+        if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+            $listOptions['yMaterialName'] = $roundFilters['name'];
+            $listOptions['yMaterialManufacturer'] = $roundFilters['manufacturer'];
+            $listOptions['yMaterialSpec'] = $roundFilters['spec'];
+            $listOptions['yMaterialModel'] = $roundFilters['model'];
         }
         $data = ProductionService::list($where, $this->page(), $this->limit(), $this->order(), [], $listOptions);
         return success($data);

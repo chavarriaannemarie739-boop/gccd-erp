@@ -130,7 +130,6 @@
         />
       </el-card>
     </div>
-    <router-view />
   </div>
 </template>
 
@@ -186,6 +185,10 @@ export default {
       if (s === '不限' && e === '不限') return '全部时间'
       return `${s} ～ ${e}`
     }
+  },
+  // [AI-2026-07] keep-alive 白名单外首次进入不触发 activated，需 mounted 拉数
+  mounted() {
+    this.refreshStatsAndList()
   },
   activated() {
     this.refreshStatsAndList()

@@ -13,30 +13,29 @@ Page({
     remark: '',
 
     // 人员选择
-    selectedUsers: [], // 选中的人员对象数组
-    selectedUserIds: [], // 选中的人员ID数组
-    selectedUserDisplay: '', // 显示文本
-    userOptions: [], // 所有人员选项
-    filteredUserOptions: [], // 过滤后的人员选项
+    selectedUsers: [],
+    selectedUserIds: [],
+    selectedUserDisplay: '',
+    userOptions: [],
+    filteredUserOptions: [],
     showUserPopup: false,
     userSearchValue: '',
 
     // 工资预览
-    dailyWagePerPerson: 200, // 每人日工工资
-    allowancePerPerson: 0, // 每人岗位津贴
-    totalWage: 0, // 工资合计
-
-    isTeamLeader: false,
+    dailyWagePerPerson: 200,
+    leaderAllowance: 0, // 报工人岗位津贴（固定 1 份）
+    reporterName: '', // 当前登录报工人
+    totalWage: 0,
 
     editMode: false,
     editId: 0,
   },
 
   onLoad(options) {
-    wx.getSystemInfo({
-      success: (res) => {
-        this.setData({ statusBarHeight: res.statusBarHeight });
-      },
+    const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+    this.setData({
+      statusBarHeight: windowInfo.statusBarHeight || 0,
+      reporterName: wx.getStorageSync('nickname') || '',
     });
 
     const today = this.formatDate(new Date());
@@ -47,7 +46,6 @@ Page({
     }
 
     this.getUserOptions();
-    this.checkTeamLeader();
   },
 
   formatDate(date) {
@@ -57,7 +55,6 @@ Page({
     return `${y}-${m}-${d}`;
   },
 
-  // 获取穿孔工序人员列表
   getUserOptions() {
     util
       .request(
@@ -86,20 +83,6 @@ Page({
       .catch(() => {});
   },
 
-  // 检查当前用户是否为班长
-  checkTeamLeader() {
-    util
-      .request('admin/dailyWork/checkLeader', {}, 'POST')
-      .then((res) => {
-        if (res.data.code === 200) {
-          this.setData({ isTeamLeader: res.data.data.isTeamLeader || false });
-          this.calcWage();
-        }
-      })
-      .catch(() => {});
-  },
-
-  // 显示人员选择弹窗
   showUserPicker() {
     this.setData({
       selectedUserIds: this.data.selectedUsers.map((u) => String(u.user_id)),
@@ -109,12 +92,10 @@ Page({
     });
   },
 
-  // 隐藏人员选择弹窗
   hideUserPicker() {
     this.setData({ showUserPopup: false });
   },
 
-  // 人员搜索
   onUserSearch(e) {
     const val = (e.detail || '').trim().toLowerCase();
     this.setData({
@@ -125,7 +106,6 @@ Page({
     });
   },
 
-  // 人员选择变化
   onUserSelectChange(e) {
     const selectedIds = Array.isArray(e.detail) ? e.detail : [e.detail];
     this.setData({
@@ -133,7 +113,6 @@ Page({
     });
   },
 
-  // 确认选择人员
   confirmUserSelect() {
     const { selectedUserIds, userOptions } = this.data;
     if (selectedUserIds.length === 0) {
@@ -149,12 +128,10 @@ Page({
     this.calcWage();
   },
 
-  // 日期变更
   onDateChange(e) {
     this.setData({ workDate: e.detail.value });
   },
 
-  // 报工类型变更
   onWorkTypeChange(e) {
     const workType = parseInt(e.detail);
     const workHours = workType === 1 ? 12 : 6;
@@ -162,7 +139,6 @@ Page({
     this.calcWage();
   },
 
-  // 工时变更
   onHoursChange(e) {
     let val = parseFloat(e.detail.value);
     if (isNaN(val) || val <= 0) val = 0;
@@ -171,24 +147,27 @@ Page({
     this.calcWage();
   },
 
-  // 备注变更
   onRemarkChange(e) {
     this.setData({ remark: e.detail.value });
   },
 
-  // 计算工资
+  // 穿孔日工：选中人员每人日工工资 + 报工人 1 份岗位津贴
   calcWage() {
-    const { workType, workHours, isTeamLeader, selectedUsers } = this.data;
-    const personCount = selectedUsers.length || 1;
+    const { workType, workHours, selectedUsers } = this.data;
+    const personCount = selectedUsers.length;
     const dailyWagePerPerson = workType === 1 ? 200 : 100;
     const allowanceRatio = Math.min(workHours / 12, 1);
-    const allowancePerPerson = isTeamLeader ? Math.round(200 * allowanceRatio * 100) / 100 : 0;
+    const leaderAllowance = Math.round(200 * allowanceRatio * 100) / 100;
     const totalWage =
-      Math.round((dailyWagePerPerson + allowancePerPerson) * personCount * 100) / 100;
-    this.setData({ dailyWagePerPerson, allowancePerPerson, totalWage });
+      Math.round((dailyWagePerPerson * personCount + leaderAllowance) * 100) / 100;
+
+    this.setData({
+      dailyWagePerPerson,
+      leaderAllowance,
+      totalWage,
+    });
   },
 
-  // 提交报工
   onSubmit() {
     const { workDate, workType, workHours, remark, selectedUsers, editMode, editId, submitting } =
       this.data;
@@ -207,6 +186,7 @@ Page({
     }
 
     this.setData({ submitting: true, loading: true });
+    wx.showLoading({ title: '提交中...', mask: true });
 
     const data = {
       work_date: workDate,
@@ -222,21 +202,25 @@ Page({
       .request(url, data, 'POST')
       .then((res) => {
         if (res.data.code === 200) {
-          Toast.success(editMode ? '修改成功' : '报工成功');
+          wx.showToast({
+            title: editMode ? '修改成功' : '报工成功',
+            icon: 'success',
+            duration: 1200,
+          });
           setTimeout(() => {
             wx.navigateBack({ delta: 1 });
-          }, 800);
+          }, 1200);
         } else {
-          this.setData({ submitting: false });
+          this.setData({ submitting: false, loading: false });
           Toast.fail(res.data.msg || '提交失败');
         }
       })
       .catch(() => {
-        this.setData({ submitting: false });
+        this.setData({ submitting: false, loading: false });
         Toast.fail('网络异常');
       })
       .finally(() => {
-        this.setData({ loading: false });
+        wx.hideLoading();
       });
   },
 

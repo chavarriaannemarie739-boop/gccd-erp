@@ -18,39 +18,43 @@ class Inventory extends BaseController
      */
     public function list()
     {
-        $where = [['is_delete', '=', '0']];
+        $where = [['mi.is_delete', '=', '0']];
         $param = $this->params(MaterialInventoryService::$inventory_search_field);
 
-        if (!empty($param['material_name'])) {
-            $where[] = ['material_name', 'like', '%' . $param['material_name'] . '%'];
-        }
         if (!empty($param['process_name'])) {
-            $where[] = ['process_name', 'like', '%' . $param['process_name'] . '%'];
+            $where[] = ['mi.process_name', 'like', '%' . $param['process_name'] . '%'];
         }
-        $ySpec = $param['y_material_spec'] ?? $param['finished_product_spec'] ?? '';
-        $yModel = $param['y_material_model'] ?? '';
+        /* [AI-2026-08] 盘点检索读取标准四字段并兼容历史拼写 */
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        if ($roundFilters['name'] === '') {
+            $roundFilters['name'] = trim((string) ($param['material_name'] ?? ''));
+        }
+        if ($roundFilters['spec'] === '') {
+            $roundFilters['spec'] = trim((string) ($param['finished_product_spec'] ?? ''));
+        }
         $cSpec = $param['c_material_spec'] ?? $param['current_process_spec'] ?? '';
         $cModel = $param['c_material_model'] ?? '';
-        if ($ySpec !== '') {
-            $where[] = ['y_material_spec', 'like', '%' . MaterialSearchHelper::likeKeyword((string) $ySpec) . '%'];
-        }
-        if ($yModel !== '') {
-            $where[] = ['y_material_model', 'like', '%' . MaterialSearchHelper::likeKeyword((string) $yModel) . '%'];
-        }
         if ($cSpec !== '') {
-            $where[] = ['c_material_spec', 'like', '%' . MaterialSearchHelper::likeKeyword((string) $cSpec) . '%'];
+            $where[] = ['mi.c_material_spec', 'like', '%' . MaterialSearchHelper::likeKeyword((string) $cSpec) . '%'];
         }
         if ($cModel !== '') {
-            $where[] = ['c_material_model', 'like', '%' . MaterialSearchHelper::likeKeyword((string) $cModel) . '%'];
+            $where[] = ['mi.c_material_model', 'like', '%' . MaterialSearchHelper::likeKeyword((string) $cModel) . '%'];
         }
         if (!empty($param['inventory_start_date'])) {
-            $where[] = ['inventory_date', '>=', $param['inventory_start_date']];
+            $where[] = ['mi.inventory_date', '>=', $param['inventory_start_date']];
         }
         if (!empty($param['inventory_end_date'])) {
-            $where[] = ['inventory_date', '<=', $param['inventory_end_date']];
+            $where[] = ['mi.inventory_date', '<=', $param['inventory_end_date']];
         }
 
-        $data = MaterialInventoryService::inventoryList($where, $this->page(), $this->limit(), $this->order());
+        $data = MaterialInventoryService::inventoryList(
+            $where,
+            $this->page(),
+            $this->limit(),
+            $this->order(),
+            [],
+            $roundFilters
+        );
         return success($data);
     }
 

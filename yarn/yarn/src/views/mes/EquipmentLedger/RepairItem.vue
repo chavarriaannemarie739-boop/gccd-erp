@@ -61,7 +61,6 @@
         </el-dialog>
       </el-card>
     </div>
-    <router-view />
   </div>
 </template>
 
@@ -93,6 +92,11 @@ export default {
         parent_id: ''
       }
     }
+  },
+  // [AI-2026-07] keep-alive 白名单外首次进入不触发 activated，需 mounted 拉数
+  mounted() {
+    this.getCategoryList()
+    this.list()
   },
   activated() {
     this.getCategoryList()

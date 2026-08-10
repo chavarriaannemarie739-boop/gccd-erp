@@ -1,41 +1,114 @@
 <template>
+  <!-- [AI-2026-08] 报工圆钢业务字段统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <el-card class="filter-card-compact" shadow="never">
       <el-form :model="query" class="filter-form-flex" @submit.prevent>
-        <el-form-item class="filter-form-item--field" style="width: auto;">
+        <el-form-item class="filter-form-item--field" style="width: auto">
           <el-radio-group v-model="query.class" size="small">
             <el-radio-button :label="0">白班</el-radio-button>
             <el-radio-button :label="1">夜班</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 100px;">
-          <el-input v-model="query.plan_code" placeholder="计划单号" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.plan_code"
+            placeholder="计划单号"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 100px;">
-          <el-input v-model="query.production_plan_name" placeholder="计划名称" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.production_plan_name"
+            placeholder="计划名称"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 100px;">
-          <el-input v-model="query.y_material_spec" placeholder="圆钢规格" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.y_material_name"
+            placeholder="圆钢名称"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 100px;">
-          <el-input v-model="query.y_material_model" placeholder="圆钢型号" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.y_material_manufacturer"
+            placeholder="圆钢厂商"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 100px;">
-          <el-input v-model="query.c_material_spec" placeholder="成品规格" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.y_material_spec"
+            placeholder="圆钢材质"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 100px;">
-          <el-input v-model="query.c_material_model" placeholder="成品型号" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.y_material_model"
+            placeholder="圆钢型号"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 90px;">
-          <el-input v-model="query.processes_name" placeholder="工序" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.c_material_spec"
+            placeholder="成品规格"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 90px;">
-          <el-input v-model="query.device_name" placeholder="设备" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 100px">
+          <el-input
+            v-model="query.c_material_model"
+            placeholder="成品型号"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--field" style="width: 90px;">
-          <el-input v-model="query.create_name" placeholder="报工人员" clearable size="small" class="filter-input" />
+        <el-form-item class="filter-form-item--field" style="width: 90px">
+          <el-input
+            v-model="query.processes_name"
+            placeholder="工序"
+            clearable
+            size="small"
+            class="filter-input"
+          />
         </el-form-item>
-        <el-form-item class="filter-form-item--date" style="width: 210px;">
+        <el-form-item class="filter-form-item--field" style="width: 90px">
+          <el-input
+            v-model="query.device_name"
+            placeholder="设备"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field" style="width: 90px">
+          <el-input
+            v-model="query.create_name"
+            placeholder="报工人员"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--date" style="width: 210px">
           <el-date-picker
             v-model="order_times"
             type="daterange"
@@ -51,7 +124,9 @@
           />
         </el-form-item>
         <el-form-item class="filter-form-item--actions">
-          <el-button v-preventReClick type="primary" size="small" @click="handleSearch">搜索</el-button>
+          <el-button v-preventReClick type="primary" size="small" @click="handleSearch"
+            >搜索</el-button
+          >
           <el-button v-preventReClick size="small" @click="handleResetting">重置</el-button>
         </el-form-item>
       </el-form>
@@ -59,57 +134,148 @@
     <div class="contenter">
       <el-card>
         <div class="toolbar-row">
-          <el-button type="primary" size="small" :disabled="editDisabled" @click="toolbarEdit">编辑</el-button>
+          <el-button type="primary" size="small" :disabled="editDisabled" @click="toolbarEdit"
+            >编辑</el-button
+          >
           <el-button type="danger" size="small" :disabled="type" v-preventReClick @click="dele"
             >删除</el-button
           >
         </div>
-        <p class="table-hint">表格列较多时，可在下方横向滚动条拖动查看全部内容（触控板双指滑动亦可）。</p>
+        <p class="table-hint">
+          表格列较多时，可在下方横向滚动条拖动查看全部内容（触控板双指滑动亦可）。
+        </p>
         <div class="table-scroll-container">
-        <el-table
-          ref="tableDataRefss"
-          :data="tableData"
-          border
-          :fit="false"
-          class="work-report-table"
-          :header-cell-style="{ 'text-align': 'center' }"
-          :cell-style="{ 'text-align': 'center' }"
-          v-loading="loading"
-          :row-key="getRowKeys"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
-          <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
-          <el-table-column prop="plan_code" label="计划编号" min-width="140" show-overflow-tooltip />
-          <el-table-column prop="production_plan_name" label="计划名称" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="y_material_spec" label="圆钢规格" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="y_material_model" label="圆钢型号" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="c_material_spec" label="成品规格" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="c_material_model" label="成品型号" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="processes_name" label="工序名称" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="device_name" label="设备名称" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="report_num" label="报工吨数" min-width="90" show-overflow-tooltip />
-          <el-table-column prop="yarn_count" label="报工支数" min-width="90" show-overflow-tooltip />
-          <el-table-column prop="create_name" label="报工人员" min-width="90" show-overflow-tooltip />
-          <el-table-column prop="product_user" label="生产人员" min-width="90" show-overflow-tooltip />
-          <el-table-column prop="card_user" label="开车人员" min-width="90" show-overflow-tooltip />
-          <el-table-column prop="class" label="班次" min-width="70" show-overflow-tooltip>
-            <template #default="{ row }">
-              {{ row.class === 1 ? '夜班' : '白班' }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="create_time" label="创建时间" min-width="160" show-overflow-tooltip />
-          <el-table-column label="工资" min-width="90" show-overflow-tooltip>
-            <template #default="{ row }">
-              <el-link type="primary" @click="goToUserWageList(row)">
-                {{ formatWage(row.wage_total ?? row.wage) }}
-              </el-link>
-            </template>
-          </el-table-column>
-          <el-table-column prop="report_date" label="归属日期" min-width="110" show-overflow-tooltip />
-          <el-table-column prop="defective" label="不良品" min-width="80" show-overflow-tooltip />
-          <el-table-column prop="remark" label="备注" min-width="100" show-overflow-tooltip />
-        </el-table>
+          <el-table
+            ref="tableDataRefss"
+            :data="tableData"
+            border
+            :fit="false"
+            class="work-report-table"
+            :header-cell-style="{ 'text-align': 'center' }"
+            :cell-style="{ 'text-align': 'center' }"
+            v-loading="loading"
+            :row-key="getRowKeys"
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
+            <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
+            <el-table-column
+              prop="plan_code"
+              label="计划编号"
+              min-width="140"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="production_plan_name"
+              label="计划名称"
+              min-width="120"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="y_material_name"
+              label="圆钢名称"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="y_material_manufacturer"
+              label="圆钢厂商"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="y_material_spec"
+              label="圆钢材质"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="y_material_model"
+              label="圆钢型号"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="c_material_spec"
+              label="成品规格"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="c_material_model"
+              label="成品型号"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="processes_name"
+              label="工序名称"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="device_name"
+              label="设备名称"
+              min-width="100"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="report_num"
+              label="报工吨数"
+              min-width="90"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="yarn_count"
+              label="报工支数"
+              min-width="90"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="create_name"
+              label="报工人员"
+              min-width="90"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="product_user"
+              label="生产人员"
+              min-width="90"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="card_user"
+              label="开车人员"
+              min-width="90"
+              show-overflow-tooltip
+            />
+            <el-table-column prop="class" label="班次" min-width="70" show-overflow-tooltip>
+              <template #default="{ row }">
+                {{ row.class === 1 ? '夜班' : '白班' }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="create_time"
+              label="创建时间"
+              min-width="160"
+              show-overflow-tooltip
+            />
+            <el-table-column label="工资" min-width="90" show-overflow-tooltip>
+              <template #default="{ row }">
+                <el-link type="primary" @click="goToUserWageList(row)">
+                  {{ formatWage(row.wage_total ?? row.wage) }}
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="report_date"
+              label="归属日期"
+              min-width="110"
+              show-overflow-tooltip
+            />
+            <el-table-column prop="defective" label="不良品" min-width="80" show-overflow-tooltip />
+            <el-table-column prop="remark" label="备注" min-width="100" show-overflow-tooltip />
+          </el-table>
         </div>
         <el-pagination
           style="margin-top: 10px"
@@ -142,7 +308,6 @@
         <EditorsReport :view="view" v-model:is-show="processVisible" @list="list" />
       </el-dialog>
     </div>
-    <router-view />
   </div>
 </template>
 
@@ -178,6 +343,8 @@ export default {
         report_date_end: '',
         plan_code: '',
         production_plan_name: '',
+        y_material_name: '',
+        y_material_manufacturer: '',
         y_material_spec: '',
         y_material_model: '',
         c_material_spec: '',
@@ -212,20 +379,26 @@ export default {
       return n.toFixed(2)
     },
     goToUserWageList(row) {
-      const relationCode = row.report_code || row.relation_code || ''
+      const mergedCodes = Array.isArray(row.merged_report_codes)
+        ? row.merged_report_codes.filter(Boolean)
+        : []
+      const relationCode =
+        mergedCodes.length > 0 ? mergedCodes.join(',') : row.report_code || row.relation_code || ''
       if (!relationCode) {
         ElMessage.warning('当前记录缺少报工编号，无法跳转')
         return
       }
-      this.$router.push({
-        name: 'EmployeejobApplication',
-        query: { relation_code: relationCode }
-      }).catch(() => {
-        this.$router.push({
-          path: '/mes/BasicSettings/EmployeejobApplication',
+      this.$router
+        .push({
+          name: 'EmployeejobApplication',
           query: { relation_code: relationCode }
         })
-      })
+        .catch(() => {
+          this.$router.push({
+            path: '/mes/BasicSettings/EmployeejobApplication',
+            query: { relation_code: relationCode }
+          })
+        })
     },
     toolbarEdit() {
       if (this.selectList.length !== 1) {
@@ -291,6 +464,8 @@ export default {
       this.query.report_date_end = ''
       this.query.plan_code = ''
       this.query.production_plan_name = ''
+      this.query.y_material_name = ''
+      this.query.y_material_manufacturer = ''
       this.query.y_material_spec = ''
       this.query.y_material_model = ''
       this.query.c_material_spec = ''
@@ -314,9 +489,7 @@ export default {
         .join('、')
       const more = n > 8 ? ` 等共 ${n} 条` : ''
       const multiHint =
-        n > 1
-          ? '\n\n若只需删除一条，请先取消本对话框，再仅勾选一条记录后删除。'
-          : ''
+        n > 1 ? '\n\n若只需删除一条，请先取消本对话框，再仅勾选一条记录后删除。' : ''
       const message = `即将删除 ${n} 条报工记录（${codeHint}${more}），删除后不可恢复。${multiHint}`
       ElMessageBox.confirm(message, '删除确认', {
         confirmButtonText: '确定删除',

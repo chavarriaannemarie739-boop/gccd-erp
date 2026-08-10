@@ -15,6 +15,7 @@ use app\common\service\admin\FlowCardService;
 use app\common\service\admin\MiniProgramWorkService;
 use app\common\service\admin\ProductTaskService;
 use app\common\service\admin\RoutingProcessHelper;
+use app\common\service\utils\MaterialSearchHelper;
 use app\Request;
 use hg\apidoc\annotation as Apidoc;
 use think\Filesystem;
@@ -72,19 +73,38 @@ class ProductTask extends BaseController
      */
     public function listForMini()
     {
-        $param = $this->param();
+        // [AI-2026-08] 小程序工单：圆钢四字段 + 成品规格/型号；keyword 保持兼容
+        $param = $this->params([
+            'processes_code' => '',
+            'processes_name' => '',
+            'device_code' => '',
+            'keyword' => '',
+            'y_material_name' => '',
+            'y_material_manufacturer' => '',
+            'y_material_spec' => '',
+            'y_material_model' => '',
+            'c_material_spec' => '',
+            'c_material_model' => '',
+        ]);
         $processesCode = trim((string) ($param['processes_code'] ?? ''));
         $deviceCode = trim((string) ($param['device_code'] ?? ''));
         if ($processesCode === '' && !empty($param['processes_name'])) {
             $processesCode = RoutingProcessHelper::getProcessCodeByName((string) $param['processes_name']);
         }
         $keyword = trim((string) ($param['keyword'] ?? ''));
+        $roundSteelFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        $finishedFilters = [
+            'spec' => trim((string) ($param['c_material_spec'] ?? '')),
+            'model' => trim((string) ($param['c_material_model'] ?? '')),
+        ];
         $data = ProductTaskService::listForMini(
             $processesCode,
             $deviceCode,
             $this->page(),
             $this->limit(),
-            $keyword
+            $keyword,
+            $roundSteelFilters,
+            $finishedFilters
         );
 
         return success($data);

@@ -16,6 +16,26 @@ class FlowCardService
     /** @var string[] 可扫码直达报工的工序 */
     private static $scanReportProcessNames = ['穿孔', '球化', '矫直', '酸洗'];
 
+    // [AI-2026-08] 流转卡圆钢四字段统一输出开始
+    /**
+     * 按名称、厂商、材质、型号构建圆钢打印文本。
+     *
+     * @param array<string,mixed> $row
+     * @return string
+     */
+    public static function formatRoundSteelText(array $row): string
+    {
+        $values = [
+            self::firstRoundSteelValue($row, 'name'),
+            self::firstRoundSteelValue($row, 'manufacturer'),
+            self::firstRoundSteelValue($row, 'spec'),
+            self::firstRoundSteelValue($row, 'model'),
+        ];
+        $values = array_values(array_filter($values, static fn (string $value): bool => $value !== ''));
+
+        return $values === [] ? '' : '圆:' . implode(' / ', $values);
+    }
+
     /**
      * 构建流转码明文
      */
@@ -87,8 +107,10 @@ class FlowCardService
             }
             $materials[] = [
                 'material_id' => $mid,
-                'y_material_spec' => (string) ($row['material_spec'] ?? ''),
-                'y_material_model' => (string) ($row['material_model'] ?? ''),
+                'y_material_name' => self::firstRoundSteelValue($row, 'name'),
+                'y_material_manufacturer' => self::firstRoundSteelValue($row, 'manufacturer'),
+                'y_material_spec' => self::firstRoundSteelValue($row, 'spec'),
+                'y_material_model' => self::firstRoundSteelValue($row, 'model'),
                 'plan_num' => (float) ($row['plan_num'] ?? 0),
             ];
         }
@@ -174,16 +196,61 @@ class FlowCardService
         $payload = self::buildPayload($planCode, $materialId, $deviceCode);
         $qrBase64 = self::qrPngBase64($payload);
 
+        // [AI-2026-08] TSPL：圆钢四字段拆为两行，保留 30mm 标签、成品行与二维码位置
+        $planName = trim((string) ($plan['production_plan_name'] ?? ''));
+        $roundSteelText = self::formatRoundSteelText($detailRow ?? []);
+        $cSpec = trim((string) ($plan['material_spec'] ?? ''));
+        $cModel = trim((string) ($plan['material_model'] ?? ''));
+        $finished = ($cSpec !== '' && $cModel !== '') ? ($cSpec . '×' . $cModel) : ($cSpec . $cModel);
+        $num = $detailRow['plan_num'] ?? 0;
+        $roundSteelTsplLines = self::buildRoundSteelTsplLines($detailRow ?? [], $num);
+
+        $line1 = $planName;
+        if ($deviceName !== '') {
+            $line1 = trim($line1 . ' ' . $deviceName);
+        }
+        $lines = [];
+        $lines[] = 'SIZE 30 mm,30 mm';
+        $lines[] = 'GAP 2 mm,0 mm';
+        $lines[] = 'DIRECTION 1';
+        $lines[] = 'CODEPAGE 936';
+        $lines[] = 'CLS';
+
+        $leftX = 4;
+        if ($line1 !== '') {
+            $lines[] = 'TEXT ' . $leftX . ',4,"TSS16.BF2",0,1,1,"' . self::escTspl(self::truncate($line1, 14)) . '"';
+        }
+        $lines[] = 'TEXT ' . $leftX . ',26,"TSS12.BF2",0,1,1,"'
+            . self::escTspl($roundSteelTsplLines[0]) . '"';
+        $lines[] = 'TEXT ' . $leftX . ',44,"TSS12.BF2",0,1,1,"'
+            . self::escTspl($roundSteelTsplLines[1]) . '"';
+        if ($finished !== '') {
+            self::appendProductLineTspl($lines, $finished);
+        }
+
+        // 二维码（保持原来大小位置不变）
+        if ($payload) {
+            $lines[] = 'QRCODE 60,85,H,4,A,0,"' . self::escTspl($payload) . '"';
+        }
+        $lines[] = 'PRINT 1';
+        $tsplStr = implode("\r\n", $lines) . "\r\n";
+        $tsplGbk = mb_convert_encoding($tsplStr, 'GBK', 'UTF-8');
+        $tsplBase64 = base64_encode($tsplGbk);
+
         return [
             'production_plan_name' => (string) ($plan['production_plan_name'] ?? ''),
-            'y_material_spec' => (string) ($detailRow['material_spec'] ?? ''),
-            'y_material_model' => (string) ($detailRow['material_model'] ?? ''),
+            'y_material_name' => self::firstRoundSteelValue($detailRow ?? [], 'name'),
+            'y_material_manufacturer' => self::firstRoundSteelValue($detailRow ?? [], 'manufacturer'),
+            'y_material_spec' => self::firstRoundSteelValue($detailRow ?? [], 'spec'),
+            'y_material_model' => self::firstRoundSteelValue($detailRow ?? [], 'model'),
+            'y_material_text' => $roundSteelText,
             'c_material_spec' => (string) ($plan['material_spec'] ?? ''),
             'c_material_model' => (string) ($plan['material_model'] ?? ''),
             'plan_num' => (float) ($detailRow['plan_num'] ?? 0),
             'device_name' => $deviceName,
             'qr_payload' => $payload,
             'qr_image' => $qrBase64,
+            'tspl_cmd' => $tsplBase64,
         ];
     }
 
@@ -295,8 +362,10 @@ class FlowCardService
 
         return [
             'production_plan_name' => (string) ($plan['production_plan_name'] ?? ''),
-            'y_material_spec' => (string) ($detailRow['material_spec'] ?? ''),
-            'y_material_model' => (string) ($detailRow['material_model'] ?? ''),
+            'y_material_name' => self::firstRoundSteelValue($detailRow ?? [], 'name'),
+            'y_material_manufacturer' => self::firstRoundSteelValue($detailRow ?? [], 'manufacturer'),
+            'y_material_spec' => self::firstRoundSteelValue($detailRow ?? [], 'spec'),
+            'y_material_model' => self::firstRoundSteelValue($detailRow ?? [], 'model'),
             'c_material_spec' => (string) ($finished['material_spec'] ?? ''),
             'c_material_model' => (string) ($finished['material_model'] ?? ''),
             'plan_num' => (float) ($detailRow['plan_num'] ?? 0),
@@ -324,10 +393,197 @@ class FlowCardService
 
     private static function qrPngBase64(string $payload): string
     {
-        $qr = QrCode::create($payload)->setSize(120)->setMargin(4);
+        $qr = QrCode::create($payload)->setSize(120)->setMargin(1);
         $writer = new PngWriter();
         $result = $writer->write($qr);
 
         return 'data:image/png;base64,' . base64_encode($result->getString());
+    }
+
+    /**
+     * 第三行成品规格：单行 Y=56，品: + 规格一次打完（font"1" 8×12，× 转 x 避免乱码叠字）
+     *
+     * @param array<int,string> $lines
+     */
+    private static function appendProductLineTspl(array &$lines, string $finished): void
+    {
+        $lineY = 64;
+        $bodyX = 28;
+        $lines[] = 'TEXT 4,' . $lineY . ',"TSS12.BF2",0,1,1,"' . self::escTspl('品:') . '"';
+        $body = str_replace('×', 'x', $finished);
+        $lines[] = 'TEXT ' . $bodyX . ',' . $lineY . ',"1",0,1,1,"' . self::escTspl($body) . '"';
+    }
+
+    /**
+     * @param array<string,mixed> $row
+     * @param int|float|string $num
+     * @return array{0:string,1:string}
+     */
+    public static function buildRoundSteelTsplLines(array $row, $num): array
+    {
+        $name = self::firstRoundSteelValue($row, 'name');
+        $manufacturer = self::firstRoundSteelValue($row, 'manufacturer');
+        $spec = self::firstRoundSteelValue($row, 'spec');
+        $model = self::firstRoundSteelValue($row, 'model');
+        $first = self::fitTsplFieldPair($name, $manufacturer, '圆:', '', 232, 12);
+        $second = self::fitTsplFieldPair($spec, $model, '', ' 数:' . $num, 232, 12);
+
+        return [$first, $second];
+    }
+
+    /**
+     * 按 TSPL 点阵宽度计算文本占用。
+     *
+     * @param string $text
+     * @param int $fontSize
+     * @return int
+     */
+    public static function measureTsplTextWidth(string $text, int $fontSize = 12): int
+    {
+        $width = 0;
+        $asciiWidth = (int) ceil($fontSize / 2);
+        $length = mb_strlen($text, 'UTF-8');
+        for ($index = 0; $index < $length; $index++) {
+            $char = mb_substr($text, $index, 1, 'UTF-8');
+            $width += strlen($char) === 1 && ord($char) < 128 ? $asciiWidth : $fontSize;
+        }
+
+        return $width;
+    }
+
+    /**
+     * 为同一行两个字段动态分配宽度，短字段不浪费剩余空间。
+     */
+    private static function fitTsplFieldPair(
+        string $left,
+        string $right,
+        string $prefix,
+        string $suffix,
+        int $maxWidth,
+        int $fontSize
+    ): string {
+        $separator = $left !== '' && $right !== '' ? ' / ' : '';
+        $fixedWidth = self::measureTsplTextWidth($prefix . $separator . $suffix, $fontSize);
+        $available = max(0, $maxWidth - $fixedWidth);
+        $leftWidth = self::measureTsplTextWidth($left, $fontSize);
+        $rightWidth = self::measureTsplTextWidth($right, $fontSize);
+        $leftBudget = $leftWidth;
+        $rightBudget = $rightWidth;
+
+        if ($leftWidth + $rightWidth > $available) {
+            if ($left === '') {
+                $rightBudget = $available;
+            } elseif ($right === '') {
+                $leftBudget = $available;
+            } else {
+                $half = (int) floor($available / 2);
+                if ($leftWidth <= $half) {
+                    $leftBudget = $leftWidth;
+                    $rightBudget = $available - $leftBudget;
+                } elseif ($rightWidth <= $half) {
+                    $rightBudget = $rightWidth;
+                    $leftBudget = $available - $rightBudget;
+                } else {
+                    $leftBudget = $half;
+                    $rightBudget = $available - $half;
+                }
+            }
+        }
+
+        return $prefix
+            . self::truncateTsplText($left, $leftBudget, $fontSize)
+            . $separator
+            . self::truncateTsplText($right, $rightBudget, $fontSize)
+            . $suffix;
+    }
+
+    /**
+     * 按点阵宽度截断，省略号计入预算。
+     */
+    private static function truncateTsplText(string $text, int $maxWidth, int $fontSize): string
+    {
+        if (self::measureTsplTextWidth($text, $fontSize) <= $maxWidth) {
+            return $text;
+        }
+        $ellipsis = '…';
+        $ellipsisWidth = self::measureTsplTextWidth($ellipsis, $fontSize);
+        if ($maxWidth < $ellipsisWidth) {
+            return '';
+        }
+
+        $result = '';
+        $width = 0;
+        $targetWidth = $maxWidth - $ellipsisWidth;
+        $length = mb_strlen($text, 'UTF-8');
+        for ($index = 0; $index < $length; $index++) {
+            $char = mb_substr($text, $index, 1, 'UTF-8');
+            $charWidth = self::measureTsplTextWidth($char, $fontSize);
+            if ($width + $charWidth > $targetWidth) {
+                break;
+            }
+            $result .= $char;
+            $width += $charWidth;
+        }
+
+        return $result . $ellipsis;
+    }
+
+    /**
+     * 标准字段优先，历史错误拼写仅用于读取兼容。
+     *
+     * @param array<string,mixed> $row
+     * @param string $field
+     * @return string
+     */
+    private static function firstRoundSteelValue(array $row, string $field): string
+    {
+        foreach (
+            [
+                'y_material_' . $field,
+                'material_' . $field,
+                'y_mateial_' . $field,
+                $field === 'manufacturer' ? 'manufacturer' : '',
+            ] as $key
+        ) {
+            if ($key === '') {
+                continue;
+            }
+            $value = trim((string) ($row[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+    // [AI-2026-08] 流转卡圆钢四字段统一输出结束
+
+    private static function truncate(string $str, int $maxLen): string
+    {
+        if (mb_strlen($str) <= $maxLen) {
+            return $str;
+        }
+        return mb_substr($str, 0, $maxLen - 1) . '…';
+    }
+
+    private static function escTspl(string $str): string
+    {
+        return str_replace(['\\', '"'], ['\\\\', '\\"'], $str);
+    }
+
+    private static function getTsplCenterX(string $str, int $fontSize = 24): int
+    {
+        $len = mb_strlen($str, 'UTF-8');
+        $width = 0;
+        for ($i = 0; $i < $len; $i++) {
+            $char = mb_substr($str, $i, 1, 'UTF-8');
+            if (ord($char) > 127) {
+                $width += $fontSize;
+            } else {
+                $width += $fontSize / 2;
+            }
+        }
+        $x = (int) ((240 - $width) / 2);
+        return max(4, $x);
     }
 }

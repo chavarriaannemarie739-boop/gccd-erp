@@ -189,6 +189,7 @@ page {
 /* 检索条件栏 */
 .filter-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   padding: 12rpx 24rpx;
   background-color: #fff;
@@ -198,7 +199,8 @@ page {
 }
 
 .filter-item {
-  flex: 1;
+  flex: 0 0 calc(50% - 8rpx);
+  width: calc(50% - 8rpx);
   min-width: 0;
 }
 

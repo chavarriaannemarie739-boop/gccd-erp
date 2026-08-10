@@ -15,10 +15,9 @@ Page({
   },
 
   onLoad() {
-    wx.getSystemInfo({
-      success: (res) => {
-        this.setData({ statusBarHeight: res.statusBarHeight });
-      },
+    const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+    this.setData({
+      statusBarHeight: windowInfo.statusBarHeight || 0,
     });
   },
 

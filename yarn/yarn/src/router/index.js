@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 export const Layout = () => import('@/layout/index.vue')
 
 /**
- * 静态路由
+ * 静态路由（仅登录壳 / 系统页；业务菜单含首页均由后台授权下发）
  */
 export const constantRoutes = [
   {
@@ -24,27 +24,12 @@ export const constantRoutes = [
     meta: { title: '登录', hidden: true }
   },
 
+  // [AI-2026-08] 首页驾驶舱改为角色菜单授权，不再写死在静态路由
   {
-    path: '/',
-    name: '/',
+    path: '/_sys',
     component: Layout,
-    redirect: '/dashboard',
+    meta: { hidden: true },
     children: [
-      {
-        // path: 'dashboard'解决首页会再次添加tag,
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: () => import('@/views/system/index.vue'),
-        meta: {
-          title: 'dashboard',
-          icon: 'home-filled',
-          affix: true,
-          keepAlive: true,
-          alwaysShow: false,
-          /** 驾驶舱为整页大屏，不在顶栏重复显示「首页」面包屑以省出纵向空间 */
-          breadcrumb: false
-        }
-      },
       {
         path: 'setting',
         component: () => import('@/views/system/components/SystemSetting.vue'),
@@ -62,78 +47,6 @@ export const constantRoutes = [
         name: '404',
         component: () => import('@/views/system/components/System404.vue'),
         meta: { title: '404', hidden: true }
-      },
-    ]
-  },
-  {
-    path: '/report',
-    name: '/report',
-    component: Layout,
-    redirect: '/report/daily-production',
-    meta: { title: '报表中心', icon: 'document', alwaysShow: true },
-    children: [
-      {
-        path: 'daily-production',
-        name: 'DailyProductionReport',
-        component: () => import('@/views/report/DailyProductionReport.vue'),
-        meta: { title: '生产统计日报', icon: 'menu' }
-      },
-      {
-        path: 'process-daily-production',
-        name: 'ProcessDailyProductionReport',
-        component: () => import('@/views/report/ProcessDailyProductionReport.vue'),
-        meta: { title: '工序每日生产报表', icon: 'document' }
-      },
-      {
-        path: 'process-cost-daily',
-        name: 'ProcessCostDailyReport',
-        component: () => import('@/views/report/ProcessCostDailyReport.vue'),
-        meta: { title: '工序成本日报表', icon: 'document' }
-      },
-      {
-        path: 'coefficient',
-        name: 'CoefficientManage',
-        component: () => import('@/views/report/CoefficientManage.vue'),
-        meta: { title: '系数配置', icon: 'setting' }
-      },
-      {
-        path: 'batch-material-trace',
-        name: 'BatchMaterialTrace',
-        component: () => import('@/views/report/BatchMaterialTrace.vue'),
-        meta: { title: '批次物料追溯', icon: 'connection' }
-      }
-    ]
-  },
-  {
-    path: '/inventory-check',
-    name: '/inventory-check',
-    component: Layout,
-    redirect: '/inventory-check/test-product-stocktake',
-    meta: { title: '盘点检验', icon: 'finished', alwaysShow: true },
-    children: [
-      {
-        path: 'test-product-stocktake',
-        name: 'TestProductStocktake',
-        component: () => import('@/views/mes/ProductStocktake/ProductStocktake.vue'),
-        meta: { title: '盘点记录', icon: 'menu' }
-      },
-      {
-        path: 'test-product-stocktake-report',
-        name: 'TestProductStocktakeReport',
-        component: () => import('@/views/mes/ProductStocktake/ProductStocktakeReport.vue'),
-        meta: { title: '盘点报表', icon: 'document' }
-      },
-      {
-        path: 'test-quality-inspection',
-        name: 'TestQualityInspection',
-        component: () => import('@/views/mes/QualityInspectionRecord/QualityInspectionRecord.vue'),
-        meta: { title: '质检记录', icon: 'menu' }
-      },
-      {
-        path: 'test-quality-inspection-report',
-        name: 'TestQualityInspectionReport',
-        component: () => import('@/views/mes/QualityInspectionRecord/QualityInspectionReport.vue'),
-        meta: { title: '质检报表', icon: 'document' }
       }
     ]
   }

@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 入库选料圆钢统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <!-- 表单（紧凑布局） -->
     <el-form ref="handleRef" label-width="100px" :model="userForm" :rules="handleRules">
@@ -60,6 +61,12 @@
         >
           <el-table-column type="index" label="序号" width="55" />
           <el-table-column prop="material_name" :label="nameColLabel" min-width="100" />
+          <el-table-column
+            v-if="warehouseMaterialKind === '圆钢'"
+            prop="manufacturer"
+            label="厂商"
+            min-width="100"
+          />
           <el-table-column prop="material_spec" :label="specColLabel" min-width="100" />
           <el-table-column prop="material_model" :label="modelColLabel" min-width="100" />
           <el-table-column v-if="warehouseMaterialKind === '配件'" label="供应商" min-width="120">
@@ -111,6 +118,11 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
+          <el-form-item v-if="warehouseMaterialKind === '圆钢'" label="厂商">
+            <el-input v-model="query.manufacturer" style="width: 260px" placeholder="请输入" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
           <el-form-item :label="pickerSpecLabel">
             <el-input
               v-model="query.material_spec"
@@ -151,10 +163,37 @@
       >
         <el-table-column show-overflow-tooltip :reserve-selection="true" type="selection" />
         <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
-        <el-table-column prop="material_name" :label="pickerNameLabel" show-overflow-tooltip min-width="100" />
-        <el-table-column prop="material_spec" :label="pickerSpecLabel" show-overflow-tooltip min-width="100" />
-        <el-table-column prop="material_model" :label="pickerModelLabel" show-overflow-tooltip min-width="100" />
-        <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip min-width="160" />
+        <el-table-column
+          prop="material_name"
+          :label="pickerNameLabel"
+          show-overflow-tooltip
+          min-width="100"
+        />
+        <el-table-column
+          v-if="warehouseMaterialKind === '圆钢'"
+          prop="manufacturer"
+          label="厂商"
+          show-overflow-tooltip
+          min-width="100"
+        />
+        <el-table-column
+          prop="material_spec"
+          :label="pickerSpecLabel"
+          show-overflow-tooltip
+          min-width="100"
+        />
+        <el-table-column
+          prop="material_model"
+          :label="pickerModelLabel"
+          show-overflow-tooltip
+          min-width="100"
+        />
+        <el-table-column
+          prop="create_time"
+          label="创建时间"
+          show-overflow-tooltip
+          min-width="160"
+        />
       </el-table>
       <!-- 分页 -->
       <el-pagination
@@ -241,6 +280,7 @@ export default {
         page: 1,
         limit: 10,
         material_name: '',
+        manufacturer: '',
         material_spec: '',
         material_model: '',
         material_property: ''
@@ -257,7 +297,9 @@ export default {
   },
   computed: {
     warehouseOptions() {
-      return (this.options || []).filter((o) => o && o.stock_name && !isFinishedStockName(o.stock_name))
+      return (this.options || []).filter(
+        (o) => o && o.stock_name && !isFinishedStockName(o.stock_name)
+      )
     },
     warehouseMaterialKind() {
       return materialPropertyFromStockName(this.userForm.warehouse)
@@ -268,7 +310,7 @@ export default {
       return '物料名称'
     },
     specColLabel() {
-      if (this.warehouseMaterialKind === '圆钢') return '圆钢规格'
+      if (this.warehouseMaterialKind === '圆钢') return '材质'
       if (this.warehouseMaterialKind === '配件') return '配件规格'
       return '物料规格'
     },
@@ -337,6 +379,7 @@ export default {
         return
       }
       this.query.material_name = ''
+      this.query.manufacturer = ''
       this.query.material_spec = ''
       this.query.material_model = ''
       this.query.page = 1
@@ -349,6 +392,7 @@ export default {
     },
     handlePickerReset() {
       this.query.material_name = ''
+      this.query.manufacturer = ''
       this.query.material_spec = ''
       this.query.material_model = ''
       this.query.page = 1
@@ -381,6 +425,7 @@ export default {
         }
         this.userForm.content.push({
           material_name: item.material_name,
+          manufacturer: item.manufacturer ?? '',
           material_spec: item.material_spec,
           material_model: item.material_model ?? '',
           id: item.id,
@@ -440,12 +485,14 @@ export default {
             params.list.content.push({
               material_id: item.id,
               material_name: item.material_name,
+              manufacturer: item.manufacturer,
               material_spec: item.material_spec,
+              material_model: item.material_model,
               remark: item.remark,
               in_num: item.in_num,
               money: item.money,
               sum: item.sum,
-              supplier: isAccessory ? (item.supplier ?? '') : ''
+              supplier: isAccessory ? item.supplier ?? '' : ''
             })
           })
           await add(params)

@@ -15,7 +15,7 @@
             <el-option
               v-for="m in options.materials"
               :key="m.material_id"
-              :label="`${m.y_material_spec}${m.y_material_model}（${m.plan_num}）`"
+              :label="`${formatRoundSteelText(m)}（${m.plan_num}）`"
               :value="m.material_id"
             />
           </el-select>
@@ -31,7 +31,9 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <p class="hint hint--sub">打印预览可缩放比例/边距；标签纸宽度在浏览器 @page 与打印机驱动中设置。</p>
+      <p class="hint hint--sub">
+        打印预览可缩放比例/边距；标签纸宽度在浏览器 @page 与打印机驱动中设置。
+      </p>
     </div>
     <template #footer>
       <el-button @click="visibleInner = false">取消</el-button>
@@ -50,52 +52,88 @@ const escapeHtml = (s) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
 
+// [AI-2026-08] 标准四字段优先，历史错误拼写仅用于旧响应读取兼容
+const roundSteelFields = (label = {}) => {
+  const legacy = (field) => label[['y', 'mateial', field].join('_')]
+  return [
+    label.y_material_name ?? legacy('name') ?? '',
+    label.y_material_manufacturer ?? legacy('manufacturer') ?? '',
+    label.y_material_spec ?? legacy('spec') ?? '',
+    label.y_material_model ?? legacy('model') ?? ''
+  ].map((value) => String(value).trim())
+}
+
+const formatRoundSteelText = (label = {}) => {
+  const values = roundSteelFields(label).filter(Boolean)
+  return values.length ? `圆:${values.join(' / ')}` : ''
+}
+
+// [AI-2026-08] 30x30mm 流转卡统一按名称、厂商、材质、型号展示
 const buildPrintHtml = (label) => {
-  const ySteel = `${label.y_material_spec || ''}${label.y_material_model || ''}`
+  const ySteel = formatRoundSteelText(label)
   const finished = `${label.c_material_spec || ''}×${label.c_material_model || ''}`
-  const meta = `数量 ${label.plan_num}${label.device_name ? ` · ${label.device_name}` : ''}`
+  const finishedStr = finished && finished !== '×' ? `品:${finished}` : ''
+  const specLine = [ySteel, finishedStr].filter(Boolean).join(' | ')
+  const meta = `数量:${label.plan_num}${label.device_name ? ` · ${label.device_name}` : ''}`
+
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>流转卡</title>
 <style>
-  /* 排版在此调整：@page 改纸张宽；.qr img 改码大小；font-size 改字号 */
-  @page { margin: 2mm; size: 58mm auto; }
+  /* [AI-2026-06] 30mm*30mm规格优化，紧凑间距，折行防遮挡，17mm二维码 */
+  @page { margin: 0; size: 30mm 30mm; }
   * { box-sizing: border-box; }
-  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 0; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 0; width: 30mm; height: 30mm; overflow: hidden; }
   .label {
-    width: 54mm;
-    margin: 0 auto;
-    padding: 1.5mm 2mm;
+    width: 30mm;
+    height: 30mm;
+    padding: 1.0mm 1.0mm 0.5mm;
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    gap: 2mm;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
   }
-  .qr { flex: 0 0 24mm; display: flex; align-items: center; justify-content: center; }
-  .qr img { width: 24mm; height: 24mm; display: block; }
-  .info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  .info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 0.8mm;
+  }
   .title {
-    font-size: 10px;
+    font-size: 8.5px;
     font-weight: 700;
-    line-height: 1.25;
-    margin-bottom: 1mm;
+    line-height: 1.2;
+    margin-bottom: 0.3mm;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row {
+    font-size: 6.8px;
+    line-height: 1.15;
+    color: #111;
+    width: 100%;
     word-break: break-all;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
   }
-  .row { font-size: 9px; line-height: 1.35; color: #222; }
-  .row + .row { margin-top: 0.5mm; }
-  .lbl { color: #555; }
+  .qr {
+    width: 18mm;
+    height: 18mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr img { width: 18mm; height: 18mm; display: block; }
 </style></head><body>
 <div class="label">
-  <div class="qr"><img src="${label.qr_image}" alt="qr" /></div>
   <div class="info">
     <div class="title">${escapeHtml(label.production_plan_name)}</div>
-    <div class="row"><span class="lbl">圆钢 </span>${escapeHtml(ySteel)}</div>
-    <div class="row"><span class="lbl">成品 </span>${escapeHtml(finished)}</div>
+    <div class="row">${escapeHtml(specLine)}</div>
     <div class="row">${escapeHtml(meta)}</div>
   </div>
+  <div class="qr"><img src="${label.qr_image}" alt="qr" /></div>
 </div>
 <script>window.onload=function(){window.print();};<\/script>
 </body></html>`
@@ -141,6 +179,7 @@ export default {
     }
   },
   methods: {
+    formatRoundSteelText,
     async loadOptions() {
       this.loading = true
       this.materialId = null
@@ -201,7 +240,12 @@ export default {
       }
     },
     onClosed() {
-      this.options = { materials: [], devices: [], need_pick_material: false, need_pick_device: false }
+      this.options = {
+        materials: [],
+        devices: [],
+        need_pick_material: false,
+        need_pick_device: false
+      }
     }
   }
 }

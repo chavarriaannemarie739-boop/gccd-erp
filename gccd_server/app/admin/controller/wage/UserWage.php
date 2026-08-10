@@ -160,7 +160,12 @@ class UserWage extends BaseController
             $where[] = ['username', 'like', '%' . $param['username'] . '%'];
         }
         if (!empty($param['relation_code'])) {
-            $where[] = ['relation_code', 'like', '%' . $param['relation_code'] . '%'];
+            $codes = array_values(array_filter(array_map('trim', explode(',', (string) $param['relation_code']))));
+            if (count($codes) > 1) {
+                $where[] = ['relation_code', 'in', $codes];
+            } else {
+                $where[] = ['relation_code', 'like', '%' . $param['relation_code'] . '%'];
+            }
         }
         /*起止日期*/
         if (!empty($param['create_start_date'])) {

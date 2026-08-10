@@ -1,5 +1,6 @@
 const util = require('../../../utils/util.js');
 
+// [AI-2026-08] 盘点反查优先 material_id，无 ID 时按圆钢四字段匹配。
 Page({
   data: {
     statusBarHeight: 0,
@@ -108,7 +109,7 @@ Page({
           msg += `\n【${pn}】\n`;
           groupMap[pn].forEach(it => {
             const specVal = it.c_material_spec || '';
-            const label = [it.material_name, it.y_material_spec, it.y_material_model, specVal ? `(${specVal})` : ''].filter(Boolean).join(' / ');
+            const label = [it.material_name, it.y_material_manufacturer, it.y_material_spec, it.y_material_model, specVal ? `(${specVal})` : ''].filter(Boolean).join(' / ');
             const newTag = it.is_new ? '🆕' : '';
             const qtyStr = it.is_negative ? `⚠ ${it.predicted_qty} 吨（异常负数）` : `${it.predicted_qty} 吨`;
             msg += `  ${newTag}${label}: ${qtyStr}\n`;
@@ -246,17 +247,28 @@ Page({
           return;
         }
 
-        // 构建物料档案查找表: "名称|规格" -> material_model
+        // 圆钢反查优先 material_id；无 ID 时四字段必须全部一致，避免跨厂商串档。
         const matList = (matRes.data && matRes.data.data && matRes.data.data.list) || [];
-        const matLookup = {};
+        const matById = new Map();
+        const matByFields = new Map();
         matList.forEach((m) => {
+          const materialId = parseInt(m.id || m.material_id, 10) || 0;
           const name = (m.material_name || '').trim();
+          const manufacturer = (m.manufacturer || '').trim();
           const spec = (m.material_spec || '').trim();
           const model = (m.material_model || '').trim();
-          if (name && spec && model) {
-            const key = name + '|' + spec;
-            // 同名同规格可能有多个型号，保留第一个匹配即可
-            if (!matLookup[key]) matLookup[key] = model;
+          const archive = {
+            material_id: materialId,
+            material_name: name,
+            manufacturer,
+            material_spec: spec,
+            material_model: model,
+          };
+          if (materialId > 0) {
+            matById.set(materialId, archive);
+          }
+          if (name || manufacturer || spec || model) {
+            matByFields.set(`${name}|${manufacturer}|${spec}|${model}`, archive);
           }
         });
 
@@ -289,17 +301,23 @@ Page({
                 const qty = dayVal + nightVal;
                 groupQty += qty;
 
-                // 反查圆钢型号：如果记录中 y_material_model 为空，从物料档案补全
-                let yModel = (it.y_material_model || '').trim();
-                if (!yModel) {
-                  const mName = (it.material_name || '').trim();
-                  const mSpec = (it.y_material_spec || '').trim();
-                  if (mName && mSpec) {
-                    yModel = matLookup[mName + '|' + mSpec] || '';
-                  }
-                }
+                const materialId = parseInt(it.material_id, 10) || 0;
+                const name = (it.y_material_name || it.material_name || '').trim();
+                const manufacturer = (it.y_material_manufacturer || '').trim();
+                const materialSpec = (it.y_material_spec || '').trim();
+                const materialModel = (it.y_material_model || '').trim();
+                const archive = materialId > 0
+                  ? matById.get(materialId)
+                  : matByFields.get(`${name}|${manufacturer}|${materialSpec}|${materialModel}`);
 
-                return { ...it, qty, y_material_model: yModel };
+                return {
+                  ...it,
+                  qty,
+                  y_material_name: name || archive?.material_name || '',
+                  y_material_manufacturer: manufacturer || archive?.manufacturer || '',
+                  y_material_spec: materialSpec || archive?.material_spec || '',
+                  y_material_model: materialModel || archive?.material_model || '',
+                };
               });
               totalQty += groupQty;
               totalItems += items.length;

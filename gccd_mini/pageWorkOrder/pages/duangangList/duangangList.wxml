@@ -1,3 +1,4 @@
+<!-- [AI-2026-08] 圆钢展示与筛选顺序：名称、厂商、材质、型号。 -->
 <view class="page">
   <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
     <view class="navbar-left" bindtap="goBack">‹</view>
@@ -14,13 +15,17 @@
     <view class="filter-bar">
       <input
         class="filter-input"
-        placeholder="圆钢规格/型号/成品规格"
-        value="{{keyword}}"
+        placeholder="圆钢名称"
+        value="{{y_material_name}}"
+        data-field="y_material_name"
         confirm-type="search"
         bindinput="onKeywordInput"
         bindconfirm="onKeywordConfirm"
       />
-      <view wx:if="{{keyword}}" class="filter-clear" bindtap="onKeywordClear">清除</view>
+      <input class="filter-input" placeholder="圆钢厂商" value="{{y_material_manufacturer}}" data-field="y_material_manufacturer" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="圆钢材质" value="{{y_material_spec}}" data-field="y_material_spec" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="圆钢型号" value="{{y_material_model}}" data-field="y_material_model" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <view wx:if="{{y_material_name || y_material_manufacturer || y_material_spec || y_material_model}}" class="filter-clear" bindtap="onFilterReset">重置筛选</view>
     </view>
 
     <scroll-view scroll-y class="list-scroll" bindscrolltolower="loadMore">
@@ -28,8 +33,16 @@
         <view class="card-title">{{item.display_title}}</view>
         <view class="spec-grid">
           <view class="spec-row">
-            <text class="spec-label">圆钢规格</text>
-            <text class="spec-value">{{item.display_y_material_spec || '—'}}</text>
+            <text class="spec-label">圆钢名称</text>
+            <text class="spec-value">{{item.y_material_name || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">圆钢厂商</text>
+            <text class="spec-value">{{item.y_material_manufacturer || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">圆钢材质</text>
+            <text class="spec-value">{{item.y_material_spec || item.display_y_material_spec || '—'}}</text>
           </view>
           <view class="spec-row">
             <text class="spec-label">圆钢型号</text>
@@ -40,11 +53,11 @@
             <text class="spec-value">{{item.c_material_spec || '—'}}</text>
           </view>
         </view>
-        <view class="card-row">计划 {{item.capacity_total}} 吨 · 已报 {{item.reported_total}} 吨</view>
-        <view class="card-row highlight">剩余 {{item.remain_total}} 吨</view>
+        <view class="card-row">计划 {{item.capacity_total_display || item.capacity_total}} 吨 · 已报 {{item.reported_total_display || item.reported_total}} 吨</view>
+        <view class="card-row highlight">剩余 {{item.remain_total_display || item.remain_total}} 吨</view>
       </view>
       <view wx:if="{{!loading && list.length === 0}}" class="empty">
-        {{keyword ? '未找到匹配的合并任务' : '暂无'}}{{activeTab === '0' ? '进行中' : '已完成'}}{{keyword ? '' : '合并任务'}}
+        {{y_material_name || y_material_manufacturer || y_material_spec || y_material_model ? '未找到匹配的合并任务' : '暂无'}}{{activeTab === '0' ? '进行中' : '已完成'}}{{y_material_name || y_material_manufacturer || y_material_spec || y_material_model ? '' : '合并任务'}}
       </view>
     </scroll-view>
   </view>

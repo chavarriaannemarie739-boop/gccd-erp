@@ -2,6 +2,7 @@
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px" :model="userForm" :rules="handleRules">
+      <!-- [AI-2026-08] 配件详情补齐厂商展示 -->
       <el-form-item label="配件名称：" prop="material_name">
         <el-input
           disabled
@@ -10,7 +11,15 @@
           style="width: 300px"
         />
       </el-form-item>
-      <el-form-item label="配件规格：" prop="material_spec">
+      <el-form-item label="厂商：" prop="manufacturer">
+        <el-input
+          disabled
+          v-model="userForm.manufacturer"
+          placeholder="请输入"
+          style="width: 300px"
+        />
+      </el-form-item>
+      <el-form-item label="材质：" prop="material_spec">
         <el-input
           disabled
           v-model="userForm.material_spec"

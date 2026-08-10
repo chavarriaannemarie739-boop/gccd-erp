@@ -309,12 +309,44 @@ class FinishedStockService
 
     /**
      * 将计划维度基础行展开为按归属的多行列表
+     * [AI-2026-08] 批量预取转出/发货/调整/物料ID，避免每个计划 3～4 次查询导致选料弹窗缓冲很慢
      *
      * @param array[] $baseRows productWarehouseList SQL 结果
      * @return array[]
      */
     public static function expandOwnerRows(array $baseRows): array
     {
+        $planCodes = [];
+        foreach ($baseRows as $row) {
+            $planCode = trim((string) ($row['plan_code'] ?? $row['relation_code'] ?? ''));
+            if ($planCode !== '') {
+                $planCodes[$planCode] = true;
+            }
+        }
+        $planCodes = array_keys($planCodes);
+        if ($planCodes === []) {
+            return [];
+        }
+
+        $batch = self::batchPlanStockMaps($planCodes);
+
+        $needMaterialCodes = [];
+        foreach ($baseRows as $row) {
+            $planCode = trim((string) ($row['plan_code'] ?? $row['relation_code'] ?? ''));
+            if ($planCode === '') {
+                continue;
+            }
+            if ((int) ($row['material_id'] ?? 0) <= 0 && !isset($batch['materialIdByPlan'][$planCode])) {
+                $needMaterialCodes[$planCode] = true;
+            }
+        }
+        if ($needMaterialCodes !== []) {
+            $batch['materialIdByPlan'] = array_merge(
+                $batch['materialIdByPlan'],
+                self::batchResolveMaterialIds(array_keys($needMaterialCodes))
+            );
+        }
+
         $out = [];
         foreach ($baseRows as $row) {
             $planCode = trim((string) ($row['plan_code'] ?? $row['relation_code'] ?? ''));
@@ -322,10 +354,26 @@ class FinishedStockService
                 continue;
             }
             $planName = trim((string) ($row['production_plan_name'] ?? ''));
-            $summary = self::planSummary($planCode, [
-                'production_plan_name' => $planName,
-                'production_plan_code' => $planCode,
-            ], $row);
+            $inNum = round((float) ($row['in_num'] ?? 0), 2);
+            $materialId = (int) ($row['material_id'] ?? 0);
+            if ($materialId <= 0) {
+                $materialId = (int) ($batch['materialIdByPlan'][$planCode] ?? 0);
+            }
+            $shippedByOwner = $batch['shippedByPlanOwner'][$planCode] ?? [];
+            // 发货未写归属时并入客户归属（与 planSummary 一致）
+            if (isset($shippedByOwner['']) && $planName !== '') {
+                $shippedByOwner[$planName] = ($shippedByOwner[$planName] ?? 0) + (float) $shippedByOwner[''];
+                unset($shippedByOwner['']);
+            }
+            $summary = self::buildOwnerSummary(
+                $planCode,
+                $planName,
+                $inNum,
+                $materialId,
+                (float) ($batch['transferByPlan'][$planCode] ?? 0),
+                $shippedByOwner,
+                $batch['adjustByPlanOwner'][$planCode] ?? []
+            );
             foreach ($summary['owners'] as $owner => $ownerRow) {
                 $stockNum = round((float) ($ownerRow['stock_num'] ?? 0), 2);
                 if ($stockNum <= 0) {
@@ -347,6 +395,163 @@ class FinishedStockService
         }
 
         return $out;
+    }
+
+    /**
+     * 批量预取计划维度库存计算所需数据
+     *
+     * @param string[] $planCodes
+     * @return array{
+     *   transferByPlan: array<string,float>,
+     *   shippedByPlanOwner: array<string,array<string,float>>,
+     *   adjustByPlanOwner: array<string,array<string,float>>,
+     *   materialIdByPlan: array<string,int>
+     * }
+     */
+    private static function batchPlanStockMaps(array $planCodes): array
+    {
+        $transferByPlan = [];
+        $shippedByPlanOwner = [];
+        $adjustByPlanOwner = [];
+        $materialIdByPlan = [];
+        if ($planCodes === []) {
+            return compact('transferByPlan', 'shippedByPlanOwner', 'adjustByPlanOwner', 'materialIdByPlan');
+        }
+
+        $placeholders = implode(',', array_fill(0, count($planCodes), '?'));
+
+        $transferRows = Db::query(
+            "SELECT plan_code, COALESCE(SUM(transfer_qty), 0) AS transfer_qty
+             FROM ya_stock_owner_transfer
+             WHERE is_delete = 0 AND plan_code IN ({$placeholders})
+             GROUP BY plan_code",
+            $planCodes
+        );
+        foreach ($transferRows as $tr) {
+            $code = trim((string) ($tr['plan_code'] ?? ''));
+            if ($code !== '') {
+                $transferByPlan[$code] = (float) ($tr['transfer_qty'] ?? 0);
+            }
+        }
+
+        $shipRows = Db::query(
+            "SELECT relation_code, stock_owner, material_num
+             FROM ya_ship
+             WHERE is_delete = 0 AND relation_code IN ({$placeholders})",
+            $planCodes
+        );
+        foreach ($shipRows as $sr) {
+            $code = trim((string) ($sr['relation_code'] ?? ''));
+            if ($code === '') {
+                continue;
+            }
+            $owner = trim((string) ($sr['stock_owner'] ?? ''));
+            $shippedByPlanOwner[$code][$owner] = ($shippedByPlanOwner[$code][$owner] ?? 0)
+                + (float) ($sr['material_num'] ?? 0);
+        }
+
+        $adjustRows = Db::query(
+            "SELECT plan_code, stock_owner, adjust_qty
+             FROM ya_stock_adjust
+             WHERE is_delete = 0 AND plan_code IN ({$placeholders})",
+            $planCodes
+        );
+        foreach ($adjustRows as $ar) {
+            $code = trim((string) ($ar['plan_code'] ?? ''));
+            $owner = trim((string) ($ar['stock_owner'] ?? ''));
+            if ($code === '' || $owner === '') {
+                continue;
+            }
+            $adjustByPlanOwner[$code][$owner] = ($adjustByPlanOwner[$code][$owner] ?? 0)
+                + (float) ($ar['adjust_qty'] ?? 0);
+        }
+
+        return compact('transferByPlan', 'shippedByPlanOwner', 'adjustByPlanOwner', 'materialIdByPlan');
+    }
+
+    /**
+     * 批量解析计划单对应 WMS 物料 ID（取各批次最新一条）
+     *
+     * @param string[] $planCodes
+     * @return array<string,int>
+     */
+    private static function batchResolveMaterialIds(array $planCodes): array
+    {
+        $out = [];
+        if ($planCodes === []) {
+            return $out;
+        }
+        $placeholders = implode(',', array_fill(0, count($planCodes), '?'));
+        $rows = Db::query(
+            "SELECT material_batch, material_id
+             FROM ya_wms_material
+             WHERE is_delete = 0 AND material_batch IN ({$placeholders})
+             ORDER BY id DESC",
+            $planCodes
+        );
+        foreach ($rows as $row) {
+            $batch = trim((string) ($row['material_batch'] ?? ''));
+            if ($batch === '' || isset($out[$batch])) {
+                continue;
+            }
+            $out[$batch] = (int) ($row['material_id'] ?? 0);
+        }
+
+        return $out;
+    }
+
+    /**
+     * 按预取数据计算归属库存（与 planSummary 规则一致）
+     *
+     * @param string               $planCode
+     * @param string               $customerOwner
+     * @param float                $inNum
+     * @param int                  $materialId
+     * @param float                $transferred
+     * @param array<string,float>  $shippedByOwner
+     * @param array<string,float>  $adjustByOwner
+     * @return array{plan_code:string,material_id:int,in_num:float,owners:array}
+     */
+    private static function buildOwnerSummary(
+        string $planCode,
+        string $customerOwner,
+        float $inNum,
+        int $materialId,
+        float $transferred,
+        array $shippedByOwner,
+        array $adjustByOwner
+    ): array {
+        $owners = [];
+        if ($customerOwner !== '' && $customerOwner !== self::STOCK_OWNER_INVENTORY) {
+            $custShipped = round((float) ($shippedByOwner[$customerOwner] ?? 0), 2);
+            $custAdjust = round((float) ($adjustByOwner[$customerOwner] ?? 0), 2);
+            $custStock = round($inNum - $transferred - $custShipped + $custAdjust, 2);
+            $owners[$customerOwner] = [
+                'stock_owner' => $customerOwner,
+                'stock_num' => $custStock,
+                'shipped_num' => $custShipped,
+                'transferred_num' => round($transferred, 2),
+            ];
+        }
+
+        $stockShipped = round((float) ($shippedByOwner[self::STOCK_OWNER_INVENTORY] ?? 0), 2);
+        $stockAdjust = round((float) ($adjustByOwner[self::STOCK_OWNER_INVENTORY] ?? 0), 2);
+        $stockStock = round($transferred - $stockShipped + $stockAdjust, 2);
+        if ($transferred > 0 || $stockShipped > 0 || $stockAdjust != 0) {
+            $owners[self::STOCK_OWNER_INVENTORY] = [
+                'stock_owner' => self::STOCK_OWNER_INVENTORY,
+                'stock_num' => $stockStock,
+                'shipped_num' => $stockShipped,
+                'transferred_num' => round($transferred, 2),
+            ];
+        }
+
+        return [
+            'plan_code' => $planCode,
+            'material_id' => $materialId,
+            'in_num' => round($inNum, 2),
+            'owners' => $owners,
+        ];
     }
 
     /**
@@ -409,37 +614,15 @@ class FinishedStockService
             $adjustByOwner[$owner] = ($adjustByOwner[$owner] ?? 0) + (float) ($ar['adjust_qty'] ?? 0);
         }
 
-        $owners = [];
-        if ($customerOwner !== '' && $customerOwner !== self::STOCK_OWNER_INVENTORY) {
-            $custShipped = round((float) ($shippedByOwner[$customerOwner] ?? 0), 2);
-            $custAdjust = round((float) ($adjustByOwner[$customerOwner] ?? 0), 2);
-            $custStock = round($inNum - $transferred - $custShipped + $custAdjust, 2);
-            $owners[$customerOwner] = [
-                'stock_owner' => $customerOwner,
-                'stock_num' => $custStock,
-                'shipped_num' => $custShipped,
-                'transferred_num' => round($transferred, 2),
-            ];
-        }
-
-        $stockShipped = round((float) ($shippedByOwner[self::STOCK_OWNER_INVENTORY] ?? 0), 2);
-        $stockAdjust = round((float) ($adjustByOwner[self::STOCK_OWNER_INVENTORY] ?? 0), 2);
-        $stockStock = round($transferred - $stockShipped + $stockAdjust, 2);
-        if ($transferred > 0 || $stockShipped > 0 || $stockAdjust != 0) {
-            $owners[self::STOCK_OWNER_INVENTORY] = [
-                'stock_owner' => self::STOCK_OWNER_INVENTORY,
-                'stock_num' => $stockStock,
-                'shipped_num' => $stockShipped,
-                'transferred_num' => round($transferred, 2),
-            ];
-        }
-
-        return [
-            'plan_code' => $planCode,
-            'material_id' => $materialId,
-            'in_num' => $inNum,
-            'owners' => $owners,
-        ];
+        return self::buildOwnerSummary(
+            $planCode,
+            $customerOwner,
+            $inNum,
+            $materialId,
+            $transferred,
+            $shippedByOwner,
+            $adjustByOwner
+        );
     }
 
     /**

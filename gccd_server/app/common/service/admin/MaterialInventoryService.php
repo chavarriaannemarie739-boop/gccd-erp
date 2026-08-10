@@ -11,8 +11,9 @@ namespace app\common\service\admin;
 
 use app\common\model\admin\MaterialInventoryModel;
 use app\common\model\admin\MaterialModel;
-use think\facade\Db;
 use app\common\service\admin\PublicService;
+use app\common\service\utils\MaterialSearchHelper;
+use think\facade\Db;
 
 class MaterialInventoryService
 {
@@ -29,6 +30,12 @@ class MaterialInventoryService
      */
     public static $inventory_search_field = [
         'material_name' => '',      // 物料名称
+        'y_material_name' => '',       // 圆钢名称
+        'y_material_manufacturer' => '', // 圆钢厂商（当前档案虚拟字段）
+        'y_mateial_name' => '',
+        'y_mateial_manufacturer' => '',
+        'y_mateial_spec' => '',
+        'y_mateial_model' => '',
         'finished_product_spec' => '', // 成品型号（历史别名）
         'current_process_spec' => '',  // 当前加工型号（历史别名）
         'y_material_spec' => '',       // 圆钢规格
@@ -47,6 +54,10 @@ class MaterialInventoryService
         'id' => '',                        // 盘点记录ID
         'material_id' => '',               // 物料ID
         'material_name' => '',             // 物料名称
+        'y_material_name' => '',           // 圆钢名称
+        'y_material_manufacturer' => '',   // 圆钢厂商快照
+        'y_material_spec' => '',           // 圆钢材质快照
+        'y_material_model' => '',          // 圆钢型号快照
         'finished_product_spec' => '',     // 成品型号规格
         'current_process_spec' => '',      // 当前加工型号规格
         'process_name' => '',              // 工序名称
@@ -248,24 +259,54 @@ class MaterialInventoryService
     /**
      * 列表
      */
-    public static function inventoryList($where = [], $page = 1, $limit = 10, $order = [], $field = [])
+    public static function inventoryList(
+        $where = [],
+        $page = 1,
+        $limit = 10,
+        $order = [],
+        $field = [],
+        array $roundFilters = []
+    )
     {
-        $model = new MaterialInventoryModel();
         if (empty($order)) {
             $order = ['inventory_date' => 'desc', 'create_time' => 'desc'];
         }
-        if ($page == 0 || $limit == 0) {
-            return $model->with(['getMaterial', 'getCreator'])->where($where)->order($order)->select()->toArray();
+        $buildQuery = static function () use ($where, $roundFilters) {
+            $query = (new MaterialInventoryModel())
+                ->alias('mi')
+                ->field('mi.*')
+                ->where($where);
+            return MaterialSearchHelper::applyInventoryRoundSteelFilters(
+                $query,
+                $roundFilters,
+                'mi',
+                'ym'
+            );
+        };
+        $queryOrder = [];
+        foreach ($order as $fieldName => $direction) {
+            $queryOrder[str_contains((string) $fieldName, '.')
+                ? $fieldName
+                : 'mi.' . $fieldName] = $direction;
         }
-        $count = $model->where($where)->count();
+        if ($page == 0 || $limit == 0) {
+            $list = $buildQuery()
+                ->with(['getMaterial', 'getCreator'])
+                ->order($queryOrder)
+                ->select()
+                ->toArray();
+            return self::enrichInventoryHistoryRows($list);
+        }
+        $count = $buildQuery()->count();
         $pages = ceil($count / $limit);
-        $list = $model->with(['getMaterial', 'getCreator'])
-            ->where($where)
+        $list = $buildQuery()
+            ->with(['getMaterial', 'getCreator'])
             ->page($page)
             ->limit($limit)
-            ->order($order)
+            ->order($queryOrder)
             ->select()
             ->toArray();
+        $list = self::enrichInventoryHistoryRows($list);
         return compact('count', 'pages', 'page', 'limit', 'list');
     }
 
@@ -282,7 +323,390 @@ class MaterialInventoryService
             }
             return [];
         }
-        return $info->toArray();
+        $rows = self::enrichInventoryHistoryRows([$info->toArray()]);
+        return $rows[0] ?? [];
+    }
+
+    /**
+     * 历史盘点展示：有效 material_id 使用当前档案，无效时保留历史快照。
+     *
+     * @param array<int,array<string,mixed>> $rows
+     * @return array<int,array<string,mixed>>
+     */
+    private static function enrichInventoryHistoryRows(array $rows): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map(
+            static fn (array $row): int => (int) ($row['material_id'] ?? 0),
+            $rows
+        ))));
+        $archiveMap = [];
+        if ($ids !== []) {
+            $archiveRows = Db::name('material')
+                ->whereIn('id', $ids)
+                ->where('is_delete', 0)
+                ->select()
+                ->toArray();
+            foreach ($archiveRows as $archiveRow) {
+                $archiveMap[(int) ($archiveRow['id'] ?? 0)] = $archiveRow;
+            }
+        }
+        foreach ($rows as &$row) {
+            $materialId = (int) ($row['material_id'] ?? 0);
+            $row = self::resolveRoundSteelHistoryFields($row, $archiveMap[$materialId] ?? null);
+        }
+        unset($row);
+
+        return $rows;
+    }
+
+    /**
+     * 解析历史圆钢四字段，不改写历史快照。
+     *
+     * @param array<string,mixed> $snapshot
+     * @param array<string,mixed>|null $archive
+     * @return array<string,mixed>
+     */
+    public static function resolveRoundSteelHistoryFields(array $snapshot, ?array $archive): array
+    {
+        if (
+            (int) ($snapshot['material_id'] ?? 0) > 0
+            && self::isRoundSteelArchive($archive)
+        ) {
+            $snapshot['y_material_name'] = (string) ($archive['material_name'] ?? '');
+            $snapshot['y_material_manufacturer'] = (string) ($archive['manufacturer'] ?? '');
+            $snapshot['y_material_spec'] = (string) ($archive['material_spec'] ?? '');
+            $snapshot['y_material_model'] = (string) ($archive['material_model'] ?? '');
+            $snapshot['material_name'] = $snapshot['y_material_name'];
+            return $snapshot;
+        }
+
+        $snapshot['y_material_name'] = (string) (
+            $snapshot['y_material_name'] ?? $snapshot['material_name'] ?? ''
+        );
+        $snapshot['y_material_manufacturer'] = (string) (
+            $snapshot['y_material_manufacturer'] ?? ''
+        );
+
+        return $snapshot;
+    }
+
+    /**
+     * 档案是否为有效圆钢。
+     *
+     * @param array<string,mixed>|null $archive
+     * @return bool
+     */
+    private static function isRoundSteelArchive(?array $archive): bool
+    {
+        return !empty($archive)
+            && (int) ($archive['is_delete'] ?? 0) === 0
+            && trim((string) ($archive['material_property'] ?? '')) === '圆钢';
+    }
+
+    /**
+     * 从候选档案中选择唯一圆钢；旧快照厂商为空时禁止猜测。
+     *
+     * @param array<string,mixed> $snapshot
+     * @param array<int,array<string,mixed>> $candidates
+     * @return array<string,mixed>|null
+     */
+    public static function selectRoundSteelArchiveCandidate(array $snapshot, array $candidates): ?array
+    {
+        $materialId = (int) ($snapshot['material_id'] ?? 0);
+        if ($materialId > 0) {
+            foreach ($candidates as $candidate) {
+                if (
+                    (int) ($candidate['id'] ?? 0) === $materialId
+                    && self::isRoundSteelArchive($candidate)
+                ) {
+                    return $candidate;
+                }
+            }
+        }
+
+        $identity = [
+            'material_name' => trim((string) (
+                $snapshot['y_material_name'] ?? $snapshot['material_name'] ?? ''
+            )),
+            'manufacturer' => trim((string) ($snapshot['y_material_manufacturer'] ?? '')),
+            'material_spec' => trim((string) ($snapshot['y_material_spec'] ?? '')),
+            'material_model' => trim((string) ($snapshot['y_material_model'] ?? '')),
+        ];
+        if (in_array('', $identity, true)) {
+            return null;
+        }
+
+        $matches = [];
+        foreach ($candidates as $candidate) {
+            if (!self::isRoundSteelArchive($candidate)) {
+                continue;
+            }
+            $matched = true;
+            foreach ($identity as $field => $value) {
+                if (trim((string) ($candidate[$field] ?? '')) !== $value) {
+                    $matched = false;
+                    break;
+                }
+            }
+            if ($matched) {
+                $matches[] = $candidate;
+            }
+        }
+
+        return count($matches) === 1 ? $matches[0] : null;
+    }
+
+    /**
+     * 圆钢身份键：material_id 优先；无 ID 时使用四字段，legacy 空厂商按记录独立。
+     *
+     * @param array<string,mixed> $row
+     * @return string
+     */
+    public static function roundSteelIdentityKey(array $row): string
+    {
+        $materialId = (int) ($row['material_id'] ?? 0);
+        $materialIdValid = ($row['_round_material_id_valid'] ?? true) !== false;
+        if ($materialId > 0 && $materialIdValid) {
+            return 'mid:' . $materialId;
+        }
+
+        $name = trim((string) ($row['y_material_name'] ?? $row['material_name'] ?? ''));
+        $manufacturer = trim((string) ($row['y_material_manufacturer'] ?? ''));
+        $spec = trim((string) ($row['y_material_spec'] ?? ''));
+        $model = trim((string) ($row['y_material_model'] ?? ''));
+        if ($manufacturer !== '') {
+            return implode("\x00", ['fields', $name, $manufacturer, $spec, $model]);
+        }
+
+        $legacyToken = trim((string) (
+            $row['id'] ?? $row['inventory_code'] ?? $row['create_time'] ?? ''
+        ));
+        if ($legacyToken === '') {
+            $legacyToken = hash('sha256', serialize($row));
+        }
+
+        return implode("\x00", ['legacy', $legacyToken, $name, $spec, $model]);
+    }
+
+    /**
+     * 审计/推算圆钢身份：有效 material_id 优先，否则稳定使用含厂商四字段。
+     *
+     * @param array<string,mixed> $row
+     * @return string
+     */
+    public static function roundSteelCalculationIdentityKey(array $row): string
+    {
+        $materialId = (int) ($row['material_id'] ?? 0);
+        $materialIdValid = ($row['_round_material_id_valid'] ?? true) !== false;
+        if ($materialId > 0 && $materialIdValid) {
+            return 'mid:' . $materialId;
+        }
+        $fields = [
+            trim((string) ($row['y_material_name'] ?? $row['material_name'] ?? '')),
+            trim((string) ($row['y_material_manufacturer'] ?? '')),
+            trim((string) ($row['y_material_spec'] ?? '')),
+            trim((string) ($row['y_material_model'] ?? '')),
+        ];
+        if (implode('', $fields) === '') {
+            return 'unknown:' . (string) ($row['id'] ?? $row['inventory_code'] ?? '');
+        }
+        if ($fields[1] === '') {
+            return implode('|', [$fields[0], $fields[2], $fields[3]]);
+        }
+
+        return 'snapshot:' . implode("\x00", $fields);
+    }
+
+    /**
+     * 返回计算身份的当前键及 legacy name|spec|model 兼容键。
+     *
+     * @param array<string,mixed> $row
+     * @return string[]
+     */
+    public static function roundSteelCalculationIdentityKeys(array $row): array
+    {
+        $keys = [self::roundSteelCalculationIdentityKey($row)];
+        $materialId = (int) ($row['material_id'] ?? 0);
+        $materialIdValid = ($row['_round_material_id_valid'] ?? true) !== false;
+        $manufacturer = trim((string) ($row['y_material_manufacturer'] ?? ''));
+        if (($materialId <= 0 || !$materialIdValid) && $manufacturer === '') {
+            $keys[] = implode('|', [
+                trim((string) ($row['y_material_name'] ?? $row['material_name'] ?? '')),
+                trim((string) ($row['y_material_spec'] ?? '')),
+                trim((string) ($row['y_material_model'] ?? '')),
+            ]);
+        }
+
+        return array_values(array_unique($keys));
+    }
+
+    /**
+     * 检查当前/legacy 任一计算身份是否已出现。
+     *
+     * @param array<string,mixed> $seenKeys
+     * @param array<string,mixed> $row
+     * @return bool
+     */
+    public static function roundSteelCalculationIdentityWasSeen(
+        array $seenKeys,
+        array $row
+    ): bool {
+        foreach (self::roundSteelCalculationIdentityKeys($row) as $key) {
+            if (array_key_exists($key, $seenKeys)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 合并自动推算中的重复圆钢基线。
+     *
+     * @param array<int,array<string,mixed>> $rows
+     * @return array<int,array<string,mixed>>
+     */
+    public static function mergeRoundSteelBaselineRows(array $rows): array
+    {
+        $merged = [];
+        $seen = [];
+        foreach ($rows as $row) {
+            if (($row['process_name'] ?? '') !== '圆钢') {
+                $merged[] = $row;
+                continue;
+            }
+            $identityKeys = self::roundSteelCalculationIdentityKeys($row);
+            $index = null;
+            foreach ($identityKeys as $identityKey) {
+                if (isset($seen[$identityKey])) {
+                    $index = $seen[$identityKey];
+                    break;
+                }
+            }
+            if ($index !== null) {
+                $merged[$index]['total_tonnage']
+                    = (float) ($merged[$index]['total_tonnage'] ?? 0)
+                    + (float) ($row['total_tonnage'] ?? 0);
+                continue;
+            }
+            $newIndex = count($merged);
+            foreach ($identityKeys as $identityKey) {
+                $seen[$identityKey] = $newIndex;
+            }
+            $merged[] = $row;
+        }
+
+        return $merged;
+    }
+
+    /**
+     * 判断基线是否已包含同一圆钢身份。
+     *
+     * @param array<int,array<string,mixed>> $baseline
+     * @param array<string,mixed> $candidate
+     * @return bool
+     */
+    public static function hasRoundSteelIdentity(array $baseline, array $candidate): bool
+    {
+        $candidateKeys = array_flip(self::roundSteelCalculationIdentityKeys($candidate));
+        foreach ($baseline as $row) {
+            if (($row['process_name'] ?? '') !== '圆钢') {
+                continue;
+            }
+            foreach (self::roundSteelCalculationIdentityKeys($row) as $rowKey) {
+                if (isset($candidateKeys[$rowKey])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 构建盘点落库的圆钢快照字段，厂商空值写 NULL。
+     *
+     * @param array<string,mixed> $item
+     * @param int $resolvedMaterialId
+     * @return array<string,mixed>
+     */
+    public static function buildStocktakeRoundSteelFields(
+        array $item,
+        int $resolvedMaterialId
+    ): array {
+        $materialName = trim((string) ($item['y_material_name'] ?? ''));
+        if ($materialName === '') {
+            $materialName = (string) ($item['material_name'] ?? '');
+        }
+        $manufacturer = trim((string) ($item['y_material_manufacturer'] ?? ''));
+
+        return [
+            'material_id' => $resolvedMaterialId,
+            'material_name' => $materialName,
+            'y_material_manufacturer' => $manufacturer !== '' ? $manufacturer : null,
+            'y_material_spec' => (string) ($item['y_material_spec'] ?? ''),
+            'y_material_model' => (string) ($item['y_material_model'] ?? ''),
+        ];
+    }
+
+    /**
+     * 批量盘点圆钢快照：仅信任与 material_id 对应的有效圆钢档案。
+     *
+     * @param array<string,mixed> $item
+     * @param array<string,mixed>|null $archive
+     * @return array<string,mixed>
+     */
+    public static function resolveStocktakeRoundSteelSnapshot(
+        array $item,
+        ?array $archive
+    ): array {
+        $materialId = (int) ($item['material_id'] ?? 0);
+        if (
+            $materialId > 0
+            && self::isRoundSteelArchive($archive)
+            && (int) ($archive['id'] ?? 0) === $materialId
+        ) {
+            $item = self::resolveRoundSteelHistoryFields($item, $archive);
+        }
+
+        return self::buildStocktakeRoundSteelFields($item, $materialId);
+    }
+
+    /**
+     * material_id 缺失时的四字段身份匹配，厂商属于身份字段。
+     *
+     * @param array<string,mixed> $left
+     * @param array<string,mixed> $right
+     * @return bool
+     */
+    public static function roundSteelIdentityMatches(array $left, array $right): bool
+    {
+        $leftId = ($left['_round_material_id_valid'] ?? true) !== false
+            ? (int) ($left['material_id'] ?? 0)
+            : 0;
+        $rightId = ($right['_round_material_id_valid'] ?? true) !== false
+            ? (int) ($right['material_id'] ?? 0)
+            : 0;
+        if ($leftId > 0 || $rightId > 0) {
+            return $leftId > 0 && $leftId === $rightId;
+        }
+
+        foreach (
+            ['y_material_name', 'y_material_manufacturer', 'y_material_spec', 'y_material_model']
+            as $field
+        ) {
+            $leftValue = trim((string) (
+                $left[$field] ?? ($field === 'y_material_name' ? ($left['material_name'] ?? '') : '')
+            ));
+            $rightValue = trim((string) (
+                $right[$field] ?? ($field === 'y_material_name' ? ($right['material_name'] ?? '') : '')
+            ));
+            if ($leftValue !== $rightValue) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -304,6 +728,9 @@ class MaterialInventoryService
             }
 
             if (empty($param['material_name'])) {
+                if (!empty($param['y_material_name'])) {
+                    $param['material_name'] = (string) $param['y_material_name'];
+                }
                 if (!empty($param['material_id'])) {
                     $materialModel = new MaterialModel();
                     $material = $materialModel->find($param['material_id']);
@@ -311,6 +738,21 @@ class MaterialInventoryService
                         $param['material_name'] = $material['material_name'];
                     }
                 }
+            }
+            /* [AI-2026-08] 新建盘点保存圆钢四字段快照，非圆钢档案不覆盖 */
+            $materialId = (int) ($param['material_id'] ?? 0);
+            if ($materialId > 0) {
+                $archive = (new MaterialModel())->find($materialId);
+                if (!empty($archive)) {
+                    $archiveRow = is_array($archive) ? $archive : $archive->toArray();
+                    $param = self::resolveRoundSteelHistoryFields($param, $archiveRow);
+                }
+            }
+            if (($param['process_name'] ?? '') === '圆钢') {
+                $param = array_merge(
+                    $param,
+                    self::buildStocktakeRoundSteelFields($param, (int) ($param['material_id'] ?? 0))
+                );
             }
 
             $dayTonnage = floatval($param['day_shift_tonnage'] ?? 0);
@@ -372,6 +814,13 @@ class MaterialInventoryService
 
             $model = new MaterialInventoryModel();
             $insertData = [];
+            $roundArchiveMap = [];
+            if ($processName === '圆钢') {
+                $roundArchiveMap = self::loadMaterialBriefMap(array_map(
+                    static fn (array $item): int => (int) ($item['material_id'] ?? 0),
+                    $items
+                ));
+            }
 
             foreach ($items as $index => $item) {
                 $dayTonnage = floatval($item['day_shift_qty'] ?? 0);
@@ -381,25 +830,25 @@ class MaterialInventoryService
                 $rawSpec = $item['c_material_spec'] ?? '';
                 $normalizedSpec = $rawSpec ? self::normalizeSpec($rawSpec) : '';
 
-                $yName = $item['y_material_name'] ?? '';
-                $ySpec = $item['y_material_spec'] ?? '';
-                $yModel = $item['y_material_model'] ?? '';
                 $materialId = intval($item['material_id'] ?? 0);
                 if ($processName === '圆钢') {
-                    $resolvedMid = self::resolveRoundSteelMaterialId($yName, $ySpec, $yModel);
-                    if ($resolvedMid > 0) {
-                        $materialId = $resolvedMid;
-                    }
+                    $roundSteelFields = self::resolveStocktakeRoundSteelSnapshot(
+                        $item,
+                        $roundArchiveMap[$materialId] ?? null
+                    );
+                } else {
+                    $roundSteelFields = self::buildStocktakeRoundSteelFields($item, $materialId);
                 }
 
                 $insertData[] = [
                     'inventory_code' => PublicService::getCode(10)['code'],
                     'inventory_date' => $stocktakeDate,
                     'process_name' => $processName,
-                    'material_id' => $materialId,
-                    'material_name' => $yName,
-                    'y_material_spec' => $ySpec,
-                    'y_material_model' => $yModel,
+                    'material_id' => $roundSteelFields['material_id'],
+                    'material_name' => $roundSteelFields['material_name'],
+                    'y_material_manufacturer' => $roundSteelFields['y_material_manufacturer'],
+                    'y_material_spec' => $roundSteelFields['y_material_spec'],
+                    'y_material_model' => $roundSteelFields['y_material_model'],
                     'c_material_spec' => $normalizedSpec, // 归一化后存入
                     'c_material_model' => $item['c_material_model'] ?? '',
                     'c_product_spec' => $item['c_product_spec'] ?? '',
@@ -459,6 +908,22 @@ class MaterialInventoryService
             $record = $model->find($ids);
             if (empty($record)) {
                 exception('盘点记录不存在');
+            }
+            $recordRow = is_array($record) ? $record : $record->toArray();
+            $mergedRow = array_merge($recordRow, $param);
+            if (($mergedRow['process_name'] ?? '') === '圆钢') {
+                $materialId = (int) ($mergedRow['material_id'] ?? 0);
+                if ($materialId > 0) {
+                    $archive = (new MaterialModel())->find($materialId);
+                    if (!empty($archive)) {
+                        $archiveRow = is_array($archive) ? $archive : $archive->toArray();
+                        $mergedRow = self::resolveRoundSteelHistoryFields($mergedRow, $archiveRow);
+                    }
+                }
+                $param = array_merge(
+                    $param,
+                    self::buildStocktakeRoundSteelFields($mergedRow, $materialId)
+                );
             }
 
             $dayTonnage = isset($param['day_shift_tonnage']) ? floatval($param['day_shift_tonnage']) : floatval($record['day_shift_tonnage']);
@@ -541,9 +1006,15 @@ class MaterialInventoryService
      */
     private static function baselineItemKey(array $row): string
     {
+        if (($row['process_name'] ?? '') === '圆钢') {
+            return self::roundSteelCalculationIdentityKey($row)
+                . "\x00" . self::normalizeSpec($row['c_material_spec'] ?? '');
+        }
+
         return implode("\x00", [
             $row['process_name'] ?? '',
             trim($row['material_name'] ?? ''),
+            trim($row['y_material_manufacturer'] ?? ''),
             trim($row['y_material_spec'] ?? ''),
             trim($row['y_material_model'] ?? ''),
             self::normalizeSpec($row['c_material_spec'] ?? ''),
@@ -557,6 +1028,7 @@ class MaterialInventoryService
     private static function parseRoundSteelIdentity(array $row): array
     {
         $category = trim($row['material_name'] ?? '');
+        $manufacturer = trim($row['y_material_manufacturer'] ?? '');
         $spec = trim($row['y_material_spec'] ?? '');
         $model = trim($row['y_material_model'] ?? '');
 
@@ -581,13 +1053,23 @@ class MaterialInventoryService
             $category = '溯源';
         }
 
-        return ['category' => $category, 'spec' => $spec, 'model' => $model];
+        return [
+            'category' => $category,
+            'manufacturer' => $manufacturer,
+            'spec' => $spec,
+            'model' => $model,
+        ];
     }
 
     /**
      * 按规格+型号解析圆钢档案 material_id（避免多条盘点共用错误 id）
      */
-    private static function resolveRoundSteelMaterialId(string $category, string $spec, string $model): int
+    private static function resolveRoundSteelMaterialId(
+        string $category,
+        string $spec,
+        string $model,
+        string $manufacturer = ''
+    ): int
     {
         if ($spec === '' || $model === '') {
             return 0;
@@ -600,7 +1082,22 @@ class MaterialInventoryService
         if ($category !== '') {
             $query->where('material_name', $category);
         }
-        return intval($query->value('id') ?: 0);
+        if ($manufacturer !== '') {
+            $query->where('manufacturer', $manufacturer);
+        }
+        $snapshot = [
+            'material_id' => 0,
+            'y_material_name' => $category,
+            'y_material_manufacturer' => $manufacturer,
+            'y_material_spec' => $spec,
+            'y_material_model' => $model,
+        ];
+        $candidate = self::selectRoundSteelArchiveCandidate(
+            $snapshot,
+            $query->select()->toArray()
+        );
+
+        return (int) ($candidate['id'] ?? 0);
     }
 
     private static function normalizeRoundSteelRow(array $row): array
@@ -608,14 +1105,28 @@ class MaterialInventoryService
         if (($row['process_name'] ?? '') !== '圆钢') {
             return $row;
         }
+        /* [AI-2026-08] 有效 material_id 优先当前档案；仅缺失/失效才按快照回退解析 */
+        $materialId = (int) ($row['material_id'] ?? 0);
+        if ($materialId > 0) {
+            $archive = Db::name('material')
+                ->where('id', $materialId)
+                ->where('is_delete', 0)
+                ->find();
+            if (self::isRoundSteelArchive($archive)) {
+                return self::resolveRoundSteelHistoryFields($row, $archive);
+            }
+            $row['material_id'] = 0;
+        }
         $identity = self::parseRoundSteelIdentity($row);
         $row['material_name'] = $identity['category'];
+        $row['y_material_manufacturer'] = $identity['manufacturer'];
         $row['y_material_spec'] = $identity['spec'];
         $row['y_material_model'] = $identity['model'];
         $resolvedMid = self::resolveRoundSteelMaterialId(
             $identity['category'],
             $identity['spec'],
-            $identity['model']
+            $identity['model'],
+            $identity['manufacturer']
         );
         if ($resolvedMid > 0) {
             $row['material_id'] = $resolvedMid;
@@ -626,8 +1137,7 @@ class MaterialInventoryService
     private static function calcResultDedupeKey(array $row): string
     {
         if (($row['process_name'] ?? '') === '圆钢') {
-            $identity = self::parseRoundSteelIdentity($row);
-            return '圆钢' . "\x00" . $identity['spec'] . "\x00" . $identity['model'];
+            return '圆钢' . "\x00" . self::roundSteelCalculationIdentityKey($row);
         }
         return self::baselineItemKey($row);
     }
@@ -638,11 +1148,18 @@ class MaterialInventoryService
         $out = [];
         foreach ($result as $item) {
             $item = self::normalizeRoundSteelRow($item);
-            $key = self::calcResultDedupeKey($item);
-            if (isset($seen[$key])) {
+            $keys = ($item['process_name'] ?? '') === '圆钢'
+                ? self::roundSteelCalculationIdentityKeys($item)
+                : [self::calcResultDedupeKey($item)];
+            $alreadySeen = ($item['process_name'] ?? '') === '圆钢'
+                ? self::roundSteelCalculationIdentityWasSeen($seen, $item)
+                : isset($seen[$keys[0]]);
+            if ($alreadySeen) {
                 continue;
             }
-            $seen[$key] = true;
+            foreach ($keys as $key) {
+                $seen[$key] = true;
+            }
             $out[] = $item;
         }
         return $out;
@@ -690,11 +1207,18 @@ class MaterialInventoryService
                 continue;
             }
             $row = self::normalizeRoundSteelRow($row);
-            $key = self::calcResultDedupeKey($row);
-            if (isset($seen[$key])) {
+            $keys = ($row['process_name'] ?? '') === '圆钢'
+                ? self::roundSteelCalculationIdentityKeys($row)
+                : [self::calcResultDedupeKey($row)];
+            $alreadySeen = ($row['process_name'] ?? '') === '圆钢'
+                ? self::roundSteelCalculationIdentityWasSeen($seen, $row)
+                : isset($seen[$keys[0]]);
+            if ($alreadySeen) {
                 continue;
             }
-            $seen[$key] = true;
+            foreach ($keys as $key) {
+                $seen[$key] = true;
+            }
             $row['inventory_date'] = date('Y-m-d', strtotime($row['inventory_date']));
             $baseline[] = $row;
         }
@@ -1178,7 +1702,8 @@ class MaterialInventoryService
         $rows = Db::name('material')
             ->whereIn('id', $ids)
             ->where('is_delete', 0)
-            ->field('id, material_name, material_spec, material_model, material_property')
+            ->where('material_property', '圆钢')
+            ->field('id, material_name, manufacturer, material_spec, material_model, material_property, is_delete')
             ->select()
             ->toArray();
         $map = [];
@@ -1404,30 +1929,8 @@ class MaterialInventoryService
             return isset($idx[$name][$spec][$specKey]) ? floatval($idx[$name][$spec][$specKey]) : 0;
         };
 
-        // Step 4.5: 合并圆钢基线中同一物料的重复记录（防止同一物料多条基线重复推算）
-        // 以 (material_name + y_material_spec + y_material_model) 为身份标识合并 total_tonnage
-        $mergedBaseline = [];
-        $seenBaselineKey = [];
-        foreach ($baseline as $stock) {
-            if ($stock['process_name'] === '圆钢') {
-                $idKey = trim($stock['material_name'] ?? '') . "\x00"
-                       . trim($stock['y_material_spec'] ?? '') . "\x00"
-                       . trim($stock['y_material_model'] ?? '');
-                if ($idKey === "\x00\x00") {
-                    $mergedBaseline[] = $stock;
-                } elseif (isset($seenBaselineKey[$idKey])) {
-                    $mergedBaseline[$seenBaselineKey[$idKey]]['total_tonnage']
-                        = floatval($mergedBaseline[$seenBaselineKey[$idKey]]['total_tonnage'])
-                        + floatval($stock['total_tonnage']);
-                } else {
-                    $seenBaselineKey[$idKey] = count($mergedBaseline);
-                    $mergedBaseline[] = $stock;
-                }
-            } else {
-                $mergedBaseline[] = $stock;
-            }
-        }
-        $baseline = $mergedBaseline;
+        // [AI-2026-08] 圆钢基线优先 material_id，否则按含厂商四字段合并。
+        $baseline = self::mergeRoundSteelBaselineRows($baseline);
 
         // Step 5: 逐条推算（v2：按工序维度匹配）
         $result = [];
@@ -1643,6 +2146,7 @@ class MaterialInventoryService
                 'process_name'       => $processName,
                 'material_id'        => $stockMaterialId,
                 'material_name'      => $materialName,
+                'y_material_manufacturer' => $stock['y_material_manufacturer'] ?? '',
                 'y_material_spec'    => $stock['y_material_spec'],
                 'y_material_model'   => $stock['y_material_model'],
                 'c_material_spec'    => ($stock['c_material_spec'] ?: $stock['c_product_spec'] ?: ''),
@@ -1669,23 +2173,7 @@ class MaterialInventoryService
         }
 
         // ========== Step 6: 补充新入库圆钢（期初没有的品种） ==========
-        // 查重：同时按 material_id 和 (material_name + y_material_spec) 去重，
-        // 兼容历史数据 material_id=0 的情况
-        $baselineMidMap = [];
-        $baselineSpecModelMap = [];
-        foreach ($baseline as $b) {
-            if ($b['process_name'] === '圆钢') {
-                $id = intval($b['material_id'] ?? 0);
-                if ($id > 0) {
-                    $baselineMidMap[$id] = true;
-                }
-                $spec = trim($b['y_material_spec'] ?? '');
-                $model = trim($b['y_material_model'] ?? '');
-                if ($spec !== '' && $model !== '') {
-                    $baselineSpecModelMap[$spec . "\x00" . $model] = true;
-                }
-            }
-        }
+        // [AI-2026-08] 查重优先 material_id，否则使用含厂商的圆钢四字段身份。
 
         // 新入库圆钢（期初无该品种）：从全局最早手动期初次日起至推算日前一天
         $newInboundMidSeen = [];
@@ -1698,12 +2186,18 @@ class MaterialInventoryService
                     continue;
                 }
                 $rName = trim($matRow['material_name']);
+                $rManufacturer = trim($matRow['manufacturer'] ?? '');
                 $rSpec = trim($matRow['material_spec'] ?? '');
                 $rModel = trim($matRow['material_model'] ?? '');
-                if ($rSpec !== '' && $rModel !== '' && isset($baselineSpecModelMap[$rSpec . "\x00" . $rModel])) {
-                    continue;
-                }
-                if ($mid <= 0 || isset($baselineMidMap[$mid])) {
+                $candidate = [
+                    'process_name' => '圆钢',
+                    'material_id' => $mid,
+                    'material_name' => $rName,
+                    'y_material_manufacturer' => $rManufacturer,
+                    'y_material_spec' => $rSpec,
+                    'y_material_model' => $rModel,
+                ];
+                if ($mid <= 0 || self::hasRoundSteelIdentity($baseline, $candidate)) {
                     continue;
                 }
                 $inboundQty = self::sumInboundDaily($inboundDaily, $mid, $newRawStartDate, $globalEndDate, $rName, $rSpec, $rModel);
@@ -1720,6 +2214,7 @@ class MaterialInventoryService
                     'process_name'     => '圆钢',
                     'material_id'      => $mid,
                     'material_name'    => $rName,
+                    'y_material_manufacturer' => $rManufacturer,
                     'y_material_spec'  => $rSpec,
                     'y_material_model' => $rModel,
                     'c_material_spec'  => '',
@@ -1751,15 +2246,29 @@ class MaterialInventoryService
                     if ($rName === '' || $rSpec === '') {
                         continue;
                     }
-                    if ($rSpec !== '' && $rModel !== '' && isset($baselineSpecModelMap[$rSpec . "\x00" . $rModel])) {
-                        continue;
-                    }
-                    $existMid = Db::name('material')
+                    $archiveCandidates = Db::name('material')
                         ->where('is_delete', 0)
+                        ->where('material_property', '圆钢')
                         ->where('material_name', $rName)
                         ->where('material_spec', $rSpec)
-                        ->value('id');
+                        ->field('id,material_name,manufacturer,material_spec,material_model')
+                        ->limit(2)
+                        ->select()
+                        ->toArray();
+                    $archive = count($archiveCandidates) === 1 ? $archiveCandidates[0] : null;
+                    $existMid = (int) ($archive['id'] ?? 0);
                     if ($existMid && isset($newInboundMidSeen[intval($existMid)])) {
+                        continue;
+                    }
+                    $candidate = [
+                        'process_name' => '圆钢',
+                        'material_id' => $existMid,
+                        'material_name' => $rName,
+                        'y_material_manufacturer' => (string) ($archive['manufacturer'] ?? ''),
+                        'y_material_spec' => $rSpec,
+                        'y_material_model' => (string) ($archive['material_model'] ?? ''),
+                    ];
+                    if (self::hasRoundSteelIdentity($baseline, $candidate)) {
                         continue;
                     }
                     $inboundQty = self::sumInboundDaily($inboundDaily, 0, $newRawStartDate, $globalEndDate, $rName, $rSpec);
@@ -1775,8 +2284,9 @@ class MaterialInventoryService
                         'process_name'     => '圆钢',
                         'material_id'      => $existMid ? intval($existMid) : 0,
                         'material_name'    => $rName,
+                        'y_material_manufacturer' => $candidate['y_material_manufacturer'],
                         'y_material_spec'  => $rSpec,
-                        'y_material_model' => '',
+                        'y_material_model' => $candidate['y_material_model'],
                         'c_material_spec'  => '',
                         'c_material_model' => '',
                         'baseline_date'    => $minBaselineDate,

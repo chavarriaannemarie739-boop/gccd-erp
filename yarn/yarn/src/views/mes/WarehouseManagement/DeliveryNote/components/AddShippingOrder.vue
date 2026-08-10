@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 发货选料圆钢业务字段统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <!-- 表单（紧凑布局） -->
     <el-form ref="handleRef" label-width="100px" :model="userForm" :rules="handleRules">
@@ -54,9 +55,17 @@
           <el-table-column type="index" label="序号" width="55" />
           <el-table-column prop="material_batch" label="批次" show-overflow-tooltip />
           <el-table-column prop="relation_code" label="计划单" show-overflow-tooltip />
-          <el-table-column prop="production_plan_name" label="计划名称" min-width="140" show-overflow-tooltip />
+          <el-table-column
+            prop="production_plan_name"
+            label="计划名称"
+            min-width="140"
+            show-overflow-tooltip
+          />
           <el-table-column prop="stock_owner" label="归属" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="y_material_spec" label="圆钢信息" />
+          <el-table-column prop="y_material_name" label="圆钢名称" />
+          <el-table-column prop="y_material_manufacturer" label="圆钢厂商" />
+          <el-table-column prop="y_material_spec" label="圆钢材质" />
+          <el-table-column prop="y_material_model" label="圆钢型号" />
           <el-table-column prop="product_info" label="成品信息" />
           <el-table-column prop="stock_num" label="库存数" />
           <el-table-column prop="material_num" label="发货数量" width="150">
@@ -89,30 +98,50 @@
       </el-form-item>
     </el-form>
     <!-- [AI-2026-05] 优化弹窗宽度从 70% 提升至 85% 以容纳宽表数据 -->
+    <!-- [AI-2026-08] 嵌套在「新增」弹窗内，必须 append-to-body，否则遮罩挡住检索输入 -->
     <el-dialog
       v-model="processVisible"
       v-if="processVisible"
       width="85%"
+      append-to-body
       :close-on-click-modal="false"
+      title="从成品库选择物料"
     >
-      <el-row :gutter="24">
-        <el-col :span="6">
-          <el-form-item label="物料名称：">
-            <el-input style="width: 260px" placeholder="请输入" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="物料规格：">
-            <el-input style="width: 260px" placeholder="请输入" class="filter-item" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-            <el-button v-preventReClick type="primary">搜索</el-button>
-            <el-button v-preventReClick>重置</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form :model="query" @submit.prevent>
+        <el-row :gutter="24">
+          <el-col :span="6">
+            <el-form-item label="物料名称：">
+              <el-input
+                v-model="query.material_name"
+                style="width: 260px"
+                clearable
+                placeholder="请输入"
+                @keyup.enter="searchFinishedStock"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="物料规格：">
+              <el-input
+                v-model="query.material_spec"
+                style="width: 260px"
+                clearable
+                placeholder="请输入"
+                class="filter-item"
+                @keyup.enter="searchFinishedStock"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item>
+              <el-button v-preventReClick type="primary" @click="searchFinishedStock"
+                >搜索</el-button
+              >
+              <el-button v-preventReClick @click="resetFinishedStock">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <el-row />
       <el-table
         :border="true"
@@ -130,11 +159,44 @@
         <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
         <el-table-column prop="material_batch" label="批次号" show-overflow-tooltip />
         <el-table-column prop="relation_code" label="计划单" show-overflow-tooltip />
-        <el-table-column prop="production_plan_name" label="计划名称" min-width="140" show-overflow-tooltip />
+        <el-table-column
+          prop="production_plan_name"
+          label="计划名称"
+          min-width="140"
+          show-overflow-tooltip
+        />
         <el-table-column prop="stock_owner" label="归属" min-width="100" show-overflow-tooltip />
         <!-- [AI-2026-05] 扩宽圆钢与成品信息列的最小宽度，防止内容展示不全 -->
-        <el-table-column prop="y_material_spec" label="圆钢信息" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="product_info" label="成品信息" min-width="200" show-overflow-tooltip />
+        <el-table-column
+          prop="y_material_name"
+          label="圆钢名称"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="y_material_manufacturer"
+          label="圆钢厂商"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="y_material_spec"
+          label="圆钢材质"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="y_material_model"
+          label="圆钢型号"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="product_info"
+          label="成品信息"
+          min-width="200"
+          show-overflow-tooltip
+        />
         <el-table-column prop="in_num" label="入库数量" show-overflow-tooltip />
         <el-table-column prop="shipped_num" label="已发数" show-overflow-tooltip />
         <el-table-column prop="stock_num" label="库存数" show-overflow-tooltip />
@@ -159,40 +221,88 @@
         </div>
       </template>
     </el-dialog>
-    <!-- 物料 -->
+    <!-- 关联计划/任务 -->
     <el-dialog
       v-model="dialogTableVisible"
       v-if="dialogTableVisible"
       width="70%"
+      append-to-body
       :close-on-click-modal="false"
+      title="选择关联计划"
     >
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-form-item label="生产计划单号：">
-            <el-input style="width: 260px" placeholder="请输入" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="方案名称：">
-            <el-input style="width: 260px" placeholder="请输入" class="filter-item" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-            <el-button
-              v-preventReClick
-              class="filter-item"
-              type="primary"
-              style="margin-left: 10px"
-            >
-              搜索
-            </el-button>
-            <el-button v-preventReClick class="filter-item" type="info" style="margin-left: 10px">
-              重置
-            </el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form :model="queryGoods" @submit.prevent>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item label="生产计划单号：">
+              <el-input
+                v-model="queryGoods.production_plan_code"
+                style="width: 260px"
+                clearable
+                placeholder="请输入"
+                @keyup.enter="searchPlanList"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="方案名称：">
+              <el-input
+                v-model="queryGoods.production_plan_name"
+                style="width: 260px"
+                clearable
+                placeholder="请输入"
+                class="filter-item"
+                @keyup.enter="searchPlanList"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="圆钢名称：">
+              <el-input v-model="queryGoods.y_material_name" clearable placeholder="请输入" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="圆钢厂商：">
+              <el-input
+                v-model="queryGoods.y_material_manufacturer"
+                clearable
+                placeholder="请输入"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="圆钢材质：">
+              <el-input v-model="queryGoods.y_material_spec" clearable placeholder="请输入" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="圆钢型号：">
+              <el-input v-model="queryGoods.y_material_model" clearable placeholder="请输入" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item>
+              <el-button
+                v-preventReClick
+                class="filter-item"
+                type="primary"
+                style="margin-left: 10px"
+                @click="searchPlanList"
+              >
+                搜索
+              </el-button>
+              <el-button
+                v-preventReClick
+                class="filter-item"
+                type="info"
+                style="margin-left: 10px"
+                @click="resetPlanList"
+              >
+                重置
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <el-table
         :border="true"
         :show-overflow-tooltip="true"
@@ -208,7 +318,10 @@
         <el-table-column type="index" :index="planTableIndex" label="序号" width="70" />
         <el-table-column prop="production_plan_code" label="生产计划单号" show-overflow-tooltip />
         <el-table-column prop="production_plan_name" label="计划名称" show-overflow-tooltip />
-        <el-table-column prop="y_mateial_spec" label="圆钢型号" show-overflow-tooltip />
+        <el-table-column prop="y_material_name" label="圆钢名称" show-overflow-tooltip />
+        <el-table-column prop="y_material_manufacturer" label="圆钢厂商" show-overflow-tooltip />
+        <el-table-column prop="y_material_spec" label="圆钢材质" show-overflow-tooltip />
+        <el-table-column prop="y_material_model" label="圆钢型号" show-overflow-tooltip />
         <el-table-column prop="material_name" label="成品名称" show-overflow-tooltip />
         <el-table-column prop="material_spec" label="成品规格" show-overflow-tooltip />
         <el-table-column prop="material_model" label="成品型号" show-overflow-tooltip />
@@ -272,12 +385,20 @@ export default {
         AdminToken: '',
         page: 1,
         limit: 10,
-        warehouse: '成品库'
+        warehouse: '成品库',
+        material_name: '',
+        material_spec: ''
       },
       queryGoods: {
         AdminToken: '',
         page: 1,
-        limit: 10
+        limit: 10,
+        production_plan_code: '',
+        production_plan_name: '',
+        y_material_name: '',
+        y_material_manufacturer: '',
+        y_material_spec: '',
+        y_material_model: ''
       },
       handleRules: {
         customer_name: [{ required: true, message: '客户名称不能为空', trigger: 'blur' }],
@@ -312,26 +433,52 @@ export default {
     },
     querySearchCustomer(queryString, cb) {
       const results = queryString
-        ? this.customerHistory.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+        ? this.customerHistory.filter(
+            (item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+          )
         : this.customerHistory
       cb(results)
     },
-    // 打开物料
+    // 打开关联计划
     handleClickmaterial() {
       this.dialogTableVisible = true
+      this.queryGoods.page = 1
       this.list()
     },
     async list() {
       this.loading = true
       const resp = await list(this.queryGoods)
-      this.tableData = resp.data.list
+      this.tableData = (resp.data.list || []).map((row) => {
+        const legacy = (field) => row[['y', 'mateial', field].join('_')]
+        return {
+          ...row,
+          y_material_name: row.y_material_name ?? legacy('name') ?? '',
+          y_material_manufacturer: row.y_material_manufacturer ?? legacy('manufacturer') ?? '',
+          y_material_spec: row.y_material_spec ?? legacy('spec') ?? '',
+          y_material_model: row.y_material_model ?? legacy('model') ?? ''
+        }
+      })
       this.totalGoods = resp.data.count
       this.loading = false
+    },
+    searchPlanList() {
+      this.queryGoods.page = 1
+      this.list()
+    },
+    resetPlanList() {
+      this.queryGoods.production_plan_code = ''
+      this.queryGoods.production_plan_name = ''
+      this.queryGoods.y_material_name = ''
+      this.queryGoods.y_material_manufacturer = ''
+      this.queryGoods.y_material_spec = ''
+      this.queryGoods.y_material_model = ''
+      this.queryGoods.page = 1
+      this.list()
     },
     handleAdd() {
       this.list()
     },
-    // 物料
+    // 选中关联计划
     handleClickAdd(row) {
       this.relation_code = row.production_plan_code
       this.dialogTableVisible = false
@@ -339,17 +486,28 @@ export default {
     // 条数
     handleSizeChange(val) {
       this.queryGoods.limit = val
-      // 获取列表
+      this.queryGoods.page = 1
       this.list()
     },
     // 页数
     handleCurrentChange(val) {
       this.queryGoods.page = val
-      // 获取列表
       this.list()
     },
     addOrderMatter() {
       this.processVisible = true
+      this.query.page = 1
+      this.mateiallist()
+    },
+    // [AI-2026-08] 成品库选料搜索（原输入框未绑定，无法缩小数据范围）
+    searchFinishedStock() {
+      this.query.page = 1
+      this.mateiallist()
+    },
+    resetFinishedStock() {
+      this.query.material_name = ''
+      this.query.material_spec = ''
+      this.query.page = 1
       this.mateiallist()
     },
     // 操作
@@ -359,6 +517,7 @@ export default {
     // 条数
     handleSizeChangeGoods(val) {
       this.query.limit = val
+      this.query.page = 1
       // 获取列表
       this.mateiallist()
     },
@@ -396,7 +555,10 @@ export default {
           relation_code: item.relation_code,
           production_plan_name: item.production_plan_name || '',
           stock_owner: item.stock_owner || '',
+          y_material_name: item.y_material_name || '',
+          y_material_manufacturer: item.y_material_manufacturer || '',
           y_material_spec: item.y_material_spec,
+          y_material_model: item.y_material_model || '',
           product_info: item.product_info,
           stock_num: item.stock_num,
           ship_max_qty: item.ship_max_qty,
@@ -463,7 +625,10 @@ export default {
               customer_name: this.userForm.customer_name,
               stock_owner: item.stock_owner || item.production_plan_name || '',
               relation_code: item.relation_code || this.relation_code,
+              y_material_name: item.y_material_name,
+              y_material_manufacturer: item.y_material_manufacturer,
               y_material_spec: item.y_material_spec,
+              y_material_model: item.y_material_model,
               product_info: item.product_info,
               ship_date: this.userForm.ship_date || ''
             })
@@ -477,7 +642,18 @@ export default {
           })
           if (overLines.length) {
             const detail = overLines
-              .map((l) => `${l.relation_code} 超发 ${(l.material_num - Number(this.userForm.content.find((c) => c.relation_code === l.relation_code && c.stock_owner === l.stock_owner)?.stock_num)).toFixed(2)} 吨`)
+              .map(
+                (l) =>
+                  `${l.relation_code} 超发 ${(
+                    l.material_num -
+                    Number(
+                      this.userForm.content.find(
+                        (c) =>
+                          c.relation_code === l.relation_code && c.stock_owner === l.stock_owner
+                      )?.stock_num
+                    )
+                  ).toFixed(2)} 吨`
+              )
               .join('；')
             try {
               await ElMessageBox.confirm(
@@ -489,7 +665,6 @@ export default {
               return
             }
           }
-          console.log(params, 'params')
           await add(params)
           this.$emit('list')
           this.hanleAddDialogClose()
@@ -502,9 +677,8 @@ export default {
         }
       })
     },
-    delOrderMatter(index, row) {
-      var that = this
-      that.userForm.content.splice(index, 1)
+    delOrderMatter(index) {
+      this.userForm.content.splice(index, 1)
     }
   }
 }

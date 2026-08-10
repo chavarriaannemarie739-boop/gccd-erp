@@ -1,0 +1,92 @@
+<van-popup show="{{show}}" position="bottom" round bind:close="onClose" custom-style="min-height: 50vh; max-height: 80vh;">
+  <view class="pfc-container">
+    <view class="pfc-header">
+      <text class="pfc-title">打印流转卡</text>
+      <van-icon name="cross" class="pfc-close" bindtap="onClose" />
+    </view>
+
+    <!-- 打印机状态 -->
+    <view class="pfc-section">
+      <view class="pfc-printer-status">
+        <view class="pfc-status-dot {{printerConnected ? 'pfc-status-dot--on' : ''}}"></view>
+        <text class="pfc-status-text" wx:if="{{printerConnected}}">{{printerName || '已连接'}}</text>
+        <text class="pfc-status-text" wx:elif="{{connecting}}">连接中…</text>
+        <text class="pfc-status-text" wx:else>未连接打印机</text>
+        <view class="pfc-status-action" bindtap="onPrinterTap">
+          {{printerConnected ? '更换' : (scanning ? '搜索中…' : '连接')}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索到的设备列表 -->
+    <view class="pfc-section" wx:if="{{showDeviceList && devices.length > 0}}">
+      <view class="pfc-device-list">
+        <view
+          class="pfc-device-item {{item.isPrinter ? 'pfc-device-item--printer' : ''}}"
+          wx:for="{{devices}}"
+          wx:key="deviceId"
+          bindtap="onDeviceSelect"
+          data-device="{{item}}"
+        >
+          <text class="pfc-device-name">{{item.name}}</text>
+          <text class="pfc-device-rssi">{{item.RSSI}}dBm</text>
+          <text class="pfc-device-tag" wx:if="{{item.isPrinter}}">打印机</text>
+        </view>
+      </view>
+    </view>
+    <view class="pfc-section pfc-hint" wx:if="{{showDeviceList && devices.length === 0 && scanning}}">
+      <van-loading size="16px" /> 正在搜索附近蓝牙设备…
+    </view>
+
+    <!-- 穿孔设备选择（多设备时） -->
+    <view class="pfc-section" wx:if="{{needPickDevice && deviceOptions.length > 1}}">
+      <text class="pfc-label">穿孔设备</text>
+      <view class="pfc-device-picker">
+        <view
+          class="pfc-pick-item {{selectedDeviceCode === item.device_code ? 'pfc-pick-item--active' : ''}}"
+          wx:for="{{deviceOptions}}"
+          wx:key="device_code"
+          bindtap="onPickDevice"
+          data-code="{{item.device_code}}"
+        >
+          {{item.device_name || item.device_code}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签预览 -->
+    <view class="pfc-section" wx:if="{{labelData}}">
+      <text class="pfc-label">标签预览</text>
+      <view class="pfc-preview">
+        <text
+          class="pfc-preview-line {{index === 0 ? 'pfc-preview-title' : ''}}"
+          wx:for="{{labelData.previewLines}}"
+          wx:key="index"
+        >{{item}}</text>
+        <text class="pfc-preview-qr">[QR] {{labelData.qr_payload}}</text>
+      </view>
+    </view>
+
+    <!-- 打印份数 -->
+    <view class="pfc-section pfc-copies" wx:if="{{labelData}}">
+      <text class="pfc-label">打印份数</text>
+      <van-stepper value="{{ copies }}" min="1" max="100" bind:change="onCopiesChange" />
+    </view>
+
+    <!-- 打印按钮 -->
+    <view class="pfc-footer">
+      <van-button
+        type="primary"
+        block
+        round
+        loading="{{printing}}"
+        disabled="{{!printerConnected || !labelData || printing}}"
+        bind:click="onPrint"
+        custom-style="background: #0d9488; border-color: #0d9488;"
+      >
+        {{printing ? '打印中…' : '打印'}}
+      </van-button>
+    </view>
+  </view>
+</van-popup>
+<van-toast id="pfc-toast" />

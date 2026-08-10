@@ -15,6 +15,18 @@ export function list(data) {
 }
 
 /**
+ * [AI-2026-08] 圆钢档案导航树（名称>厂商>材质>型号）
+ * @param {object} [data]
+ */
+export function roundSteelTree(data = {}) {
+  return request({
+    url: url + 'roundSteelTree',
+    method: 'post',
+    data
+  })
+}
+
+/**
  * 物料删除
  * @param {array} data 请求数据
  */
@@ -57,18 +69,6 @@ export function info(data) {
 export function edit(data) {
   return request({
     url: url + 'edit',
-    method: 'post',
-    data
-  })
-}
-
-/**
- * 批量更新最低库存阈值（档案页）
- * @param {object} data ids, min_stock_qty
- */
-export function batchUpdateMinStockQty(data) {
-  return request({
-    url: url + 'batchUpdateMinStockQty',
     method: 'post',
     data
   })

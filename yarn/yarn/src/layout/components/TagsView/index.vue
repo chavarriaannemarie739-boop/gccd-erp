@@ -196,6 +196,7 @@ function isFirstView() {
   try {
     return (
       selectedTag.value.fullPath === '/dashboard' ||
+      selectedTag.value.fullPath === '/dashboard/index' ||
       selectedTag.value.fullPath === tagsViewStore.visitedViews[1].fullPath
     )
   } catch (err) {

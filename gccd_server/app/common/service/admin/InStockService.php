@@ -16,6 +16,7 @@ use app\common\model\admin\WmsMaterialModel;
 use app\common\model\system\RoleModel;
 use app\common\model\system\UserAttributesModel;
 use app\common\model\system\UserModel;
+use app\common\service\utils\MaterialSearchHelper;
 use http\Client\Curl\User;
 use think\facade\Db;
 use think\facade\Filesystem;
@@ -41,6 +42,7 @@ class InStockService
     /*搜索的字段内容获取*/
     public static $search_field = [
         'material_name' => '', //物料名称
+        'manufacturer' => '', // [AI-2026-08] 厂商
         'material_spec' => '', //物料规格
         'in_code' => '', //入库编码
         'warehouse' => '',
@@ -51,6 +53,14 @@ class InStockService
         'create_start_date' => '',
         'create_end_date' => '',
         'material_model' => '',
+        'y_material_name' => '',
+        'y_material_manufacturer' => '',
+        'y_material_spec' => '',
+        'y_material_model' => '',
+        'y_mateial_name' => '',
+        'y_mateial_manufacturer' => '',
+        'y_mateial_spec' => '',
+        'y_mateial_model' => '',
         'stock_alert_only' => '',
     ];
     /**
@@ -79,11 +89,13 @@ class InStockService
         }
         if ($page == 0 || $limit == 0) {
             $list = $model->with(['getMaterial'])->where($where)->order($order)->select()->toArray();
+            $list = MaterialSearchHelper::enrichRoundSteelArchiveRows($list);
             return self::enrichFinishedWarehouseInboundListRows($list);
         }
         $count = $model->where($where)->count();
         $pages = ceil($count / $limit);
         $list = $model->with(['getMaterial','getUser'])->where($where)->page($page)->limit($limit)->order($order)->select()->toArray();
+        $list = MaterialSearchHelper::enrichRoundSteelArchiveRows($list);
         $list = self::enrichFinishedWarehouseInboundListRows($list);
         /*为列表添加采购前的数据*/
         return compact('count', 'pages', 'page', 'limit', 'list');
@@ -130,6 +142,10 @@ class InStockService
                 || trim((string) ($b['cp_spec'] ?? '')) !== ''
                 || trim((string) ($b['cp_model'] ?? '')) !== '';
             if ($hasCp) {
+                $row['y_material_name'] = (string) ($b['cp_name'] ?? '');
+                $row['y_material_manufacturer'] = (string) ($b['cp_manufacturer'] ?? '');
+                $row['y_material_spec'] = (string) ($b['cp_spec'] ?? '');
+                $row['y_material_model'] = (string) ($b['cp_model'] ?? '');
                 $row['material_name'] = (string) ($b['cp_name'] ?? '');
                 $row['material_spec'] = (string) ($b['cp_spec'] ?? '');
                 $row['material_model'] = (string) ($b['cp_model'] ?? '');
@@ -141,7 +157,7 @@ class InStockService
     }
 
     /**
-     * 按计划单号：cp=任务单物料(圆钢)，yg=计划 english_material(成品)
+     * 按计划单号：cp=计划明细+工单圆钢聚合，yg=计划 english_material(成品)
      *
      * @param string[] $codes production_plan_code / relation_code
      * @return array<string, array<string, string>>
@@ -154,36 +170,46 @@ class InStockService
         if ($codes === []) {
             return [];
         }
-        $placeholders = implode(',', array_fill(0, count($codes), '?'));
-        $sql = "
-            SELECT 
-                p.production_plan_code as relation_code,
-                m_yg.material_name as yg_name,
-                m_yg.material_spec as yg_spec,
-                m_yg.material_model as yg_model,
-                m_cp.material_name as cp_name,
-                m_cp.material_spec as cp_spec,
-                m_cp.material_model as cp_model
-            FROM ya_production p
-            LEFT JOIN ya_material m_yg ON p.english_material = m_yg.id
-            LEFT JOIN ya_product_task pt ON pt.relation_code = p.production_plan_code AND pt.is_delete = 0
-            LEFT JOIN ya_material m_cp ON pt.material_id = m_cp.id
-            WHERE p.is_delete = 0 AND p.production_plan_code IN ({$placeholders})
-            GROUP BY p.production_plan_code, p.english_material,
-                   m_yg.material_name, m_yg.material_spec, m_yg.material_model,
-                   m_cp.material_name, m_cp.material_spec, m_cp.material_model
-        ";
-        $rows = Db::query($sql, $codes);
+        $rows = Db::name('production')
+            ->alias('p')
+            ->leftJoin('material m_yg', 'p.english_material=m_yg.id')
+            ->whereIn('p.production_plan_code', $codes)
+            ->where('p.is_delete', 0)
+            ->field(
+                'p.production_plan_code AS relation_code,m_yg.material_name AS yg_name,'
+                . 'm_yg.material_spec AS yg_spec,m_yg.material_model AS yg_model'
+            )
+            ->select()
+            ->toArray();
+        $roundSteelMap = MaterialSearchHelper::roundSteelMaterialsByPlanCodes($codes);
         $out = [];
         foreach ($rows as $row) {
             $rc = (string) ($row['relation_code'] ?? '');
-            if ($rc === '' || isset($out[$rc])) {
+            if ($rc === '') {
                 continue;
             }
+            $materials = $roundSteelMap[$rc] ?? [];
+            $row['cp_name'] = self::aggregateMaterialField($materials, 'material_name');
+            $row['cp_manufacturer'] = self::aggregateMaterialField($materials, 'manufacturer');
+            $row['cp_spec'] = self::aggregateMaterialField($materials, 'material_spec');
+            $row['cp_model'] = self::aggregateMaterialField($materials, 'material_model');
             $out[$rc] = $row;
         }
 
         return $out;
+    }
+
+    /**
+     * @param array<int,array<string,mixed>> $materials
+     * @param string $field
+     * @return string
+     */
+    private static function aggregateMaterialField(array $materials, string $field): string
+    {
+        return implode(',', array_values(array_unique(array_filter(array_map(
+            static fn (array $material): string => trim((string) ($material[$field] ?? '')),
+            $materials
+        ), static fn (string $value): bool => $value !== ''))));
     }
 
     /**
@@ -210,7 +236,7 @@ class InStockService
             }
             /*检查入库单查找相同单号的数据*/
             $content = $model->with(['getMaterial'])->where('in_code', $info['in_code'])->select()->toArray();
-            $info['content'] = $content;
+            $info['content'] = MaterialSearchHelper::enrichRoundSteelArchiveRows($content);
             $info = $info->toArray();
         }
         /*生成调试单号*/
@@ -590,51 +616,20 @@ class InStockService
     }
 
     /**
-     * 当前用户允许查看的 ya_wms_in.warehouse 取值（多角色取并集）；空数组表示不限仓
+     * 当前用户允许查看的 ya_wms_in.warehouse 取值（多角色/菜单权限取并集）；空数组表示不限仓
+     *
+     * [AI-2026-08] 委托 WarehouseScopeService（入库动作）
      *
      * @return string[]
      */
     public static function getUserWarehouseAllowedValues(): array
     {
-        $roleModel = new RoleModel();
-        $userModel = new UserModel();
-        $userAttrModel = new UserAttributesModel();
-        $user_info = $userModel->find(user_id());
-        $roleToWarehouse = [
-            '配件仓库' => '配件仓库',
-            '配件库' => '配件仓库',
-            '圆钢仓库' => '圆钢仓库',
-            '圆钢库' => '圆钢仓库',
-            '原料库' => '圆钢仓库',
-            '原料仓库' => '圆钢仓库',
-            '成品仓库' => '成品仓库',
-            '成品库' => '成品仓库',
-            '成品仓' => '成品仓',
-        ];
-        if (($user_info['is_super'] ?? 0) == 1 || user_id() == 1) {
+        $values = WarehouseScopeService::warehouseFilterValues(WarehouseScopeService::ACTION_INBOUND);
+        if ($values === null) {
             return [];
         }
-        $roleIds = $userAttrModel->where('user_id', user_id())->column('role_id');
-        $merged = [];
-        foreach ($roleIds as $rid) {
-            $rid = (int) $rid;
-            if ($rid <= 0) {
-                continue;
-            }
-            $roleRow = $roleModel->find($rid);
-            if (!$roleRow) {
-                continue;
-            }
-            $roleName = (string) ($roleRow['role_name'] ?? '');
-            if (!isset($roleToWarehouse[$roleName])) {
-                continue;
-            }
-            $canonical = $roleToWarehouse[$roleName];
-            foreach (self::warehouseRoleMatchValues($canonical) as $v) {
-                $merged[$v] = true;
-            }
-        }
-        return array_keys($merged);
+
+        return $values;
     }
 
     public static function getUserWarehouse()
@@ -714,12 +709,14 @@ class InStockService
             $order = ['create_time' => 'desc'];
         }
         if ($page == 0 || $limit == 0) {
-            return $model->with(['getMaterial','getStock'])->where($where)->order($order)->select()->toArray();
+            $list = $model->with(['getMaterial','getStock'])->where($where)->order($order)->select()->toArray();
+            return MaterialSearchHelper::enrichRoundSteelArchiveRows($list);
         }
         $count = $model->where($where)->count();
         $pages = ceil($count / $limit);
         /*对list的方法进行处理*/
         $list = $model->with(['getMaterial','getStock'])->where($where)->page($page)->limit($limit)->order($order)->select()->toArray();
+        $list = MaterialSearchHelper::enrichRoundSteelArchiveRows($list);
         foreach ($list as $k => &$v) {
             // 仅补充当前行对应批次的单价/总价；禁止把同物料多批次拼接到一行（会导致批次号、金额列出现超长逗号串）
             $batch = (string) ($v['material_batch'] ?? '');
@@ -751,7 +748,7 @@ class InStockService
      * 与成品库虚拟列表同一套展示规则：圆钢信息列 / 成品信息列
      *
      * @param array $row 查询行需含 yg_name/yg_spec/yg_model、cp_name/cp_spec/cp_model
-     * @return array{y_material_spec:string, product_info:string}
+     * @return array<string,string>
      */
     private static function productWarehouseDisplayLabels(array $row): array
     {
@@ -766,7 +763,11 @@ class InStockService
         if (!empty($row['cp_model'])) {
             $parts[] = $row['cp_model'];
         }
-        $y_material_spec = implode(' · ', $parts);
+        $y_material_info = implode(' · ', $parts);
+        $y_material_name = (string) ($row['cp_name'] ?? '');
+        $y_material_manufacturer = (string) ($row['cp_manufacturer'] ?? '');
+        $y_material_spec = (string) ($row['cp_spec'] ?? '');
+        $y_material_model = (string) ($row['cp_model'] ?? '');
 
         // 成品信息列：来自 production.english_material（yg_*）
         $cpParts = [];
@@ -781,7 +782,14 @@ class InStockService
         }
         $product_info = implode(' · ', $cpParts);
 
-        return compact('y_material_spec', 'product_info');
+        return compact(
+            'y_material_name',
+            'y_material_manufacturer',
+            'y_material_spec',
+            'y_material_model',
+            'y_material_info',
+            'product_info'
+        );
     }
 
     /**
@@ -798,32 +806,9 @@ class InStockService
         if ($codes === []) {
             return [];
         }
-        $placeholders = implode(',', array_fill(0, count($codes), '?'));
-        $sql = "
-            SELECT 
-                p.production_plan_code as relation_code,
-                m_yg.material_name as yg_name,
-                m_yg.material_spec as yg_spec,
-                m_yg.material_model as yg_model,
-                m_cp.material_spec as cp_spec,
-                m_cp.material_model as cp_model,
-                m_cp.material_name as cp_name
-            FROM ya_production p
-            LEFT JOIN ya_material m_yg ON p.english_material = m_yg.id
-            LEFT JOIN ya_product_task pt ON pt.relation_code = p.production_plan_code AND pt.is_delete = 0
-            LEFT JOIN ya_material m_cp ON pt.material_id = m_cp.id
-            WHERE p.is_delete = 0 AND p.production_plan_code IN ({$placeholders})
-            GROUP BY p.production_plan_code, p.english_material,
-                   m_yg.material_name, m_yg.material_spec, m_yg.material_model,
-                   m_cp.material_spec, m_cp.material_model, m_cp.material_name
-        ";
-        $rows = Db::query($sql, $codes);
+        $rows = self::planSteelAndFinishedMaterialsByRelationCodes($codes);
         $out = [];
-        foreach ($rows as $row) {
-            $rc = (string) ($row['relation_code'] ?? '');
-            if ($rc === '' || isset($out[$rc])) {
-                continue;
-            }
+        foreach ($rows as $rc => $row) {
             $out[$rc] = self::productWarehouseDisplayLabels($row);
         }
 
@@ -839,7 +824,7 @@ class InStockService
      */
     private static function productWarehouseList($where = [], $page = 1, $limit = 10, $order = [])
     {
-        // 主查询：以生产计划单为维度，汇总酸洗报工数量
+        // [AI-2026-08] 去掉逐行发货相关子查询；物料 ID 缺失改由 expandOwnerRows 批量补全
         $sql = "
             SELECT 
                 p.production_plan_code as plan_code,
@@ -853,66 +838,102 @@ class InStockService
                 m_cp.material_spec as cp_spec,
                 m_cp.material_model as cp_model,
                 m_cp.material_name as cp_name,
+                m_cp.manufacturer as cp_manufacturer,
                 COALESCE(SUM(pr.report_num), 0) as in_num,
-                (SELECT COALESCE(SUM(material_num), 0) FROM ya_ship WHERE relation_code = p.production_plan_code AND is_delete = 0) as shipped_num,
+                0 as shipped_num,
                 MAX(pr.create_time) as create_time
             FROM ya_production p
             LEFT JOIN ya_material m_yg ON p.english_material = m_yg.id
             LEFT JOIN ya_product_task pt ON pt.relation_code = p.production_plan_code AND pt.is_delete = 0
             LEFT JOIN ya_material m_cp ON pt.material_id = m_cp.id
+                AND m_cp.is_delete = 0
+                AND m_cp.material_property = '圆钢'
             LEFT JOIN ya_product_report pr ON pr.relation_code = pt.task_code 
                 AND pr.processes_code = 'gx_0014' 
                 AND pr.is_delete = 0
             WHERE p.is_delete = 0
         ";
 
-        // 只显示有酸洗报工记录的计划单（即有成品入库的）
         $params = [];
+        $materialIds = null;
 
         // 搜索条件（$where 可能含 ThinkPHP 闭包，不可当下标数组访问）
         foreach ($where as $condition) {
             if (!is_array($condition)) {
                 continue;
             }
-            if (isset($condition[0]) && $condition[0] === 'material_batch' && !empty($condition[2])) {
-                $sql .= " AND p.production_plan_code LIKE ?";
-                $params[] = '%' . $condition[2] . '%';
+            $field = $condition[0] ?? '';
+            $op = strtolower((string) ($condition[1] ?? ''));
+            $val = $condition[2] ?? null;
+            if ($field === 'material_batch' && $val !== null && $val !== '') {
+                $sql .= ' AND p.production_plan_code LIKE ?';
+                // controller 已拼好 %keyword%，此处不再二次包裹
+                $params[] = (string) $val;
             }
-            if (isset($condition[0]) && $condition[0] === 'material_name' && !empty($condition[2])) {
-                $sql .= " AND (m_yg.material_name LIKE ? OR m_cp.material_name LIKE ?)";
-                $params[] = '%' . $condition[2] . '%';
-                $params[] = '%' . $condition[2] . '%';
+            if ($field === 'material_name' && $val !== null && $val !== '') {
+                $like = (string) $val;
+                if (strpos($like, '%') === false) {
+                    $like = '%' . $like . '%';
+                }
+                $sql .= ' AND (m_yg.material_name LIKE ? OR m_cp.material_name LIKE ?)';
+                $params[] = $like;
+                $params[] = $like;
             }
+            if ($field === 'material_id' && $op === 'in') {
+                $materialIds = is_array($val) ? $val : [];
+            }
+        }
+
+        if ($materialIds !== null) {
+            $materialIds = array_values(array_unique(array_filter(array_map('intval', $materialIds))));
+            if ($materialIds === []) {
+                return [
+                    'count' => 0,
+                    'pages' => 0,
+                    'page' => $page,
+                    'limit' => $limit,
+                    'list' => [],
+                    'alert_count' => 0,
+                    'stockPermissions' => FinishedStockService::actionPermissions(),
+                ];
+            }
+            $idPh = implode(',', array_fill(0, count($materialIds), '?'));
+            $sql .= " AND (
+                p.english_material IN ({$idPh})
+                OR pt.material_id IN ({$idPh})
+                OR EXISTS (
+                    SELECT 1
+                    FROM ya_production_detail pd_filter
+                    WHERE pd_filter.production_plan_code = p.production_plan_code
+                      AND pd_filter.is_delete = 0
+                      AND pd_filter.material_id IN ({$idPh})
+                )
+            )";
+            $params = array_merge($params, $materialIds, $materialIds, $materialIds);
         }
 
         $sql .= " GROUP BY p.production_plan_code, p.production_plan_name, p.english_material, 
                    m_yg.material_name, m_yg.material_spec, m_yg.material_model,
-                   m_cp.material_spec, m_cp.material_model, m_cp.material_name";
+                   m_cp.material_spec, m_cp.material_model, m_cp.material_name, m_cp.manufacturer";
         // [AI-2026-06] 先取有酸洗报工的计划，再按归属拆行并过滤库存>0
         $sql .= " HAVING in_num > 0";
         $sql .= " ORDER BY create_time DESC";
 
         $baseList = Db::query($sql, $params);
+        $displayMap = self::labelsForShipRelationCodes(array_column($baseList, 'relation_code'));
 
         // 处理数据格式（注意：english_material实际存的是成品物料，product_task.material_id存的是圆钢物料）
         foreach ($baseList as &$item) {
-            // 与酸洗报工生成入库单时写入 wms_material 的 material_id 对齐（见 ProductReportService::report）
-            if (empty($item['material_id']) && !empty($item['material_batch'])) {
-                $wm = (new WmsMaterialModel())
-                    ->where('material_batch', $item['material_batch'])
-                    ->where('is_delete', 0)
-                    ->order('id', 'desc')
-                    ->find();
-                if (!empty($wm)) {
-                    $item['material_id'] = $wm['material_id'];
-                }
-            }
-            $labels = self::productWarehouseDisplayLabels($item);
+            $relationCode = (string) ($item['relation_code'] ?? '');
+            $labels = $displayMap[$relationCode] ?? self::productWarehouseDisplayLabels($item);
+            $item['y_material_name'] = $labels['y_material_name'];
+            $item['y_material_manufacturer'] = $labels['y_material_manufacturer'];
             $item['y_material_spec'] = $labels['y_material_spec'];
+            $item['y_material_model'] = $labels['y_material_model'];
+            $item['y_material_info'] = $labels['y_material_info'];
             $item['product_info'] = $labels['product_info'];
-
             $item['in_num'] = round((float) $item['in_num'], 2);
-            $item['shipped_num'] = round((float) $item['shipped_num'], 2);
+            $item['shipped_num'] = 0;
         }
         unset($item);
 

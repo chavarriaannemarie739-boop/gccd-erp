@@ -18,7 +18,15 @@ export const useUserStore = defineStore('user', () => {
     avatar_url: '',
     roles: [],
     menus: [],
-    is_super: ''
+    is_super: '',
+    // [AI-2026-08] 仓库权限范围
+    warehouse_scopes: {
+      unlimited: false,
+      archive: [],
+      inventory: [],
+      inbound: [],
+      outbound: []
+    }
   })
 
   // 登录
@@ -56,6 +64,13 @@ export const useUserStore = defineStore('user', () => {
           user.roles = data.roles
           user.menus = data.menus
           user.is_super = data.is_super
+          user.warehouse_scopes = data.warehouse_scopes || {
+            unlimited: Number(data.is_super) === 1,
+            archive: [],
+            inventory: [],
+            inbound: [],
+            outbound: []
+          }
           settingsStore.changeSetting({
             key: 'watermarkContent',
             value: settingsStore.systemName + '@' + data.nickname

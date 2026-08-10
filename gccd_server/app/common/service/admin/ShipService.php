@@ -20,6 +20,7 @@ use think\facade\Filesystem;
  */
 class ShipService
 {
+    // [AI-2026-08] 圆钢四字段发货展示兼容开始
     /**
      * 添加、修改字段
      * @var array
@@ -33,6 +34,9 @@ class ShipService
         'content' => '',
         'customer_name' => '',//客户名称
         'y_material_spec' => '',
+        'y_material_name' => '',
+        'y_material_manufacturer' => '',
+        'y_material_model' => '',
         'product_info' => '',
     ];
 
@@ -51,11 +55,51 @@ class ShipService
         'material_batch' => '',
         'customer_name' => '',//客户名称
         'y_material_spec' => '',
+        'y_material_name' => '',
+        'y_material_manufacturer' => '',
+        'y_material_model' => '',
+        'y_mateial_name' => '',
+        'y_mateial_manufacturer' => '',
+        'y_mateial_spec' => '',
+        'y_mateial_model' => '',
         'product_info' => '',
         'create_start_date' => '',
         'create_end_date' => '',
         'ship_date' => '',
     ];
+
+    /**
+     * 将计划圆钢/成品展示字段应用到发货行。
+     *
+     * @param array<int,array<string,mixed>> $rows
+     * @param array<string,array<string,string>> $labelMap
+     * @return array<int,array<string,mixed>>
+     */
+    public static function applyRoundSteelLabelsToRows(array $rows, array $labelMap): array
+    {
+        foreach ($rows as &$row) {
+            $code = trim((string) ($row['relation_code'] ?? ''));
+            if ($code === '' || !isset($labelMap[$code])) {
+                continue;
+            }
+            foreach (
+                [
+                    'y_material_name',
+                    'y_material_manufacturer',
+                    'y_material_spec',
+                    'y_material_model',
+                    'y_material_info',
+                    'product_info',
+                ] as $field
+            ) {
+                $row[$field] = (string) ($labelMap[$code][$field] ?? '');
+            }
+        }
+        unset($row);
+
+        return $rows;
+    }
+    // [AI-2026-08] 圆钢四字段发货展示兼容结束
     /**
      * 列表
      *
@@ -75,21 +119,18 @@ class ShipService
             $order = ['create_time' => 'desc'];
         }
         if ($page == 0 || $limit == 0) {
-            return $model->where($where)->order($order)->select()->toArray();
+            $list = $model->where($where)->order($order)->select()->toArray();
+            $labelMap = InStockService::labelsForShipRelationCodes(
+                array_column($list, 'relation_code')
+            );
+            return self::applyRoundSteelLabelsToRows($list, $labelMap);
         }
         $count = $model->where($where)->count();
         $pages = ceil($count / $limit);
         $list = $model->where($where)->page($page)->limit($limit)->order($order)->select()->toArray();
         /* 按计划单号补全圆钢信息 / 成品信息（与成品库选料展示一致；不依赖 ya_ship 是否已加扩展字段） */
         $labelMap = InStockService::labelsForShipRelationCodes(array_column($list, 'relation_code'));
-        foreach ($list as &$row) {
-            $code = isset($row['relation_code']) ? trim((string) $row['relation_code']) : '';
-            if ($code !== '' && isset($labelMap[$code])) {
-                $row['y_material_spec'] = $labelMap[$code]['y_material_spec'];
-                $row['product_info'] = $labelMap[$code]['product_info'];
-            }
-        }
-        unset($row);
+        $list = self::applyRoundSteelLabelsToRows($list, $labelMap);
 
         return compact('count', 'pages', 'page', 'limit', 'list');
     }
@@ -116,6 +157,10 @@ class ShipService
                 return [];
             }
             $info = $info->toArray();
+            $labelMap = InStockService::labelsForShipRelationCodes([
+                (string) ($info['relation_code'] ?? ''),
+            ]);
+            $info = self::applyRoundSteelLabelsToRows([$info], $labelMap)[0];
         }
         /*生成调试单号*/
         return $info;

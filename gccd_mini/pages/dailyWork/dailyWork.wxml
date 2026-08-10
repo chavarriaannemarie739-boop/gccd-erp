@@ -58,9 +58,9 @@
           <text>日工工资（每人）</text>
           <text class="preview-val">{{dailyWagePerPerson}} 元</text>
         </view>
-        <view class="preview-row" wx:if="{{isTeamLeader}}">
-          <text>岗位津贴（每人）</text>
-          <text class="preview-val">{{allowancePerPerson}} 元</text>
+        <view class="preview-row">
+          <text>岗位津贴（报工人{{reporterName ? '：' + reporterName : ''}}）</text>
+          <text class="preview-val">{{leaderAllowance}} 元</text>
         </view>
         <view class="preview-row">
           <text>报工人数</text>
@@ -81,7 +81,6 @@
     </view>
   </view>
 
-  <!-- 人员选择弹窗 -->
   <van-popup show="{{showUserPopup}}" position="bottom" round bind:close="hideUserPicker" custom-style="height: 70vh">
     <view class="user-picker-container">
       <view class="user-picker-header">
@@ -116,4 +115,6 @@
       </view>
     </view>
   </van-popup>
+
+  <van-toast id="van-toast" />
 </view>

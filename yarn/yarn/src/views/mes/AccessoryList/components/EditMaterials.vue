@@ -2,10 +2,14 @@
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px" :model="userForm" :rules="handleRules">
+      <!-- [AI-2026-08] 配件档案补齐厂商录入，与列表筛选字段一致 -->
       <el-form-item label="配件名称：" prop="material_name">
         <el-input v-model="userForm.material_name" placeholder="请输入" style="width: 300px" />
       </el-form-item>
-      <el-form-item label="配件规格：" prop="material_spec">
+      <el-form-item label="厂商：" prop="manufacturer">
+        <el-input v-model="userForm.manufacturer" placeholder="请输入" style="width: 300px" />
+      </el-form-item>
+      <el-form-item label="材质：" prop="material_spec">
         <el-input v-model="userForm.material_spec" placeholder="请输入" style="width: 300px" />
       </el-form-item>
       <el-form-item label="配件型号：" prop="material_model">
@@ -17,16 +21,6 @@
           placeholder="创建后不可修改"
           style="width: 300px"
           disabled
-        />
-      </el-form-item>
-      <el-form-item label="最低库存阈值：" prop="min_stock_qty">
-        <el-input-number
-          v-model="userForm.min_stock_qty"
-          :min="0"
-          :precision="3"
-          :controls="true"
-          placeholder="不填则不预警"
-          style="width: 300px"
         />
       </el-form-item>
       <el-form-item label="是否为生产原料：" prop="is_product">
@@ -64,15 +58,15 @@ export default {
       ],
       userForm: {
         material_name: '',
+        manufacturer: '',
         material_spec: '',
         material_model: '',
         material_property: '',
-        min_stock_qty: null,
         is_product: 0
       },
       handleRules: {
         material_name: [{ required: true, message: '配件名称不能为空', trigger: 'blur' }],
-        material_spec: [{ required: true, message: '配件规格不能为空', trigger: 'blur' }],
+        material_spec: [{ required: true, message: '材质不能为空', trigger: 'blur' }],
         // material_model: [{ required: true, message: '型号不能为空', trigger: 'blur' }],
         material_property: [{ required: true, message: '物料属性不能为空', trigger: 'blur' }]
       }

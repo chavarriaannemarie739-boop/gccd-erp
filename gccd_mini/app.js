@@ -9,9 +9,9 @@ App({
         // 检查是否有 AdminToken
         const adminToken = wx.getStorageSync('AdminToken')
 
-        // 如果有 AdminToken，跳转到首页；否则跳转到登录页
+        // Tab 页须用 switchTab；reLaunch 在 glass-easel 下易导致首屏空白
         if (adminToken) {
-            wx.reLaunch({
+            wx.switchTab({
                 url: '/pages/workbench/workbench'
             })
         } else {

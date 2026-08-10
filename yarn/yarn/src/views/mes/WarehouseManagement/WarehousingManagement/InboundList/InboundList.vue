@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 入库圆钢统一名称、厂商、材质、型号 -->
   <div class="app-container inbound-list-page">
     <el-card class="filter-card-compact" shadow="never">
       <el-form :model="query" class="filter-form-flex" @submit.prevent>
@@ -6,6 +7,15 @@
           <el-input
             v-model="query.in_code"
             placeholder="入库编码"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
+            v-model="query.manufacturer"
+            placeholder="厂商"
             clearable
             size="small"
             class="filter-input"
@@ -70,17 +80,25 @@
           />
         </el-form-item>
         <el-form-item class="filter-form-item--actions">
-          <el-button v-preventReClick type="primary" size="small" @click="handleSearch">搜索</el-button>
+          <el-button v-preventReClick type="primary" size="small" @click="handleSearch"
+            >搜索</el-button
+          >
           <el-button v-preventReClick size="small" @click="handleResetting">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
     <div class="contenter">
       <el-card class="main-list-card">
-        <el-tabs v-model="activeName" class="plan-tabs" type="card" @tab-change="onWarehouseTabChange">
-          <el-tab-pane label="配件仓库" name="配件仓库" />
-          <el-tab-pane label="圆钢仓库" name="圆钢仓库" />
-          <el-tab-pane label="成品仓库" name="成品库" />
+        <el-tabs
+          v-model="activeName"
+          class="plan-tabs"
+          type="card"
+          @tab-change="onWarehouseTabChange"
+        >
+          <!-- [AI-2026-08] 按入库仓库权限显隐 Tab -->
+          <el-tab-pane v-if="canInboundTab('配件')" label="配件仓库" name="配件仓库" />
+          <el-tab-pane v-if="canInboundTab('圆钢')" label="圆钢仓库" name="圆钢仓库" />
+          <el-tab-pane v-if="canInboundTab('成品')" label="成品仓库" name="成品库" />
         </el-tabs>
         <div class="toolbar-row">
           <el-button
@@ -88,11 +106,18 @@
             size="small"
             :disabled="inboundAddDisabled"
             @click="CheckbelowGoods"
-          >新增</el-button>
-          <el-button type="primary" size="small" :disabled="editDisabled" @click="toolbarEdit">编辑</el-button>
-          <el-button type="danger" size="small" :disabled="type" v-preventReClick @click="dele(row)">删除</el-button>
+            >新增</el-button
+          >
+          <el-button type="primary" size="small" :disabled="editDisabled" @click="toolbarEdit"
+            >编辑</el-button
+          >
+          <el-button type="danger" size="small" :disabled="type" v-preventReClick @click="dele(row)"
+            >删除</el-button
+          >
         </div>
-        <p class="table-hint">表格列较多时，可在下方横向滚动条拖动查看全部内容（触控板双指滑动亦可）。</p>
+        <p class="table-hint">
+          表格列较多时，可在下方横向滚动条拖动查看全部内容（触控板双指滑动亦可）。
+        </p>
         <div class="table-scroll-container">
           <el-table
             :key="activeName"
@@ -139,7 +164,11 @@
           width="70%"
           :close-on-click-modal="false"
         >
-          <CreateInventory :inbound-tab="activeName" v-model:is-show="processVisible" @list="list" />
+          <CreateInventory
+            :inbound-tab="activeName"
+            v-model:is-show="processVisible"
+            @list="list"
+          />
         </el-dialog>
         <!-- 编辑 -->
         <el-dialog
@@ -152,7 +181,6 @@
           <ViewInventory :view="view" v-model:is-show="processVisibleGoods" @list="list" />
         </el-dialog>
       </el-card>
-      <router-view />
     </div>
   </div>
 </template>
@@ -162,6 +190,7 @@ import { list, dele } from '@/api/mes/WarehouseManagement/WarehouseManagement'
 import { listGoods } from '@/api/mes/WarehouseManagement/RepositoryList'
 import CreateInventory from './components/CreateInventory.vue'
 import ViewInventory from './components/ViewInventory.vue'
+import { canWarehouse, pickDefaultTab, visibleWarehouseTabs } from '@/utils/warehouseScope'
 export default {
   name: 'InboundList',
   components: {
@@ -188,6 +217,7 @@ export default {
         limit: 10,
         in_code: '',
         material_name: '',
+        manufacturer: '',
         warehouse: '配件',
         material_batch: '',
         create_start_date: '',
@@ -218,6 +248,16 @@ export default {
     }
   },
   computed: {
+    inboundTabDefs() {
+      return [
+        { type: '配件', name: '配件仓库', label: '配件仓库' },
+        { type: '圆钢', name: '圆钢仓库', label: '圆钢仓库' },
+        { type: '成品', name: '成品库', label: '成品仓库' }
+      ]
+    },
+    visibleInboundTabs() {
+      return visibleWarehouseTabs('inbound', this.inboundTabDefs)
+    },
     inboundAddDisabled() {
       return this.activeName === '成品库'
     },
@@ -230,8 +270,9 @@ export default {
           { prop: 'in_code', label: '入库编号', minWidth: 130 },
           { prop: 'relation_code', label: 'SCJH单号', minWidth: 130 },
           { prop: 'material_name', label: '圆钢名称', minWidth: 120 },
-          { prop: 'material_spec', label: '圆钢规格', minWidth: 120 },
-          { prop: 'material_model', label: '圆钢型号', minWidth: 120 },
+          { prop: 'manufacturer', label: '厂商', minWidth: 120 },
+          { prop: 'material_spec', label: '材质', minWidth: 120 },
+          { prop: 'material_model', label: '型号', minWidth: 120 },
           { prop: 'finished_material_name', label: '成品名称', minWidth: 120 },
           { prop: 'finished_material_spec', label: '成品规格', minWidth: 120 },
           { prop: 'finished_material_model', label: '成品型号', minWidth: 120 },
@@ -245,8 +286,9 @@ export default {
         return [
           { prop: 'in_code', label: '入库编号', minWidth: 130 },
           { prop: 'material_name', label: '圆钢名称', minWidth: 120 },
-          { prop: 'material_spec', label: '圆钢规格', minWidth: 120 },
-          { prop: 'material_model', label: '圆钢型号', minWidth: 120 },
+          { prop: 'manufacturer', label: '厂商', minWidth: 120 },
+          { prop: 'material_spec', label: '材质', minWidth: 120 },
+          { prop: 'material_model', label: '型号', minWidth: 120 },
           { prop: 'in_num', label: '入库数量', width: 100 },
           { prop: 'money', label: '单价', width: 88 },
           { prop: 'sum', label: '总额', width: 88 },
@@ -290,12 +332,26 @@ export default {
       ]
     }
   },
+  // [AI-2026-07] keep-alive 白名单外首次进入不触发 activated，需 mounted 拉数
+  mounted() {
+    this.applyInboundTabScope()
+    this.syncWarehouseQueryFromTab()
+    this.list()
+    this.listGoods()
+  },
   activated() {
+    this.applyInboundTabScope()
     this.syncWarehouseQueryFromTab()
     this.list()
     this.listGoods()
   },
   methods: {
+    canInboundTab(type) {
+      return canWarehouse('inbound', type)
+    },
+    applyInboundTabScope() {
+      this.activeName = pickDefaultTab(this.visibleInboundTabs, this.activeName)
+    },
     /** 与 Tab 对应的仓库 LIKE 关键字（兼容库内 配件仓库/配件库、圆钢仓库、成品仓库/成品库 等写法，仅影响筛选，不改数据） */
     warehouseLikeForTab(tabName) {
       const map = {
@@ -350,10 +406,15 @@ export default {
     },
     async list() {
       this.loading = true
-      const resp = await list(this.query)
-      this.tableData = resp.data.list
-      this.total = resp.data.count
-      this.loading = false
+      try {
+        const resp = await list(this.query)
+        this.tableData = resp.data?.list || []
+        this.total = resp.data?.count || 0
+      } catch (e) {
+        /* request 拦截器已提示 */
+      } finally {
+        this.loading = false
+      }
     },
     handleSearch() {
       this.query.page = 1
@@ -382,6 +443,7 @@ export default {
     handleResetting() {
       this.query.in_code = ''
       this.query.material_name = ''
+      this.query.manufacturer = ''
       this.query.material_batch = ''
       this.query.create_start_date = ''
       this.query.create_end_date = ''

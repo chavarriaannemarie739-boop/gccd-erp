@@ -1,3 +1,4 @@
+<!-- [AI-2026-08] 圆钢展示与筛选顺序：名称、厂商、材质、型号。 -->
 <view class="page">
   <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
     <view class="navbar-left" bindtap="goBack">‹</view>
@@ -11,16 +12,15 @@
       <text class="device-name">{{device_name}}</text>
     </view>
 
+    <!-- [AI-2026-08] 穿孔及后续工序：圆钢四字段 + 成品规格/型号；两行三列 -->
     <view class="filter-bar">
-      <input
-        class="filter-input"
-        placeholder="圆钢规格/型号/成品规格/型号"
-        value="{{keyword}}"
-        confirm-type="search"
-        bindinput="onKeywordInput"
-        bindconfirm="onKeywordConfirm"
-      />
-      <view wx:if="{{keyword}}" class="filter-clear" bindtap="onKeywordClear">清除</view>
+      <input class="filter-input" placeholder="圆钢名称" value="{{y_material_name}}" data-field="y_material_name" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="圆钢厂商" value="{{y_material_manufacturer}}" data-field="y_material_manufacturer" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="圆钢材质" value="{{y_material_spec}}" data-field="y_material_spec" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="圆钢型号" value="{{y_material_model}}" data-field="y_material_model" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="成品规格" value="{{c_material_spec}}" data-field="c_material_spec" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <input class="filter-input" placeholder="成品型号" value="{{c_material_model}}" data-field="c_material_model" confirm-type="search" bindinput="onKeywordInput" bindconfirm="onKeywordConfirm" />
+      <view wx:if="{{y_material_name || y_material_manufacturer || y_material_spec || y_material_model || c_material_spec || c_material_model}}" class="filter-clear" bindtap="onFilterReset">重置筛选</view>
     </view>
 
     <scroll-view scroll-y class="list-scroll" bindscrolltolower="loadMore">
@@ -28,7 +28,15 @@
         <view class="card-title">{{item.production_plan_name}}</view>
         <view class="spec-grid">
           <view class="spec-row">
-            <text class="spec-label">圆钢规格</text>
+            <text class="spec-label">圆钢名称</text>
+            <text class="spec-value">{{item.y_material_name || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">圆钢厂商</text>
+            <text class="spec-value">{{item.y_material_manufacturer || '—'}}</text>
+          </view>
+          <view class="spec-row">
+            <text class="spec-label">圆钢材质</text>
             <text class="spec-value">{{item.y_material_spec || '—'}}</text>
           </view>
           <view class="spec-row">
@@ -46,11 +54,17 @@
         </view>
         <view class="card-row">计划 {{item.task_num}} 吨 · 已报 {{item.process_report_num || 0}} 吨</view>
         <view class="card-row highlight">剩余 {{item.remain_total}} 吨</view>
+        <view class="card-footer" style="display: flex; justify-content: flex-end; margin-top: 10px;">
+          <van-button type="info" size="small" catch:tap="onPrintTap" data-plan-id="{{item.production_plan_id}}" data-material-id="{{item.material_id}}" custom-style="background: #0d9488; border-color: #0d9488;" round>
+            打印
+          </van-button>
+        </view>
       </view>
       <view wx:if="{{!loading && list.length === 0}}" class="empty">
-        {{keyword ? '未找到匹配的任务' : '暂无进行中的'}}{{keyword ? '' : processes_name + '任务'}}
+        {{y_material_name || y_material_manufacturer || y_material_spec || y_material_model || c_material_spec || c_material_model ? '未找到匹配的任务' : '暂无进行中的' + processes_name + '任务'}}
       </view>
     </scroll-view>
   </view>
   <van-toast id="van-toast" />
+  <print-flow-card show="{{showPrintPopup}}" planId="{{printPlanId}}" materialId="{{printMaterialId}}" bind:close="closePrintPopup" />
 </view>

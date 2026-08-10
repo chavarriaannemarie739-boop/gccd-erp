@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 发货单圆钢业务字段统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <el-card class="filter-card-compact" shadow="never">
       <el-form :model="query" class="filter-form-flex" @submit.prevent>
@@ -58,8 +59,35 @@
         </el-form-item>
         <el-form-item class="filter-form-item--field">
           <el-input
+            v-model="query.y_material_name"
+            placeholder="圆钢名称"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
+            v-model="query.y_material_manufacturer"
+            placeholder="圆钢厂商"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
             v-model="query.y_material_spec"
-            placeholder="圆钢信息"
+            placeholder="圆钢材质"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
+            v-model="query.y_material_model"
+            placeholder="圆钢型号"
             clearable
             size="small"
             class="filter-input"
@@ -91,42 +119,45 @@
       </el-form>
     </el-card>
     <div class="contenter">
-        <el-card>
-          <div style="margin-bottom: 20px">
-            <el-button type="success" @click="CheckbelowGoods">新增</el-button>
-            <!-- <el-button type="danger" :disabled="type" v-preventReClick @click="dele(row)"
+      <el-card>
+        <div style="margin-bottom: 20px">
+          <el-button type="success" @click="CheckbelowGoods">新增</el-button>
+          <!-- <el-button type="danger" :disabled="type" v-preventReClick @click="dele(row)"
               >删除</el-button
             > -->
-          </div>
-          <el-table
-            ref="tableDataRefss"
-            :data="tableData"
-            border
-            fit
-            style="width: 100%"
-            :header-cell-style="{ 'text-align': 'center' }"
-            :cell-style="{ 'text-align': 'center' }"
-            v-loading="loading"
-            :row-key="getRowKeys"
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
-            <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
-            <el-table-column prop="ship_code" label="发货编号" show-overflow-tooltip />
-            <el-table-column prop="customer_name" label="客户" show-overflow-tooltip />
-            <el-table-column prop="relation_code" label="关联单号" show-overflow-tooltip />
-            <el-table-column prop="material_batch" label="物料批次" show-overflow-tooltip />
-            <el-table-column prop="y_material_spec" label="圆钢信息" show-overflow-tooltip />
-            <el-table-column prop="product_info" label="成品信息" show-overflow-tooltip />
-            <el-table-column prop="material_num" label="数量" show-overflow-tooltip>
-              <template #default="{ row }">
-                {{ formatShipQty(row.material_num) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-            <el-table-column prop="ship_date" label="发货日期" show-overflow-tooltip />
-            <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
-            <!-- <el-table-column fixed="right" label="操作" width="200">
+        </div>
+        <el-table
+          ref="tableDataRefss"
+          :data="tableData"
+          border
+          fit
+          style="width: 100%"
+          :header-cell-style="{ 'text-align': 'center' }"
+          :cell-style="{ 'text-align': 'center' }"
+          v-loading="loading"
+          :row-key="getRowKeys"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
+          <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
+          <el-table-column prop="ship_code" label="发货编号" show-overflow-tooltip />
+          <el-table-column prop="customer_name" label="客户" show-overflow-tooltip />
+          <el-table-column prop="relation_code" label="关联单号" show-overflow-tooltip />
+          <el-table-column prop="material_batch" label="物料批次" show-overflow-tooltip />
+          <el-table-column prop="y_material_name" label="圆钢名称" show-overflow-tooltip />
+          <el-table-column prop="y_material_manufacturer" label="圆钢厂商" show-overflow-tooltip />
+          <el-table-column prop="y_material_spec" label="圆钢材质" show-overflow-tooltip />
+          <el-table-column prop="y_material_model" label="圆钢型号" show-overflow-tooltip />
+          <el-table-column prop="product_info" label="成品信息" show-overflow-tooltip />
+          <el-table-column prop="material_num" label="数量" show-overflow-tooltip>
+            <template #default="{ row }">
+              {{ formatShipQty(row.material_num) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+          <el-table-column prop="ship_date" label="发货日期" show-overflow-tooltip />
+          <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
+          <!-- <el-table-column fixed="right" label="操作" width="200">
               <template #default="{ row }">
                 <el-button type="info" v-preventReClick @click="ViewproductionPlan(row)"
                   >查看</el-button
@@ -136,32 +167,32 @@
                 >
               </template>
             </el-table-column> -->
-          </el-table>
-          <!-- 分页 -->
-          <el-pagination
-            style="margin-top: 10px"
-            :page-sizes="[30, 60, 100, 200]"
-            :current-page="query.page"
-            :page-size="query.limit"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-card>
-        <!-- 新增 -->
-        <el-dialog
-          title="新增"
-          v-if="processVisible"
-          v-model="processVisible"
-          width="60%"
-          :close-on-click-modal="false"
-        >
-          <AddShippingOrder :processes="selectList" v-model:is-show="processVisible" @list="list" />
-        </el-dialog>
-      </div>
-    <router-view />
+        </el-table>
+        <!-- 分页 -->
+        <el-pagination
+          style="margin-top: 10px"
+          :page-sizes="[30, 60, 100, 200]"
+          :current-page="query.page"
+          :page-size="query.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-card>
+      <!-- 新增 -->
+      <el-dialog
+        title="新增"
+        v-if="processVisible"
+        v-model="processVisible"
+        width="60%"
+        append-to-body
+        :close-on-click-modal="false"
+      >
+        <AddShippingOrder :processes="selectList" v-model:is-show="processVisible" @list="list" />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -197,7 +228,10 @@ export default {
         material_batch: '',
         material_name: '',
         customer_name: '',
+        y_material_name: '',
+        y_material_manufacturer: '',
         y_material_spec: '',
+        y_material_model: '',
         product_info: '',
         ship_date: ''
       },
@@ -205,6 +239,10 @@ export default {
       tableList: [],
       loading: true
     }
+  },
+  // [AI-2026-07] keep-alive 白名单外首次进入不触发 activated，需 mounted 拉数
+  mounted() {
+    this.list()
   },
   activated() {
     this.list()
@@ -246,11 +284,24 @@ export default {
     // 生产工序
     async list() {
       this.loading = true
-      const resp = await list(this.query)
-      this.tableData = resp.data.list
-      this.total = resp.data.count
-      console.log(resp, 'resp')
-      this.loading = false
+      try {
+        const resp = await list(this.query)
+        this.tableData = (resp.data?.list || []).map((row) => {
+          const legacy = (field) => row[['y', 'mateial', field].join('_')]
+          return {
+            ...row,
+            y_material_name: row.y_material_name ?? legacy('name') ?? '',
+            y_material_manufacturer: row.y_material_manufacturer ?? legacy('manufacturer') ?? '',
+            y_material_spec: row.y_material_spec ?? legacy('spec') ?? '',
+            y_material_model: row.y_material_model ?? legacy('model') ?? ''
+          }
+        })
+        this.total = resp.data?.count || 0
+      } catch (e) {
+        /* request 拦截器已提示 */
+      } finally {
+        this.loading = false
+      }
     },
     // 处理时间
     handleChange(val) {
@@ -281,7 +332,10 @@ export default {
       this.query.material_batch = ''
       this.query.material_name = ''
       this.query.customer_name = ''
+      this.query.y_material_name = ''
+      this.query.y_material_manufacturer = ''
       this.query.y_material_spec = ''
+      this.query.y_material_model = ''
       this.query.product_info = ''
       this.query.ship_date = ''
       this.list()

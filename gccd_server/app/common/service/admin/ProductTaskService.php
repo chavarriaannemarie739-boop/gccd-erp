@@ -15,6 +15,7 @@ use app\common\model\admin\InStockModel;
 use app\common\model\admin\ProcessesModel;
 use app\common\model\admin\RoutingDetailModel;
 use app\common\model\admin\ProductTaskModel;
+use app\common\service\utils\MaterialSearchHelper;
 use app\common\service\wechat\Exception;
 use think\facade\App;
 use think\facade\Db;
@@ -47,6 +48,13 @@ class ProductTaskService
         'routing_code' => '',
         'create_start_date' => '',
         'create_end_date' => '',
+        // [AI-2026-08] 小程序 listForMini：圆钢四字段 + 成品规格/型号
+        'y_material_name' => '',
+        'y_material_manufacturer' => '',
+        'y_material_spec' => '',
+        'y_material_model' => '',
+        'c_material_spec' => '',
+        'c_material_model' => '',
     ];
 
     /**
@@ -335,7 +343,7 @@ class ProductTaskService
     /**
      * 返回「该生产计划下全部工单已结束」的 relation_code 列表。
      * 规则：单条工单已结束 = status=2（手动点完成或自动完成）。
-     * 自动完成条件：每个工序报工量 >= 计划量×97% 且 <= 计划量。
+     * 自动完成条件：穿孔/球化/矫直/酸洗报工量 >= 计划量×97% 且 <= 计划量（断钢不参与）。
      *
      * @return string[]
      */
@@ -379,13 +387,17 @@ class ProductTaskService
      *
      * @param string $processesCode 目标工序编码
      * @param string $deviceCode    穿孔时必传
+     * @param array<string,string> $roundSteelFilters 圆钢名称、厂商、材质、型号组合筛选
+     * @param array{spec?:string,model?:string} $finishedFilters 成品规格/型号（跨表 english_material）
      */
     public static function listForMini(
         string $processesCode,
         string $deviceCode = '',
         int $page = 1,
         int $limit = 10,
-        string $keyword = ''
+        string $keyword = '',
+        array $roundSteelFilters = [],
+        array $finishedFilters = []
     ): array {
         $processesCode = trim($processesCode);
         if ($processesCode === '') {
@@ -395,8 +407,33 @@ class ProductTaskService
         $processName = (string) ($processRow['processes_name'] ?? '');
 
         $model = new ProductTaskModel();
-        $query = $model->with(['getProcessName', 'getGyName', 'getPlanName', 'getMaterial', 'getYMaterial'])
-            ->where('is_delete', 0);
+        $query = $model->alias('pt')
+            ->with(['getProcessName', 'getGyName', 'getPlanName', 'getMaterial', 'getYMaterial'])
+            ->field('pt.*')
+            ->where('pt.is_delete', 0);
+
+        // [AI-2026-08] 同一圆钢档案四字段组合 AND，查询构造器绑定值避免 SQL 注入
+        if (MaterialSearchHelper::hasRoundSteelFilters($roundSteelFilters)) {
+            $query->join('material ym', 'ym.id=pt.material_id')
+                ->where('ym.is_delete', 0)
+                ->where('ym.material_property', '圆钢');
+            MaterialSearchHelper::applyRoundSteelFilters($query, $roundSteelFilters, 'ym');
+        }
+
+        // [AI-2026-08] 成品规格/型号：计划 english_material → material
+        $cSpec = trim((string) ($finishedFilters['spec'] ?? ''));
+        $cModel = trim((string) ($finishedFilters['model'] ?? ''));
+        if ($cSpec !== '' || $cModel !== '') {
+            $query->join('production pfin', 'pfin.production_plan_code = pt.relation_code')
+                ->join('material cm', 'cm.id = pfin.english_material')
+                ->where('cm.is_delete', 0);
+            if ($cSpec !== '') {
+                $query->whereLike('cm.material_spec', '%' . MaterialSearchHelper::likeKeyword($cSpec) . '%');
+            }
+            if ($cModel !== '') {
+                $query->whereLike('cm.material_model', '%' . MaterialSearchHelper::likeKeyword($cModel) . '%');
+            }
+        }
 
         if ($processName === ProductionConfig::PROCESS_NAME_PUNCH) {
             if ($deviceCode === '') {
@@ -408,10 +445,10 @@ class ProductTaskService
             if ($taskCodes === []) {
                 return ['list' => [], 'count' => 0, 'page' => $page, 'pages' => 0, 'limit' => $limit];
             }
-            $query->whereIn('task_code', array_unique($taskCodes));
+            $query->whereIn('pt.task_code', array_unique($taskCodes));
         }
 
-        $all = $query->order(['create_time' => 'desc'])->select()->toArray();
+        $all = $query->order(['pt.create_time' => 'desc'])->select()->toArray();
         self::applyTaskListReportAggregates($all);
 
         $keyword = trim($keyword);
@@ -448,6 +485,9 @@ class ProductTaskService
         $kw = mb_strtolower($keyword);
         $fields = [
             $row['production_plan_name'] ?? '',
+            // [AI-2026-08] 圆钢标准四字段均可匹配
+            $row['y_material_name'] ?? '',
+            $row['y_material_manufacturer'] ?? '',
             $row['y_material_spec'] ?? '',
             $row['y_material_model'] ?? '',
             $row['c_material_spec'] ?? '',

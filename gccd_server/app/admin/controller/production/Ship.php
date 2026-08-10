@@ -74,8 +74,15 @@ class Ship extends BaseController
         if (!empty($param['ship_date'])) {
             $where[] = ['ship_date', '=', $param['ship_date']];
         }
-        if (!empty($param['y_material_spec'])) {
-            $matchingCodes = MaterialSearchHelper::planCodesByRawTaskKeyword((string) $param['y_material_spec']);
+        /* [AI-2026-08] 发货圆钢四字段独立/组合检索 */
+        $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
+        if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+            $matchingCodes = MaterialSearchHelper::planCodesByRawMaterial(
+                $roundFilters['spec'],
+                $roundFilters['model'],
+                $roundFilters['name'],
+                $roundFilters['manufacturer']
+            );
             if (empty($matchingCodes)) {
                 $where[] = ['relation_code', '=', 'non-existent-code-to-force-empty-result'];
             } else {

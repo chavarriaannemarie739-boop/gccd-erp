@@ -1,3 +1,4 @@
+<!-- [AI-2026-08] 圆钢信息按名称、厂商、材质、型号展示。 -->
 <view class="page">
   <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
     <view class="navbar-left" bindtap="goBack">‹</view>
@@ -7,10 +8,12 @@
   <view class="body" style="padding-top: {{statusBarHeight + 44}}px">
     <view class="info-card">
       <view class="title">{{group.display_title}}</view>
-      <view class="spec-row"><text class="spec-label">圆钢规格</text><text>{{group.display_y_material_spec || '—'}}</text></view>
+      <view class="spec-row"><text class="spec-label">圆钢名称</text><text>{{group.y_material_name || '—'}}</text></view>
+      <view class="spec-row"><text class="spec-label">圆钢厂商</text><text>{{group.y_material_manufacturer || '—'}}</text></view>
+      <view class="spec-row"><text class="spec-label">圆钢材质</text><text>{{group.y_material_spec || group.display_y_material_spec || '—'}}</text></view>
       <view class="spec-row"><text class="spec-label">圆钢型号</text><text>{{group.y_material_model || '—'}}</text></view>
       <view class="spec-row"><text class="spec-label">成品规格</text><text>{{group.c_material_spec || '—'}}</text></view>
-      <view class="remain">剩余可报：{{group.remain_total}} 吨</view>
+      <view class="remain">剩余可报：{{group.remain_total_display || group.remain_total}} 吨</view>
     </view>
     <view class="field">
       <text class="label">报工吨数</text>

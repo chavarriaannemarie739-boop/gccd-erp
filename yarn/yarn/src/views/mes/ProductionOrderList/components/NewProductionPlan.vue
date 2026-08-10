@@ -1,4 +1,5 @@
 <template>
+  <!-- [AI-2026-08] 生产计划圆钢选择统一名称、厂商、材质、型号 -->
   <div class="app-container">
     <!-- 表单 -->
     <el-form ref="handleRef" label-width="180px" :model="userForm" :rules="handleRules">
@@ -65,8 +66,9 @@
         >
           <el-table-column type="index" label="序号" width="55" />
           <el-table-column prop="material_name" label="圆钢名称" />
-          <el-table-column prop="material_spec" label="圆钢规格" />
-          <el-table-column prop="material_model" label="圆钢型号" />
+          <el-table-column prop="manufacturer" label="厂商" />
+          <el-table-column prop="material_spec" label="材质" />
+          <el-table-column prop="material_model" label="型号" />
           <el-table-column prop="plan_num" label="计划数量">
             <template #default="{ row }">
               <el-input v-model="row.plan_num" placeholder="请输入" style="width: 110px" />
@@ -100,7 +102,12 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="圆钢规格：">
+          <el-form-item label="厂商：">
+            <el-input v-model="query.manufacturer" style="width: 260px" placeholder="请输入" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="材质：">
             <el-input
               v-model="query.material_spec"
               style="width: 260px"
@@ -110,7 +117,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="圆钢型号：">
+          <el-form-item label="型号：">
             <el-input v-model="query.material_model" style="width: 260px" placeholder="请输入" />
           </el-form-item>
         </el-col>
@@ -142,8 +149,9 @@
         </el-table-column>
         <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
         <el-table-column prop="material_name" label="圆钢名称" show-overflow-tooltip />
-        <el-table-column prop="material_spec" label="圆钢规格" show-overflow-tooltip />
-        <el-table-column prop="material_model" label="圆钢型号" show-overflow-tooltip />
+        <el-table-column prop="manufacturer" label="厂商" show-overflow-tooltip />
+        <el-table-column prop="material_spec" label="材质" show-overflow-tooltip />
+        <el-table-column prop="material_model" label="型号" show-overflow-tooltip />
         <el-table-column prop="create_time" label="创建时间" show-overflow-tooltip />
       </el-table>
       <!-- 分页 -->
@@ -283,6 +291,7 @@ export default {
         stock: '',
         material_property: '',
         material_name: '',
+        manufacturer: '',
         material_spec: '',
         material_model: ''
       },
@@ -297,9 +306,7 @@ export default {
           { required: true, message: '生产计划名称不能为空', trigger: 'blur' }
         ],
         routing_code: [{ required: true, message: '工艺信息不能为空', trigger: 'blur' }],
-        english_material: [
-          { required: true, message: '成品物料不能为空', trigger: 'change' }
-        ],
+        english_material: [{ required: true, message: '成品物料不能为空', trigger: 'change' }],
         punchDeviceCodes: [
           {
             validator: (_rule, value, callback) => {
@@ -331,13 +338,13 @@ export default {
       }
     }
   },
-  mounted() {
-    this.listGoods()
-  },
   watch: {
     'userForm.routing_code'(val) {
       this.syncPunchDeviceField(val)
     }
+  },
+  mounted() {
+    this.listGoods()
   },
   methods: {
     async syncPunchDeviceField(routingCode) {
@@ -368,6 +375,7 @@ export default {
     handleClickFinishedProduct() {
       this.query.stock = ''
       this.query.material_property = '成品'
+      this.query.manufacturer = ''
       this.dialogTableVisibleGoods = true
       this.list()
     },
@@ -379,6 +387,7 @@ export default {
       this.dialogTableVisibleGoods = false
       this.query.material_spec = ''
       this.query.material_name = ''
+      this.query.manufacturer = ''
       this.query.material_model = ''
       this.$nextTick(() => {
         this.$refs.handleRef?.validateField('english_material')
@@ -405,6 +414,7 @@ export default {
         ? {
             id: existing.id,
             material_name: existing.material_name,
+            manufacturer: existing.manufacturer,
             material_spec: existing.material_spec,
             material_model: existing.material_model
           }
@@ -420,6 +430,7 @@ export default {
     handleAdf() {
       this.query.material_spec = ''
       this.query.material_name = ''
+      this.query.manufacturer = ''
       this.query.material_model = ''
       this.list()
     },
@@ -449,6 +460,7 @@ export default {
       this.userForm.content = [
         {
           material_name: item.material_name,
+          manufacturer: item.manufacturer,
           material_spec: item.material_spec,
           material_model: item.material_model,
           id: item.id,
@@ -473,23 +485,20 @@ export default {
     handleIndex(index) {
       return index + 1 + this.query.limit * (this.query.page - 1)
     },
-    // 关闭
+    // 关闭（取消按钮已通过 :disabled="submitting" 防重复点击）
     hanleAddDialogClose() {
-      if (this.submitting) {
-        return
-      }
       this.$emit('update:isShow', false)
     },
     handleAppEdit() {
       if (this.submitting) {
         return
       }
+      this.submitting = true
       this.$refs.handleRef.validate(async (value) => {
-        // 判断
-        if (!value || this.submitting) {
+        if (!value) {
+          this.submitting = false
           return
         }
-        this.submitting = true
         try {
           const params = {
             production_plan_name: this.userForm.production_plan_name,
@@ -510,6 +519,7 @@ export default {
             params.content.push({
               material_id: item.id,
               material_name: item.material_name,
+              manufacturer: item.manufacturer,
               material_spec: item.material_spec,
               material_model: item.material_model,
               remark: item.remark,
@@ -518,14 +528,13 @@ export default {
           })
           await add(params)
           this.$emit('list')
-          this.hanleAddDialogClose()
           ElMessage({
             message: '操作成功',
             type: 'success'
           })
+          this.hanleAddDialogClose()
         } catch (err) {
           ElMessage.error(err?.msg || err?.message || '保存失败')
-        } finally {
           this.submitting = false
         }
       })

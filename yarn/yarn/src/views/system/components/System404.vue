@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-result icon="error" title="404" sub-title="页面不存在">
       <template #extra>
-        <router-link to="/dashboard">
+        <router-link to="/">
           <el-button type="primary">首页</el-button>
         </router-link>
       </template>

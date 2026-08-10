@@ -1,3 +1,4 @@
+<!-- [AI-2026-08] 圆钢四字段顺序：名称、厂商、材质、型号。 -->
 <!-- 自定义导航栏：van-tabs 不能包在外层 scroll-view 内，否则无法滚动且底栏被挤出；底栏用页面级 fixed 容器 -->
 <view class="material-page">
 <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
@@ -19,8 +20,18 @@
         </view>
 
         <view class="form-item">
-            <text class="form-label">物料型号：</text>
-            <van-field value="{{materialForm.material_spec}}" placeholder="请输入物料型号" border="{{true}}" bind:input="onMaterialSpecChange" />
+            <text class="form-label">厂商：</text>
+            <van-field value="{{materialForm.manufacturer}}" placeholder="请输入厂商" border="{{true}}" bind:input="onMaterialManufacturerChange" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">材质/规格：</text>
+            <van-field value="{{materialForm.material_spec}}" placeholder="请输入材质或规格" border="{{true}}" bind:input="onMaterialSpecChange" />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">型号：</text>
+            <van-field value="{{materialForm.material_model}}" placeholder="请输入型号" border="{{true}}" bind:input="onMaterialModelChange" />
         </view>
 
         <view class="form-actions">
@@ -108,7 +119,8 @@
                         <!-- 表头 -->
                         <view class="table-header">
                             <view class="th name-col">名称</view>
-                            <view class="th spec-col">规格</view>
+                            <view class="th spec-col">厂商</view>
+                            <view class="th spec-col">材质/规格</view>
                             <view class="th model-col">型号</view>
                             <view class="th stock-col">总库存</view>
                         </view>
@@ -117,6 +129,7 @@
                             <block wx:for="{{list}}" wx:key="id">
                                 <view class="table-row" bindtap="navigateToDetail" data-id="{{item.id}}">
                                     <view class="td name-col">{{item.material_name || '-'}}</view>
+                                    <view class="td spec-col">{{item.manufacturer || '-'}}</view>
                                     <view class="td spec-col">{{item.material_spec || '-'}}</view>
                                     <view class="td model-col">{{item.material_model || '-'}}</view>
                                     <view class="td stock-col">{{item.material_num || 0}}</view>
@@ -140,7 +153,16 @@
                             <van-field value="{{searchParams.material_name}}" placeholder="请输入物料名称" border="{{true}}" bind:input="onFilterChange" data-field="material_name" />
                         </view>
 
-                        <!-- 物料型号 -->
+                        <view class="filter-item">
+                            <text class="filter-label">厂商</text>
+                            <van-field value="{{searchParams.manufacturer}}" placeholder="请输入厂商" border="{{true}}" bind:input="onFilterChange" data-field="manufacturer" />
+                        </view>
+
+                        <view class="filter-item">
+                            <text class="filter-label">材质/规格</text>
+                            <van-field value="{{searchParams.material_spec}}" placeholder="请输入材质或规格" border="{{true}}" bind:input="onFilterChange" data-field="material_spec" />
+                        </view>
+
                         <view class="filter-item">
                             <text class="filter-label">物料型号</text>
                             <van-field value="{{searchParams.material_model}}" placeholder="请输入物料型号" border="{{true}}" bind:input="onFilterChange" data-field="material_model" />

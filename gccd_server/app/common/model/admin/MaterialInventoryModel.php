@@ -23,6 +23,8 @@ class MaterialInventoryModel extends Model
         'process_name'          => 'string',
         'material_id'           => 'int',
         'material_name'         => 'string',
+        // [AI-2026-08] 圆钢厂商历史快照（可空，不反写旧记录）
+        'y_material_manufacturer' => 'string',
         'y_material_spec'       => 'string',
         'y_material_model'      => 'string',
         'c_material_spec'       => 'string',

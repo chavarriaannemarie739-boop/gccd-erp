@@ -1,4 +1,4 @@
-
+<!-- [AI-2026-08] 盘点记录圆钢按名称、厂商、材质、型号展示。 -->
 <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px">
   <van-icon name="arrow-left" class="back-icon" bind:click="navigateBack" />
   <view class="navbar-title">生产盘点</view>
@@ -120,11 +120,9 @@
                     </view>
                     <view wx:for="{{group.items}}" wx:for-item="row" wx:key="index" class="detail-row">
                       <view class="dr dr-mat">
-                        <!-- 圆钢名称（必显示） -->
-                        <text class="dr-name">{{row.material_name || '-'}}</text>
-                        <!-- 圆钢规格 + 圆钢型号 + 工序规格（同一行） -->
-                        <text class="dr-spec" wx:if="{{row.y_material_spec || row.y_material_model || row.c_material_spec || row.c_product_spec}}">
-                          圆钢: {{row.y_material_spec || ''}}{{row.y_material_model ? ' / ' + row.y_material_model : ''}}{{row.c_material_spec || row.c_product_spec ? ' | 工序规格: ' + (row.c_material_spec || row.c_product_spec) : ''}}
+                        <text class="dr-name">{{row.y_material_name || row.material_name || '-'}}</text>
+                        <text class="dr-spec" wx:if="{{row.y_material_manufacturer || row.y_material_spec || row.y_material_model || row.c_material_spec || row.c_product_spec}}">
+                          厂商: {{row.y_material_manufacturer || '-'}} | 材质: {{row.y_material_spec || '-'}} | 型号: {{row.y_material_model || '-'}}{{row.c_material_spec || row.c_product_spec ? ' | 工序规格: ' + (row.c_material_spec || row.c_product_spec) : ''}}
                         </text>
                       </view>
                       <text class="dr dr-qty">{{row.qty || '-'}}</text>

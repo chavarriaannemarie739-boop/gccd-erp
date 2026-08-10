@@ -61,15 +61,31 @@ class AuditStocktakeCalc extends Command
             }
 
             $label = $this->rowLabel($row);
-            $key = ($pn === '圆钢')
-                ? ($row['material_name'] ?? '') . '|' . ($row['y_material_spec'] ?? '') . '|' . ($row['y_material_model'] ?? '')
-                : $label;
-            $dedupe = $pn . "\0" . $key;
-            if (isset($seenKeys[$dedupe])) {
+            // [AI-2026-08] 圆钢审计键与自动推算身份规则保持一致
+            $dedupeKeys = $pn === '圆钢'
+                ? array_map(
+                    static fn (string $key): string => $pn . "\0" . $key,
+                    MaterialInventoryService::roundSteelCalculationIdentityKeys($row)
+                )
+                : [$pn . "\0" . $label];
+            $matchedKey = null;
+            foreach ($dedupeKeys as $dedupeKey) {
+                if (isset($seenKeys[$dedupeKey])) {
+                    $matchedKey = $dedupeKey;
+                    break;
+                }
+            }
+            if ($matchedKey !== null) {
                 $stats['duplicate_key']++;
-                $issues[] = $this->issue('duplicate_key', $row, '与另一条推算结果重复：' . $seenKeys[$dedupe]);
+                $issues[] = $this->issue(
+                    'duplicate_key',
+                    $row,
+                    '与另一条推算结果重复：' . $seenKeys[$matchedKey]
+                );
             } else {
-                $seenKeys[$dedupe] = $label;
+                foreach ($dedupeKeys as $dedupeKey) {
+                    $seenKeys[$dedupeKey] = $label;
+                }
             }
 
             $predicted = floatval($row['predicted_qty'] ?? 0);
@@ -337,7 +353,8 @@ class AuditStocktakeCalc extends Command
     private function rowLabel(array $row): string
     {
         $parts = array_filter([
-            $row['material_name'] ?? '',
+            $row['y_material_name'] ?? $row['material_name'] ?? '',
+            $row['y_material_manufacturer'] ?? '',
             $row['y_material_spec'] ?? '',
             $row['y_material_model'] ?? '',
             $row['c_material_spec'] ?? '',

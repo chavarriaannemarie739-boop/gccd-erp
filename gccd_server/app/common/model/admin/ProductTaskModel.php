@@ -36,6 +36,7 @@ class ProductTaskModel extends Model
         return $this->hasOne(ProductionModel::class, 'production_plan_code', 'relation_code')
             ->bind(
                 [
+                    'production_plan_id' => 'id',
                     'production_plan_name' => 'production_plan_name',
                     'english_material' => 'english_material',
                 ]
@@ -58,7 +59,9 @@ class ProductTaskModel extends Model
         return $this->hasOne(MaterialModel::class, 'id', 'material_id')
             ->bind(
                 [
+                    // [AI-2026-08] 圆钢标准四字段 DTO
                     'y_material_name' => 'material_name',
+                    'y_material_manufacturer' => 'manufacturer',
                     'y_material_spec' => 'material_spec',
                     'y_material_model' => 'material_model'
                 ]

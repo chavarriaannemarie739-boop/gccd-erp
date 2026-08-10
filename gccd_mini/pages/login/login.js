@@ -102,9 +102,8 @@ Page({
         wx.setStorageSync('role_names', payload.role_names || '');
         wx.setStorageSync('is_super', payload.is_super || 0);
         Toast.success('登录成功');
-        // 用 reLaunch 清空栈并进入 Tab 首页，避免 switchTab 在部分场景不触发
         setTimeout(() => {
-          wx.reLaunch({
+          wx.switchTab({
             url: '/pages/workbench/workbench',
           });
         }, 400);

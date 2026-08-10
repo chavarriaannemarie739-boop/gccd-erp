@@ -263,7 +263,12 @@ class UserService
             $info['roles']    = array_values($menu_urls);
             $info['menus']    = MenuService::menus($menu_ids);
             $info['menu_ids'] = $menu_ids;
+            /* [AI-2026-08] 仓库范围写入用户缓存；勿在每次 info 热路径重复全量重算 */
+            $info['warehouse_scopes'] = \app\common\service\admin\WarehouseScopeService::scopesForUser((int) $id);
 
+            UserCache::set($id, $info);
+        } elseif (is_array($info) && !isset($info['warehouse_scopes'])) {
+            $info['warehouse_scopes'] = \app\common\service\admin\WarehouseScopeService::scopesForUser((int) $id);
             UserCache::set($id, $info);
         }
 
@@ -537,9 +542,14 @@ class UserService
         $user_log['response_msg']  = '登录成功';
         UserLogService::add($user_log, SettingService::LOG_TYPE_LOGIN);
 
+        // [AI-2026-08] 登录只回轻量字段+Token，不重建完整菜单树（小程序登录卡十几秒的主因）
         UserCache::del($user_id);
-        $user = self::info($user_id);
-        $data = self::loginField($user);
+        $lite = $model->field($pk . ',nickname,username')->where($pk, $user_id)->find();
+        $liteArr = $lite ? $lite->toArray() : [];
+        $liteArr[$pk] = $user_id;
+        $liteArr['user_id'] = $user_id;
+        $liteArr['login_time'] = $update['login_time'];
+        $data = self::loginField($liteArr);
 
         return $data;
     }

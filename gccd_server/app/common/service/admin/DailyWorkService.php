@@ -58,9 +58,12 @@ class DailyWorkService
 
             $dailyWage = ($workType == 1) ? self::DAILY_WAGE_FULL : self::DAILY_WAGE_HALF;
             $allowanceRatio = $workHours / self::DEFAULT_WORK_HOURS;
+            $leaderAllowanceAmount = round(self::LEADER_ALLOWANCE_FULL * $allowanceRatio, 2);
             $now = date('Y-m-d H:i:s');
             $createdIds = [];
             $totalWages = [];
+            $reporterGotAllowance = false;
+            $firstReportCode = '';
 
             foreach ($userIds as $workerId) {
                 $workerId = (int) $workerId;
@@ -68,16 +71,15 @@ class DailyWorkService
                     continue;
                 }
 
-                // 判断该工人是否为班长
-                $isTeamLeader = PublicService::is_class($workerId);
-                $teamLeaderAllowance = $isTeamLeader
-                    ? round(self::LEADER_ALLOWANCE_FULL * $allowanceRatio, 2)
-                    : 0.00;
+                // 穿孔日工：谁提交报工谁享岗位津贴（与选中人员职位无关）
+                $teamLeaderAllowance = ($workerId === $reporterId) ? $leaderAllowanceAmount : 0.00;
+                if ($teamLeaderAllowance > 0) {
+                    $reporterGotAllowance = true;
+                }
                 $totalWage = round($dailyWage + $teamLeaderAllowance, 2);
 
                 // 写入日工记录
-                $dailyWork = new DailyWorkModel();
-                $dailyWork->insert([
+                $dailyWorkId = (new DailyWorkModel())->insertGetId([
                     'user_id' => $workerId,
                     'work_date' => $workDate,
                     'work_type' => $workType,
@@ -87,12 +89,13 @@ class DailyWorkService
                     'total_wage' => $totalWage,
                     'remark' => $remark,
                     'report_id' => 0,
+                    'create_time' => $now,
+                    'create_uid' => $reporterId,
                 ]);
 
                 // 创建 product_report 记录
-                $reportCode = 'DW' . date('Ymd') . sprintf('%04d', $dailyWork->id);
-                $productReport = new ProductReportModel();
-                $productReport->insert([
+                $reportCode = 'DW' . date('Ymd') . sprintf('%04d', $dailyWorkId);
+                $productReportId = (new ProductReportModel())->insertGetId([
                     'report_code' => $reportCode,
                     'relation_code' => 'DAILY_WORK',
                     'material_id' => 0,
@@ -113,7 +116,11 @@ class DailyWorkService
                 ]);
 
                 // 回写 report_id
-                $dailyWork->update(['report_id' => $productReport->id]);
+                DailyWorkModel::where('id', $dailyWorkId)->update(['report_id' => $productReportId]);
+
+                if ($firstReportCode === '') {
+                    $firstReportCode = $reportCode;
+                }
 
                 // 写入工资明细 - 日工工资
                 $username = user_name($workerId);
@@ -142,16 +149,27 @@ class DailyWorkService
                     ]);
                 }
 
-                $createdIds[] = $dailyWork->id;
+                $createdIds[] = $dailyWorkId;
                 $totalWages[] = $totalWage;
             }
 
-            // 更新日汇总表
-            try {
-                DailySummaryService::refresh($workDate);
-            } catch (\Exception $e) {
+            // 报工人不在选中人员中时，岗位津贴单独记给提交人
+            if (!$reporterGotAllowance && $leaderAllowanceAmount > 0 && $firstReportCode !== '') {
+                $reporterName = user_name($reporterId);
+                (new UserWageDetailModel())->insert([
+                    'user_id' => $reporterId,
+                    'username' => $reporterName,
+                    'date' => $workDate,
+                    'wage' => $leaderAllowanceAmount,
+                    'relation_code' => $firstReportCode,
+                    'wage_type' => 'team_leader_allowance',
+                    'create_time' => $now,
+                    'create_uid' => $reporterId,
+                ]);
+                $totalWages[] = $leaderAllowanceAmount;
             }
 
+            // 日工不计产量，跳过全量日汇总刷新以加快提交响应
             Db::commit();
 
             return [
@@ -194,9 +212,12 @@ class DailyWorkService
 
             // 重新计算工资
             $dailyWage = ($workType == 1) ? self::DAILY_WAGE_FULL : self::DAILY_WAGE_HALF;
-            $isTeamLeader = PublicService::is_class($dailyWork['user_id']);
+            $reporterId = (int) ($dailyWork['create_uid'] ?? 0);
+            $workerId = (int) ($dailyWork['user_id'] ?? 0);
             $allowanceRatio = $workHours / self::DEFAULT_WORK_HOURS;
-            $teamLeaderAllowance = round(self::LEADER_ALLOWANCE_FULL * $allowanceRatio, 2);
+            $teamLeaderAllowance = ($workerId === $reporterId)
+                ? round(self::LEADER_ALLOWANCE_FULL * $allowanceRatio, 2)
+                : 0.00;
             $totalWage = round($dailyWage + $teamLeaderAllowance, 2);
 
             // 更新日工记录
@@ -208,6 +229,8 @@ class DailyWorkService
                 'team_leader_allowance' => $teamLeaderAllowance,
                 'total_wage' => $totalWage,
                 'remark' => $remark,
+                'update_time' => date('Y-m-d H:i:s'),
+                'update_uid' => user_id(),
             ]);
 
             // 更新 product_report 记录

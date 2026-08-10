@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-08T09:37:36.532Z",
+  "generatedAt": "2026-08-08T14:12:40.327Z",
   "smokeCases": [
     {
       "name": "生产计划-成品型号模糊",
@@ -41,7 +41,7 @@
   ],
   "summary": {
     "adminPages": 38,
-    "miniPages": 17,
+    "miniPages": 20,
     "issues": {
       "ui_unbound": 0,
       "missing_backend": 0,
@@ -73,6 +73,7 @@
     ],
     "gccd_server/app/common/service/admin/InStockService.php": [
       "material_name",
+      "manufacturer",
       "material_spec",
       "in_code",
       "warehouse",
@@ -82,7 +83,16 @@
       "relation_code",
       "create_start_date",
       "create_end_date",
-      "material_model"
+      "material_model",
+      "y_material_name",
+      "y_material_manufacturer",
+      "y_material_spec",
+      "y_material_model",
+      "y_mateial_name",
+      "y_mateial_manufacturer",
+      "y_mateial_spec",
+      "y_mateial_model",
+      "stock_alert_only"
     ],
     "gccd_server/app/common/service/admin/MaterialInventoryService.php": [
       "check_name",
@@ -100,6 +110,7 @@
       "material_property",
       "material_scope",
       "stock",
+      "stock_alert_only",
       "create_start_date",
       "create_end_date"
     ],
@@ -114,11 +125,21 @@
     ],
     "gccd_server/app/common/service/admin/OutStockService.php": [
       "material_name",
+      "manufacturer",
       "material_spec",
       "out_code",
       "relation_code",
       "material_batch",
       "warehouse",
+      "material_model",
+      "y_material_name",
+      "y_material_manufacturer",
+      "y_material_spec",
+      "y_material_model",
+      "y_mateial_name",
+      "y_mateial_manufacturer",
+      "y_mateial_spec",
+      "y_mateial_model",
       "create_start_date",
       "create_end_date"
     ],
@@ -164,9 +185,15 @@
       "production_plan_name",
       "create_name",
       "c_material_spec",
+      "y_material_name",
+      "y_material_manufacturer",
       "y_material_spec",
       "c_material_model",
       "y_material_model",
+      "y_mateial_name",
+      "y_mateial_manufacturer",
+      "y_mateial_spec",
+      "y_mateial_model",
       "create_start_date",
       "create_end_date",
       "report_date_start",
@@ -181,7 +208,13 @@
       "relation_code",
       "routing_code",
       "create_start_date",
-      "create_end_date"
+      "create_end_date",
+      "y_material_name",
+      "y_material_manufacturer",
+      "y_material_spec",
+      "y_material_model",
+      "c_material_spec",
+      "c_material_model"
     ],
     "gccd_server/app/common/service/admin/ProductionService.php": [
       "production_plan_name",
@@ -194,8 +227,12 @@
       "create_end_date",
       "material_spec",
       "material_model",
+      "y_mateial_name",
+      "y_mateial_manufacturer",
       "y_mateial_spec",
       "y_mateial_model",
+      "y_material_name",
+      "y_material_manufacturer",
       "y_material_spec",
       "y_material_model",
       "plan_finish"
@@ -245,6 +282,13 @@
       "material_batch",
       "customer_name",
       "y_material_spec",
+      "y_material_name",
+      "y_material_manufacturer",
+      "y_material_model",
+      "y_mateial_name",
+      "y_mateial_manufacturer",
+      "y_mateial_spec",
+      "y_mateial_model",
       "product_info",
       "create_start_date",
       "create_end_date",
@@ -319,7 +363,7 @@
           "bound": true
         },
         {
-          "placeholder": "配件规格",
+          "placeholder": "材质",
           "vModel": "query.material_spec",
           "bound": true
         },
@@ -381,7 +425,8 @@
         "material_property",
         "stock",
         "create_start_date",
-        "create_end_date"
+        "create_end_date",
+        "stock_alert_only"
       ],
       "searchFieldService": "MaterialService"
     },
@@ -648,12 +693,25 @@
         "period_end"
       ],
       "api": "mes/SalaryList/SalaryList",
-      "listImport": "BarChart",
+      "listImport": "list",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
       "backend": "gccd_server/app/admin/controller/wage/UserWage.php",
-      "listFn": "BarChart"
+      "listFn": "list",
+      "handledParams": [
+        "username",
+        "user_id",
+        "check_name",
+        "check_code",
+        "create_start_date",
+        "create_end_date",
+        "period_start",
+        "period_end",
+        "year",
+        "month"
+      ],
+      "searchFieldService": "UserWageService"
     },
     {
       "page": "yarn/yarn/src/views/mes/BasicSettings/SalaryManagement.vue",
@@ -714,7 +772,7 @@
       ],
       "queryKeys": [],
       "api": "mes/DailyWork/DailyWork",
-      "listImport": "ref, reactive, onMounted",
+      "listImport": "list, edit, dele, stat",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
@@ -775,8 +833,7 @@
         "create_end_date",
         "report_date_start",
         "report_date_end"
-      ],
-      "searchFieldService": "ProductReportService"
+      ]
     },
     {
       "page": "yarn/yarn/src/views/mes/EnergyConsumption/PicklingWorkshop.vue",
@@ -819,8 +876,7 @@
         "create_end_date",
         "report_date_start",
         "report_date_end"
-      ],
-      "searchFieldService": "ProductReportService"
+      ]
     },
     {
       "page": "yarn/yarn/src/views/mes/EquipmentLedger/EquipmentLedger.vue",
@@ -919,12 +975,25 @@
         "create_end_date"
       ],
       "api": "mes/EquipmentLedger/EquipmentLedger",
-      "listImport": "ElMessage, ElMessageBox",
+      "listImport": "repairlist as requestRepairList, repairDele",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
       "backend": "gccd_server/app/admin/controller/repair/Device.php",
-      "listFn": "ElMessage"
+      "listFn": "repairlist",
+      "handledParams": [
+        "device_code",
+        "create_start_date",
+        "create_end_date",
+        "reason",
+        "device_name",
+        "processes_code",
+        "user_id",
+        "repair_name",
+        "create_name",
+        "status"
+      ],
+      "searchFieldService": "DeviceService"
     },
     {
       "page": "yarn/yarn/src/views/mes/EquipmentLedger/RepairItem.vue",
@@ -1047,12 +1116,25 @@
         "create_end_date"
       ],
       "api": "mes/EquipmentLedger/EquipmentLedger",
-      "listImport": "ElMessage",
+      "listImport": "repairlist",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
       "backend": "gccd_server/app/admin/controller/repair/Device.php",
-      "listFn": "ElMessage"
+      "listFn": "repairlist",
+      "handledParams": [
+        "device_code",
+        "create_start_date",
+        "create_end_date",
+        "reason",
+        "device_name",
+        "processes_code",
+        "user_id",
+        "repair_name",
+        "create_name",
+        "status"
+      ],
+      "searchFieldService": "DeviceService"
     },
     {
       "page": "yarn/yarn/src/views/mes/MaintenanceReport/MaintenanceReport.vue",
@@ -1205,7 +1287,8 @@
         "material_property",
         "stock",
         "create_start_date",
-        "create_end_date"
+        "create_end_date",
+        "stock_alert_only"
       ],
       "searchFieldService": "MaterialService"
     },
@@ -1286,7 +1369,8 @@
         "material_property",
         "stock",
         "create_start_date",
-        "create_end_date"
+        "create_end_date",
+        "stock_alert_only"
       ],
       "searchFieldService": "MaterialService"
     },
@@ -1295,8 +1379,13 @@
       "platform": "admin",
       "uiFields": [
         {
-          "placeholder": "原材料",
-          "vModel": "query.material_name",
+          "placeholder": "圆钢名称",
+          "vModel": "query.y_material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢厂商",
+          "vModel": "query.y_material_manufacturer",
           "bound": true
         },
         {
@@ -1305,7 +1394,7 @@
           "bound": true
         },
         {
-          "placeholder": "规格",
+          "placeholder": "圆钢材质",
           "vModel": "query.y_material_spec",
           "bound": true
         },
@@ -1327,7 +1416,8 @@
         }
       ],
       "boundParams": [
-        "material_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "process_name",
         "y_material_spec",
         "y_material_model",
@@ -1338,7 +1428,8 @@
       "queryKeys": [
         "page",
         "limit",
-        "material_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "process_name",
         "inventory_start_date",
         "inventory_end_date",
@@ -1354,16 +1445,18 @@
       "backend": "gccd_server/app/admin/controller/production/Inventory.php",
       "listFn": "list",
       "handledParams": [
-        "material_name",
         "process_name",
-        "y_material_spec",
+        "material_name",
         "finished_product_spec",
-        "y_material_model",
         "c_material_spec",
         "current_process_spec",
         "c_material_model",
         "inventory_start_date",
-        "inventory_end_date"
+        "inventory_end_date",
+        "y_material_name",
+        "y_material_manufacturer",
+        "y_material_spec",
+        "y_material_model"
       ]
     },
     {
@@ -1415,7 +1508,17 @@
           "bound": true
         },
         {
-          "placeholder": "圆钢规格",
+          "placeholder": "圆钢名称",
+          "vModel": "query.y_material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢厂商",
+          "vModel": "query.y_material_manufacturer",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢材质",
           "vModel": "query.y_material_spec",
           "bound": true
         },
@@ -1448,6 +1551,8 @@
       ],
       "boundParams": [
         "production_plan_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
         "y_material_model",
         "material_spec",
@@ -1464,6 +1569,8 @@
         "production_plan_code",
         "material_spec",
         "material_model",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
         "y_material_model",
         "create_start_date",
@@ -1471,7 +1578,7 @@
         "plan_finish"
       ],
       "api": "mes/ProductionOrderList/ProductionOrderList",
-      "listImport": "list, dele, exportExcel",
+      "listImport": "list, dele",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
@@ -1482,13 +1589,13 @@
         "create_start_date",
         "create_end_date",
         "production_plan_code",
-        "y_material_spec",
-        "y_mateial_spec",
-        "y_material_model",
-        "y_mateial_model",
         "material_spec",
         "material_model",
-        "plan_finish"
+        "plan_finish",
+        "y_material_name",
+        "y_material_manufacturer",
+        "y_material_spec",
+        "y_material_model"
       ],
       "searchFieldService": "ProductionService"
     },
@@ -1550,7 +1657,17 @@
           "bound": true
         },
         {
-          "placeholder": "圆钢规格",
+          "placeholder": "圆钢名称",
+          "vModel": "query.y_material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢厂商",
+          "vModel": "query.y_material_manufacturer",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢材质",
           "vModel": "query.y_material_spec",
           "bound": true
         },
@@ -1600,6 +1717,8 @@
       "boundParams": [
         "plan_code",
         "production_plan_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
         "y_material_model",
         "c_material_spec",
@@ -1622,6 +1741,8 @@
         "report_date_end",
         "plan_code",
         "production_plan_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
         "y_material_model",
         "c_material_spec",
@@ -1656,6 +1777,8 @@
         "plan_code",
         "c_material_spec",
         "c_material_model",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
         "y_material_model"
       ],
@@ -1746,13 +1869,18 @@
           "bound": true
         },
         {
-          "placeholder": "圆钢型号",
-          "vModel": "query.material_model",
+          "placeholder": "厂商",
+          "vModel": "query.manufacturer",
           "bound": true
         },
         {
-          "placeholder": "圆钢规格",
+          "placeholder": "材质",
           "vModel": "query.material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "型号",
+          "vModel": "query.material_model",
           "bound": true
         },
         {
@@ -1764,8 +1892,9 @@
       ],
       "boundParams": [
         "material_name",
-        "material_model",
+        "manufacturer",
         "material_spec",
+        "material_model",
         "create_start_date",
         "create_end_date"
       ],
@@ -1774,6 +1903,7 @@
         "page",
         "limit",
         "material_thickness",
+        "manufacturer",
         "material_model",
         "material_spec",
         "create_end_date",
@@ -1782,7 +1912,7 @@
         "material_name"
       ],
       "api": "mes/MaterialManagement/MaterialManagement",
-      "listImport": "list, dele",
+      "listImport": "list, dele, roundSteelTree",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
@@ -1799,7 +1929,8 @@
         "material_property",
         "stock",
         "create_start_date",
-        "create_end_date"
+        "create_end_date",
+        "stock_alert_only"
       ],
       "searchFieldService": "MaterialService"
     },
@@ -1838,8 +1969,23 @@
           "bound": true
         },
         {
-          "placeholder": "圆钢信息",
+          "placeholder": "圆钢名称",
+          "vModel": "query.y_material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢厂商",
+          "vModel": "query.y_material_manufacturer",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢材质",
           "vModel": "query.y_material_spec",
+          "bound": true
+        },
+        {
+          "placeholder": "圆钢型号",
+          "vModel": "query.y_material_model",
           "bound": true
         },
         {
@@ -1861,7 +2007,10 @@
         "material_batch",
         "material_name",
         "customer_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
+        "y_material_model",
         "product_info",
         "ship_date"
       ],
@@ -1875,7 +2024,10 @@
         "material_batch",
         "material_name",
         "customer_name",
+        "y_material_name",
+        "y_material_manufacturer",
         "y_material_spec",
+        "y_material_model",
         "product_info",
         "ship_date"
       ],
@@ -1895,10 +2047,13 @@
         "material_num",
         "customer_name",
         "ship_date",
-        "y_material_spec",
         "product_info",
         "create_start_date",
-        "create_end_date"
+        "create_end_date",
+        "y_material_name",
+        "y_material_manufacturer",
+        "y_material_spec",
+        "y_material_model"
       ],
       "searchFieldService": "ShipService"
     },
@@ -1909,6 +2064,11 @@
         {
           "placeholder": "物料名称",
           "vModel": "query.material_name",
+          "bound": true
+        },
+        {
+          "placeholder": "厂商",
+          "vModel": "query.manufacturer",
           "bound": true
         },
         {
@@ -1940,6 +2100,7 @@
       ],
       "boundParams": [
         "material_name",
+        "manufacturer",
         "material_spec",
         "material_batch",
         "material_model",
@@ -1952,32 +2113,23 @@
         "page",
         "limit",
         "material_name",
+        "manufacturer",
         "material_spec",
         "material_model",
         "location",
         "warehouse",
         "material_batch",
         "create_start_date",
-        "create_end_date"
+        "create_end_date",
+        "stock_alert_only"
       ],
       "api": "mes/WarehouseManagement/WarehouseManagement",
-      "listImport": "mateiallist",
+      "listImport": "batchUpdateStockThreshold,\n  mateiallist,\n  stockAlertSummary,\n  transferToStock,\n  writeOffStock",
       "hasSearchBtn": false,
       "status": "ok",
       "issues": [],
       "backend": "gccd_server/app/admin/controller/stock/InStock.php",
-      "listFn": "mateiallist",
-      "handledParams": [
-        "material_batch",
-        "location",
-        "warehouse",
-        "create_start_date",
-        "create_end_date",
-        "material_name",
-        "material_spec",
-        "material_model"
-      ],
-      "searchFieldService": "InStockService"
+      "listFn": "batchUpdateStockThreshold"
     },
     {
       "page": "yarn/yarn/src/views/mes/WarehouseManagement/OutboundManagement/OutboundList/OutboundList.vue",
@@ -1986,6 +2138,11 @@
         {
           "placeholder": "出库编码",
           "vModel": "query.out_code",
+          "bound": true
+        },
+        {
+          "placeholder": "厂商",
+          "vModel": "query.manufacturer",
           "bound": true
         },
         {
@@ -2017,6 +2174,7 @@
       ],
       "boundParams": [
         "out_code",
+        "manufacturer",
         "material_name",
         "material_batch",
         "material_spec",
@@ -2030,6 +2188,7 @@
         "limit",
         "out_code",
         "material_name",
+        "manufacturer",
         "material_spec",
         "material_model",
         "material_batch",
@@ -2051,9 +2210,14 @@
         "create_end_date",
         "warehouse",
         "material_name",
+        "manufacturer",
         "material_spec",
         "material_model",
-        "material_batch"
+        "material_batch",
+        "y_material_name",
+        "y_material_manufacturer",
+        "y_material_spec",
+        "y_material_model"
       ],
       "searchFieldService": "OutStockService"
     },
@@ -2112,6 +2276,11 @@
           "bound": true
         },
         {
+          "placeholder": "厂商",
+          "vModel": "query.manufacturer",
+          "bound": true
+        },
+        {
           "placeholder": "物料名称",
           "vModel": "query.material_name",
           "bound": true
@@ -2145,6 +2314,7 @@
       ],
       "boundParams": [
         "in_code",
+        "manufacturer",
         "material_name",
         "material_batch",
         "material_spec",
@@ -2159,6 +2329,7 @@
         "limit",
         "in_code",
         "material_name",
+        "manufacturer",
         "warehouse",
         "material_batch",
         "create_start_date",
@@ -2180,12 +2351,17 @@
         "create_start_date",
         "create_end_date",
         "material_name",
+        "manufacturer",
         "material_spec",
         "material_model",
         "material_batch",
         "supplier",
         "location",
-        "warehouse"
+        "warehouse",
+        "y_material_name",
+        "y_material_manufacturer",
+        "y_material_spec",
+        "y_material_model"
       ],
       "searchFieldService": "InStockService"
     },
@@ -2222,7 +2398,7 @@
         "type"
       ],
       "api": "report/coefficient",
-      "listImport": "ElMessage",
+      "listImport": "getCoefficientList, addCoefficient, editCoefficient, deleteCoefficient, getCoefficientTypes",
       "hasSearchBtn": false,
       "status": "ui_empty",
       "issues": [],
@@ -2269,12 +2445,12 @@
       "boundParams": [],
       "queryKeys": [],
       "api": "report/dailyReport",
-      "listImport": "ref, computed",
+      "listImport": "getProcessCostDailyReport,\r\n  exportProcessCostDailyReportApi",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
       "backend": "gccd_server/app/admin/controller/production/DailyReport.php",
-      "listFn": "ref"
+      "listFn": "getProcessCostDailyReport"
     },
     {
       "page": "yarn/yarn/src/views/report/ProcessDailyProductionReport.vue",
@@ -2290,12 +2466,12 @@
       "boundParams": [],
       "queryKeys": [],
       "api": "report/dailyReport",
-      "listImport": "ref, computed",
+      "listImport": "getProcessDailyReport, exportProcessDailyReportApi",
       "hasSearchBtn": true,
       "status": "ok",
       "issues": [],
       "backend": "gccd_server/app/admin/controller/production/DailyReport.php",
-      "listFn": "ref"
+      "listFn": "getProcessDailyReport"
     }
   ],
   "mini": [
@@ -2346,6 +2522,28 @@
       "issues": []
     },
     {
+      "page": "gccd_mini/pageWorkOrder/pages/duangangAdd/duangangAdd.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.DuangangMerge/info",
+        "admin/repair.Device/listByProcess",
+        "admin/production.DuangangMerge/report"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/duangangList/duangangList.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.DuangangMerge/list"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
       "page": "gccd_mini/pageWorkOrder/pages/energyAdd/energyAdd.js",
       "platform": "mini",
       "clientSideOnly": false,
@@ -2366,6 +2564,16 @@
         "admin/system.User/list",
         "admin/production.ProductCount/list",
         "admin/repair.Device/reportBatch"
+      ],
+      "status": "api_search",
+      "issues": []
+    },
+    {
+      "page": "gccd_mini/pageWorkOrder/pages/processTaskList/processTaskList.js",
+      "platform": "mini",
+      "clientSideOnly": false,
+      "apiEndpoints": [
+        "admin/production.ProductTask/listForMini"
       ],
       "status": "api_search",
       "issues": []
@@ -2427,8 +2635,7 @@
       "platform": "mini",
       "clientSideOnly": false,
       "apiEndpoints": [
-        "admin/system.User/productlist",
-        "admin/dailyWork/checkLeader"
+        "admin/system.User/productlist"
       ],
       "status": "api_search",
       "issues": []

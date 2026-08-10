@@ -3,6 +3,7 @@ const mediaCompress = require('../../utils/mediaCompress.js');
 import Toast from '@vant/weapp/toast/toast';
 import Dialog from '@vant/weapp/dialog/dialog';
 
+// [AI-2026-08] 工单圆钢四字段筛选与展示，保留原打印及交互流程。
 Page({
   data: {
     // 导航栏相关内容
@@ -50,12 +51,19 @@ Page({
       device_code: '',
     },
     // 检索条件
-    filterYSpec: '',
+    y_material_name: '',
+    y_material_manufacturer: '',
+    y_material_spec: '',
+    y_material_model: '',
     filterCSpec: '',
     filterCModel: '',
     // 完整数据（未过滤）
     fullList: [],
     fullFinishedList: [],
+    // 蓝牙打印相关
+    showPrintPopup: false,
+    printPlanId: 0,
+    printMaterialId: 0,
   },
 
   // 检索输入
@@ -67,21 +75,31 @@ Page({
 
   // 重置检索
   onFilterReset() {
-    this.setData({ filterYSpec: '', filterCSpec: '', filterCModel: '' });
+    this.setData({
+      y_material_name: '',
+      y_material_manufacturer: '',
+      y_material_spec: '',
+      y_material_model: '',
+      filterCSpec: '',
+      filterCModel: '',
+    });
     this.applyFilter();
   },
 
   // 应用过滤
   applyFilter() {
-    const ys = (this.data.filterYSpec || '').trim().toLowerCase();
+    const yn = (this.data.y_material_name || '').trim().toLowerCase();
+    const ymf = (this.data.y_material_manufacturer || '').trim().toLowerCase();
+    const ys = (this.data.y_material_spec || '').trim().toLowerCase();
+    const ym = (this.data.y_material_model || '').trim().toLowerCase();
     const cs = (this.data.filterCSpec || '').trim().toLowerCase();
     const cm = (this.data.filterCModel || '').trim().toLowerCase();
 
     const match = (item) => {
-      const yCombined = (
-        (item.y_material_spec || '') + (item.y_material_model || '')
-      ).toLowerCase();
-      if (ys && !yCombined.includes(ys)) return false;
+      if (yn && !(item.y_material_name || '').toLowerCase().includes(yn)) return false;
+      if (ymf && !(item.y_material_manufacturer || '').toLowerCase().includes(ymf)) return false;
+      if (ys && !(item.y_material_spec || '').toLowerCase().includes(ys)) return false;
+      if (ym && !(item.y_material_model || '').toLowerCase().includes(ym)) return false;
       if (cs && !(item.c_material_spec || '').toLowerCase().includes(cs)) return false;
       if (cm && !(item.c_material_model || '').toLowerCase().includes(cm)) return false;
       return true;
@@ -193,6 +211,10 @@ Page({
       .request('admin/production.ProductTask/list', {
         limit: this.data.limit,
         page: page,
+        y_material_name: this.data.y_material_name,
+        y_material_manufacturer: this.data.y_material_manufacturer,
+        y_material_spec: this.data.y_material_spec,
+        y_material_model: this.data.y_material_model,
       })
       .then((res) => {
         if (res.data.code === 200) {
@@ -255,6 +277,10 @@ Page({
       .request('admin/production.ProductTask/list', {
         limit: this.data.limit,
         page: page,
+        y_material_name: this.data.y_material_name,
+        y_material_manufacturer: this.data.y_material_manufacturer,
+        y_material_spec: this.data.y_material_spec,
+        y_material_model: this.data.y_material_model,
       })
       .then((res) => {
         if (res.data.code === 200) {
@@ -759,6 +785,36 @@ Page({
   closeRepairForm() {
     this.setData({
       showRepairForm: false,
+    });
+  },
+
+  // [AI-2026-06] 打开打印弹出层
+  onPrintTap(e) {
+    const planId = e.currentTarget.dataset.planId;
+    const materialId = e.currentTarget.dataset.materialId;
+
+    if (!planId) {
+      wx.showToast({
+        title: '工单未关联生产计划，无法打印',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    this.setData({
+      showPrintPopup: true,
+      printPlanId: Number(planId),
+      printMaterialId: materialId ? Number(materialId) : 0,
+    });
+  },
+
+  // [AI-2026-06] 关闭打印弹出层
+  closePrintPopup() {
+    this.setData({
+      showPrintPopup: false,
+      printPlanId: 0,
+      printMaterialId: 0,
     });
   },
 });

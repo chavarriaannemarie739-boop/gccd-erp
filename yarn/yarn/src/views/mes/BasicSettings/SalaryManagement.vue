@@ -101,7 +101,6 @@
           <SalaryDetails :view="view" v-model:is-show="processVisibleGoods" />
         </el-dialog>
       </div>
-    <router-view />
   </div>
 </template>
 
@@ -140,6 +139,9 @@ export default {
       loading: true
     }
   },
+  mounted() {
+    this.list()
+  },
   activated() {
     this.list()
   },
@@ -170,11 +172,13 @@ export default {
     // 生产工序
     async list() {
       this.loading = true
-      const resp = await list(this.query)
-      this.tableData = resp.data.list
-      this.total = resp.data.count
-      console.log(resp, 'resp')
-      this.loading = false
+      try {
+        const resp = await list(this.query)
+        this.tableData = resp.data.list
+        this.total = resp.data.count
+      } finally {
+        this.loading = false
+      }
     },
     handleSearch() {
       this.query.page = 1
