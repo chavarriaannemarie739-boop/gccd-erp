@@ -25,3 +25,5 @@ Thumbs.db
 nginx.htaccess
 composer.phar
 composer.lock
+# Local DB dump (contains init accounts); do not publish
+/private/database/yyladmin.sql
