@@ -1,0 +1,1 @@
+import{Y as t}from"./index.BhkUE9Vc.js";const o="/admin/production.Inventory/";function n(n){return t({url:o+"autoCalc",method:"post",data:n})}function a(n){return t({url:o+"list",method:"post",data:n})}function r(n){return t({url:o+"monthlyLedger",method:"post",data:n})}function u(n){return t({url:o+"submitStocktake",method:"post",data:n})}export{n as a,a as l,r as m,u as s};

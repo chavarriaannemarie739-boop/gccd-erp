@@ -95,31 +95,34 @@ service.interceptors.response.use(
       if (import.meta.env.DEV) {
         console.log(error.response)
       }
-    } else {
-      const base = import.meta.env.VITE_APP_BASE_URL || '(当前站点，经 Vite 代理 /admin)'
-      const hint =
-        error.code === 'ECONNABORTED'
-          ? '请求超时，请检查网络或稍后重试'
-          : `无法连接接口服务器（${base}）。开发环境请确认：① PHP 已启动 ② yarn/.env.development 中 DEV_PROXY_TARGET 端口与 PHP 一致（站点根目录为 gccd_server/public）`
-      ElMessage({
-        showClose: true,
-        message: hint,
-        type: 'error',
-        duration: 6000
-      })
-      if (import.meta.env.DEV) {
-        console.error(error)
-      }
+      // [AI-2026-08] 必须 reject，否则调用方 await 会得到 undefined 并一直表现为异常态
       return Promise.reject(error)
     }
+    const base = import.meta.env.VITE_APP_BASE_URL || '(当前站点，经 Vite 代理 /admin)'
+    const hint =
+      error.code === 'ECONNABORTED'
+        ? '请求超时，请检查网络或稍后重试'
+        : `无法连接接口服务器（${base}）。开发环境请确认：① PHP 已启动 ② yarn/.env.development 中 DEV_PROXY_TARGET 端口与 PHP 一致（站点根目录为 gccd_server/public）`
+    ElMessage({
+      showClose: true,
+      message: hint,
+      type: 'error',
+      duration: 6000
+    })
+    if (import.meta.env.DEV) {
+      console.error(error)
+    }
+    return Promise.reject(error)
   }
 )
 
 // 响应处理
 function responseHandle(res) {
   // 返回码 401：Token 无效
-  if (res.code === 401) {
-    ElMessageBox.confirm(res.msg, '提示', {
+  const code = res && typeof res === 'object' ? res.code : undefined
+  const msg = res && typeof res === 'object' ? res.msg : undefined
+  if (code === 401) {
+    ElMessageBox.confirm(msg || '请重新登录', '提示', {
       confirmButtonText: '重新登录',
       cancelButtonText: '取消',
       type: 'warning'
@@ -134,7 +137,7 @@ function responseHandle(res) {
   } else {
     ElMessage({
       showClose: true,
-      message: res.msg || 'Server error',
+      message: msg || 'Server error',
       type: 'error',
       duration: 5000
     })

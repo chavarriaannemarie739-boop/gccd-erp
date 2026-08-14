@@ -359,16 +359,18 @@ class MaterialSearchHelper
         if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $reportAlias)) {
             throw new \InvalidArgumentException('查询别名不合法');
         }
-        $subQuery = Db::name('product_task')
-            ->alias('rpt')
-            ->join('material rym', 'rym.id=rpt.material_id')
-            ->whereColumn('rpt.task_code', $reportAlias . '.relation_code')
-            ->where('rpt.is_delete', 0)
-            ->where('rym.is_delete', 0)
-            ->where('rym.material_property', '圆钢')
-            ->field('1');
-        self::applyRoundSteelFilters($subQuery, $filters, 'rym');
-        $query->whereExists($subQuery);
+        // [AI-2026-08] ThinkPHP parseExists 只接受 Closure|Raw，不能传 Query
+        $query->whereExists(function ($existsQuery) use ($filters, $reportAlias) {
+            $existsQuery->name('product_task')
+                ->alias('rpt')
+                ->join('material rym', 'rym.id=rpt.material_id')
+                ->whereColumn('rpt.task_code', $reportAlias . '.relation_code')
+                ->where('rpt.is_delete', 0)
+                ->where('rym.is_delete', 0)
+                ->where('rym.material_property', '圆钢')
+                ->field('1');
+            self::applyRoundSteelFilters($existsQuery, $filters, 'rym');
+        });
 
         return $query;
     }
@@ -573,25 +575,67 @@ class MaterialSearchHelper
     }
 
     /**
+     * 成品信息检索词规范化：70*1.2 / 70×1.2 / 70 · 1.2 视为同一写法
+     *
+     * @param string $keyword
+     * @return string
+     */
+    public static function normalizeFinishedSearchToken(string $keyword): string
+    {
+        $token = trim($keyword);
+        if ($token === '') {
+            return '';
+        }
+        $token = preg_replace('/\s+/u', '', $token) ?? $token;
+        $token = str_replace(['×', '＊', '·', '．'], '*', $token);
+        $token = preg_replace('/(?<=\d)[xX](?=\d)/', '*', $token) ?? $token;
+        $token = preg_replace('/\*+/', '*', $token) ?? $token;
+
+        return trim($token, '*');
+    }
+
+    /**
      * 生产计划单号：成品物料多字段 OR 模糊（发货 product_info）
+     * 支持 70*1.2、74*6.3 这类「规格*型号」连写
      *
      * @param string $keyword
      * @return array
      */
     public static function planCodesByFinishedKeyword(string $keyword): array
     {
+        $keyword = trim($keyword);
         if ($keyword === '') {
             return [];
         }
         $like = '%' . self::likeKeyword($keyword) . '%';
+        $compact = self::normalizeFinishedSearchToken($keyword);
+        $concatLike = $compact === '' ? '' : '%' . self::likeKeyword($compact) . '%';
+        $parts = $compact === '' ? [] : explode('*', $compact);
+        $specPart = isset($parts[0]) ? trim((string) $parts[0]) : '';
+        $modelPart = isset($parts[1]) ? trim((string) $parts[1]) : '';
+
         return Db::name('production')
             ->alias('p')
             ->join('material m_yg', 'p.english_material = m_yg.id')
             ->where('p.is_delete', 0)
-            ->where(function ($query) use ($like) {
-                $query->whereOr('m_yg.material_name', 'like', $like)
+            ->where(function ($query) use ($like, $concatLike, $specPart, $modelPart) {
+                $query->where('m_yg.material_name', 'like', $like)
                     ->whereOr('m_yg.material_spec', 'like', $like)
                     ->whereOr('m_yg.material_model', 'like', $like);
+                if ($concatLike !== '') {
+                    $query->whereOrRaw(
+                        "REPLACE(CONCAT(IFNULL(m_yg.material_spec,''), '*', IFNULL(m_yg.material_model,'')), ' ', '') LIKE ?",
+                        [$concatLike]
+                    );
+                }
+                if ($specPart !== '' && $modelPart !== '') {
+                    $specLike = '%' . self::likeKeyword($specPart) . '%';
+                    $modelLike = '%' . self::likeKeyword($modelPart) . '%';
+                    $query->whereOr(function ($inner) use ($specLike, $modelLike) {
+                        $inner->where('m_yg.material_spec', 'like', $specLike)
+                            ->where('m_yg.material_model', 'like', $modelLike);
+                    });
+                }
             })
             ->column('p.production_plan_code');
     }

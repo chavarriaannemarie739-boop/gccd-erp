@@ -170,7 +170,7 @@
                     style="width: 100%; height: 52rpx; font-size: 26rpx; text-align: center;"
                   />
                 </view>
-                <!-- 穿孔+：手动输入壁厚规格 -->
+                <!-- 次成品/半成品手填规格；穿孔到酸洗走成品档案 -->
                 <view wx:elif="{{isSpecInputMode}}" class="compact-qty-block" style="flex: 1; max-width: 170rpx; margin-right: 8rpx; margin-left: 8rpx; padding: 0 12rpx; background: #f9fafb; border-radius: 8rpx; border: 1px solid #e5e7eb;">
                   <input
                     class="compact-qty-input"

@@ -20,6 +20,12 @@ class MaterialInventoryService
     /** 穿孔→断钢消耗折算系数（报工吨数 / 0.97 = 圆钢消耗） */
     private const PROCESS_YIELD_RATIO = 0.97;
 
+    /**
+     * [AI-2026-08] 全厂盘点重置日：此日及之后的推算只认该日及更新的手动期初，
+     * 不再沿用重置前旧品种（Excel 未盘到的不再显示）。
+     */
+    private const MANUAL_BASELINE_RESET_DATE = '2026-08-10';
+
     public static $search_field = [
         'check_name' => '',
         'check_code' => '',
@@ -96,7 +102,7 @@ class MaterialInventoryService
     }
 
     /**
-     * 同一工序、同一圆钢下多规格行按期初吨数占比（断钢长度 / 穿孔壁厚等）
+     * 同一工序、同一圆钢、同一成品型号下多长度行按期初吨数占比
      */
     private static function calcProcessBaselineRatio(
         array $baseline,
@@ -105,10 +111,12 @@ class MaterialInventoryService
         string $materialName,
         string $matchSpec,
         string $matchModel,
-        string $matchKey
+        string $matchKey,
+        string $matchCModel = ''
     ): float {
         $specQtyMap = [];
         $totalBaseline = 0.0;
+        $matchCModel = self::normalizeSpec($matchCModel);
         foreach ($baseline as $bs) {
             if (($bs['process_name'] ?? '') !== $processName) {
                 continue;
@@ -126,19 +134,26 @@ class MaterialInventoryService
                     continue;
                 }
             }
+            if ($matchCModel !== '' && self::normalizeSpec($bs['c_material_model'] ?? '') !== $matchCModel) {
+                continue;
+            }
             $bsKey = self::extractSpecKey($bs['c_material_spec'] ?? '');
             $bsQty = floatval($bs['total_tonnage']);
             $specQtyMap[$bsKey] = ($specQtyMap[$bsKey] ?? 0.0) + $bsQty;
             $totalBaseline += $bsQty;
         }
         if ($totalBaseline <= 0.000001) {
-            return count($specQtyMap) === 1 ? 1.0 : 0.0;
+            $specCount = count($specQtyMap);
+            return $specCount > 0 ? (1.0 / $specCount) : 0.0;
         }
         return ($specQtyMap[$matchKey] ?? 0.0) / $totalBaseline;
     }
 
     /**
-     * 圆钢当日报工：仅按「类别+规格+型号」或 material_id 精确匹配，禁止 name+spec 汇总回退（避免同规格不同型号重复同一消耗）
+     * 圆钢当日报工：有 material_id 只按档案 ID，禁止「溯源+轴承钢+型号」跨钢厂串扣。
+     *
+     * @param array<int, array<string, float>> $todayReportIdx
+     * @param array<string, mixed> $todayVarietyReportIdx 保留参数兼容调用方，不再用于有 ID 的圆钢
      */
     private static function getTodayRoundSteelReport(
         string $code,
@@ -149,17 +164,9 @@ class MaterialInventoryService
         array $todayReportIdx,
         array $todayVarietyReportIdx
     ): float {
-        $spec = trim($spec);
-        $model = trim($model);
-        $name = trim($name);
-        if (
-            $name !== '' && $spec !== '' && $model !== ''
-            && isset($todayVarietyReportIdx[$name][$spec][$model][$code])
-        ) {
-            return floatval($todayVarietyReportIdx[$name][$spec][$model][$code]);
-        }
-        if ($mid > 0 && isset($todayReportIdx[$mid][$code])) {
-            return floatval($todayReportIdx[$mid][$code]);
+        // [AI-2026-08] 钢厂串扣修复：有档案 ID 不走无钢厂三字段合计
+        if ($mid > 0) {
+            return floatval($todayReportIdx[$mid][$code] ?? 0);
         }
         return 0.0;
     }
@@ -167,6 +174,8 @@ class MaterialInventoryService
     /**
      * 圆钢当日报工明细（与 getTodayRoundSteelReport 同一匹配规则）
      *
+     * @param array<int, array<string, array<int, array{date: string, qty: float}>>> $todayReportDetails
+     * @param array<string, mixed> $todayVarietyReportDetails 保留参数兼容调用方
      * @return array<int, array{date: string, qty: float}>
      */
     private static function getTodayRoundSteelReportDetails(
@@ -178,15 +187,7 @@ class MaterialInventoryService
         array $todayReportDetails,
         array $todayVarietyReportDetails
     ): array {
-        $spec = trim($spec);
-        $model = trim($model);
-        $name = trim($name);
-        if (
-            $name !== '' && $spec !== '' && $model !== ''
-            && !empty($todayVarietyReportDetails[$name][$spec][$model][$code])
-        ) {
-            return $todayVarietyReportDetails[$name][$spec][$model][$code];
-        }
+        // [AI-2026-08] 钢厂串扣修复：明细与数量同一套 ID 匹配
         if ($mid > 0 && !empty($todayReportDetails[$mid][$code])) {
             return $todayReportDetails[$mid][$code];
         }
@@ -210,17 +211,12 @@ class MaterialInventoryService
         $spec = trim($spec);
         $model = trim($model);
         $name = trim($name);
-        if (
-            $name !== '' && $spec !== '' && $model !== ''
-            && !empty($todayVarietyReportDetails[$name][$spec][$model][$code])
-        ) {
-            return $todayVarietyReportDetails[$name][$spec][$model][$code];
-        }
-        if ($spec !== '' && $model !== '' && !empty($todaySpecModelReportDetails[$spec][$model][$code])) {
-            return $todaySpecModelReportDetails[$spec][$model][$code];
-        }
+        // [AI-2026-08] 钢厂串扣修复：有档案 ID 不按规格+型号串其他钢厂明细
         if ($mid > 0 && !empty($todayReportDetails[$mid][$code])) {
             return $todayReportDetails[$mid][$code];
+        }
+        if ($mid > 0) {
+            return [];
         }
         if ($name !== '' && $spec !== '' && !empty($todayNameReportDetails[$name][$spec][$code])) {
             $qty = floatval($todayNameReportDetails[$name][$spec][$code]);
@@ -822,6 +818,10 @@ class MaterialInventoryService
                 ));
             }
 
+            // [AI-2026-08] 一次批量取号，避免逐条 getCode 行锁导致「全部提交」长时间转圈
+            $inventoryCodes = PublicService::allocateCodes(10, count($items));
+            $nowTime = datetime();
+
             foreach ($items as $index => $item) {
                 $dayTonnage = floatval($item['day_shift_qty'] ?? 0);
                 $nightTonnage = floatval($item['night_shift_qty'] ?? 0);
@@ -829,6 +829,8 @@ class MaterialInventoryService
                 // 归一化规格：确保格式一致以支持匹配
                 $rawSpec = $item['c_material_spec'] ?? '';
                 $normalizedSpec = $rawSpec ? self::normalizeSpec($rawSpec) : '';
+                $rawModel = $item['c_material_model'] ?? '';
+                $normalizedModel = $rawModel ? self::normalizeSpec((string) $rawModel) : '';
 
                 $materialId = intval($item['material_id'] ?? 0);
                 if ($processName === '圆钢') {
@@ -841,7 +843,7 @@ class MaterialInventoryService
                 }
 
                 $insertData[] = [
-                    'inventory_code' => PublicService::getCode(10)['code'],
+                    'inventory_code' => $inventoryCodes[$index] ?? PublicService::getCode(10)['code'],
                     'inventory_date' => $stocktakeDate,
                     'process_name' => $processName,
                     'material_id' => $roundSteelFields['material_id'],
@@ -849,8 +851,8 @@ class MaterialInventoryService
                     'y_material_manufacturer' => $roundSteelFields['y_material_manufacturer'],
                     'y_material_spec' => $roundSteelFields['y_material_spec'],
                     'y_material_model' => $roundSteelFields['y_material_model'],
-                    'c_material_spec' => $normalizedSpec, // 归一化后存入
-                    'c_material_model' => $item['c_material_model'] ?? '',
+                    'c_material_spec' => $normalizedSpec,
+                    'c_material_model' => $normalizedModel,
                     'c_product_spec' => $item['c_product_spec'] ?? '',
                     'finished_product_spec' => $item['c_product_model'] ?? $item['c_material_model'] ?? '',
                     'day_shift_tonnage' => $dayTonnage,
@@ -860,9 +862,9 @@ class MaterialInventoryService
                     'source' => 'manual',
                     'confirmed' => 1,
                     'create_uid' => $userId,
-                    'create_time' => datetime(),
+                    'create_time' => $nowTime,
                     'update_uid' => $userId,
-                    'update_time' => datetime(),
+                    'update_time' => $nowTime,
                 ];
 
                 // 调试日志：第一条数据
@@ -1002,13 +1004,14 @@ class MaterialInventoryService
     }
 
     /**
-     * 盘点品种唯一键（工序 + 圆钢 + 工序规格）
+     * 盘点品种唯一键（工序 + 圆钢 + 成品规格 + 成品型号）
      */
     private static function baselineItemKey(array $row): string
     {
         if (($row['process_name'] ?? '') === '圆钢') {
             return self::roundSteelCalculationIdentityKey($row)
-                . "\x00" . self::normalizeSpec($row['c_material_spec'] ?? '');
+                . "\x00" . self::normalizeSpec($row['c_material_spec'] ?? '')
+                . "\x00" . self::normalizeSpec($row['c_material_model'] ?? '');
         }
 
         return implode("\x00", [
@@ -1018,6 +1021,7 @@ class MaterialInventoryService
             trim($row['y_material_spec'] ?? ''),
             trim($row['y_material_model'] ?? ''),
             self::normalizeSpec($row['c_material_spec'] ?? ''),
+            self::normalizeSpec($row['c_material_model'] ?? ''),
         ]);
     }
 
@@ -1186,7 +1190,7 @@ class MaterialInventoryService
     private static function buildLatestManualBaseline(string $calcDate): array
     {
         $processNames = ['圆钢', '断钢', '穿孔', '球化', '矫直', '酸洗', '次成品', '半成品'];
-        $rows = Db::name('material_inventory')
+        $query = Db::name('material_inventory')
             ->where('is_delete', 0)
             ->where('confirmed', 1)
             ->whereIn('process_name', $processNames)
@@ -1195,7 +1199,14 @@ class MaterialInventoryService
                 $q->where('source', 'manual')
                     ->whereOr('source', '')
                     ->whereOr('source', null);
-            })
+            });
+
+        // [AI-2026-08] 重置日后切断更早期初，避免旧品种继续出现在推算列表
+        if (strtotime($calcDate) >= strtotime(self::MANUAL_BASELINE_RESET_DATE)) {
+            $query->where('inventory_date', '>=', self::MANUAL_BASELINE_RESET_DATE);
+        }
+
+        $rows = $query
             ->order(['inventory_date' => 'desc', 'create_time' => 'desc', 'id' => 'desc'])
             ->select()
             ->toArray();
@@ -1470,7 +1481,9 @@ class MaterialInventoryService
     }
 
     /**
-     * @param string $model 圆钢型号；非空时优先按「规格+型号」汇总（溯源/凯亚改报工后仍计入）
+     * 区间报工合计。有 material_id 只按档案 ID；禁止「溯源+轴承钢+型号」跨钢厂串扣。
+     *
+     * @param array<string, mixed> $dailyIndex
      */
     private static function sumReportDaily(array $dailyIndex, int $mid, string $code, string $startDate, string $endDate, string $name, string $spec, string $model = ''): float
     {
@@ -1480,41 +1493,20 @@ class MaterialInventoryService
         $spec = trim($spec);
         $model = trim($model);
         $name = trim($name);
-        // 圆钢推算：优先「类别+规格+型号」（如 溯源|巨能|50），避免改工单后漏计或串到凯亚
-        if ($name !== '' && $spec !== '' && $model !== '' && !empty($dailyIndex['variety'][$name][$spec][$model][$code])) {
-            $varietySum = 0.0;
-            foreach ($dailyIndex['variety'][$name][$spec][$model][$code] as $d => $qty) {
-                if ($d >= $startDate && $d <= $endDate) {
-                    $varietySum += floatval($qty);
-                }
-            }
-            return $varietySum;
-        }
-        if ($spec !== '' && $model !== '' && !empty($dailyIndex['spec_model'][$spec][$model][$code])) {
-            $specModelSum = 0.0;
-            foreach ($dailyIndex['spec_model'][$spec][$model][$code] as $d => $qty) {
-                if ($d >= $startDate && $d <= $endDate) {
-                    $specModelSum += floatval($qty);
-                }
-            }
-            if ($specModelSum > 0.000001) {
-                return $specModelSum;
-            }
-        }
-
         $sum = 0.0;
-        if ($mid > 0 && !empty($dailyIndex['id'][$mid][$code])) {
-            foreach ($dailyIndex['id'][$mid][$code] as $d => $qty) {
-                if ($d >= $startDate && $d <= $endDate) {
-                    $sum += floatval($qty);
+        // [AI-2026-08] 钢厂串扣修复：有档案 ID 不走无钢厂 variety / spec_model
+        if ($mid > 0) {
+            if (!empty($dailyIndex['id'][$mid][$code])) {
+                foreach ($dailyIndex['id'][$mid][$code] as $d => $qty) {
+                    if ($d >= $startDate && $d <= $endDate) {
+                        $sum += floatval($qty);
+                    }
                 }
             }
-        }
-        if ($mid > 0 && $model !== '') {
             return $sum;
         }
-        if ($sum > 0 || ($mid > 0 && !empty($dailyIndex['id'][$mid][$code]))) {
-            return $sum;
+        if ($model !== '') {
+            return 0.0;
         }
         if ($name !== '' && !empty($dailyIndex['name'][$name][$spec][$code])) {
             foreach ($dailyIndex['name'][$name][$spec][$code] as $d => $qty) {
@@ -1524,6 +1516,134 @@ class MaterialInventoryService
             }
         }
         return $sum;
+    }
+
+    /**
+     * 报工按圆钢 + 工序码 + 计划成品规格/型号分日汇总。
+     *
+     * @return array<int, array<string, array<string, array<string, array<string, float>>>>>
+     */
+    public static function buildFinishedReportQtyIndex(string $minDate, string $maxDate): array
+    {
+        $index = [];
+        if (strtotime($minDate) > strtotime($maxDate)) {
+            return $index;
+        }
+
+        $reportRows = Db::name('product_report')
+            ->alias('pr')
+            ->join('material m', 'pr.material_id = m.id')
+            ->where('pr.report_date', '>=', $minDate)
+            ->where('pr.report_date', '<=', $maxDate)
+            ->where('pr.is_delete', 0)
+            ->field('pr.material_id, pr.processes_code, pr.relation_code, pr.report_date, pr.report_num')
+            ->select()
+            ->toArray();
+        if ($reportRows === []) {
+            return $index;
+        }
+
+        $relationCodes = [];
+        foreach ($reportRows as $r) {
+            $rel = trim((string) ($r['relation_code'] ?? ''));
+            if ($rel !== '') {
+                $relationCodes[$rel] = true;
+            }
+        }
+
+        $taskToPlan = [];
+        $planCodesDirect = [];
+        if ($relationCodes !== []) {
+            $taskRows = Db::name('product_task')
+                ->whereIn('task_code', array_keys($relationCodes))
+                ->where('is_delete', 0)
+                ->field('task_code, relation_code')
+                ->select()
+                ->toArray();
+            foreach ($taskRows as $tr) {
+                $taskToPlan[trim((string) $tr['task_code'])] = trim((string) $tr['relation_code']);
+            }
+            foreach (array_keys($relationCodes) as $rel) {
+                $planCodesDirect[$taskToPlan[$rel] ?? $rel] = true;
+            }
+        }
+
+        $planFinished = [];
+        $finishedMap = [];
+        if ($planCodesDirect !== []) {
+            $planRows = Db::name('production')
+                ->whereIn('production_plan_code', array_keys($planCodesDirect))
+                ->where('is_delete', 0)
+                ->field('production_plan_code, english_material')
+                ->select()
+                ->toArray();
+            $finishedIds = [];
+            foreach ($planRows as $pr) {
+                $fid = intval($pr['english_material'] ?? 0);
+                if ($fid > 0) {
+                    $planFinished[trim((string) $pr['production_plan_code'])] = $fid;
+                    $finishedIds[$fid] = true;
+                }
+            }
+            $finishedMap = $finishedIds === [] ? [] : self::loadFinishedSpecMap(array_keys($finishedIds));
+        }
+
+        foreach ($reportRows as $r) {
+            $mid = intval($r['material_id'] ?? 0);
+            $code = (string) ($r['processes_code'] ?? '');
+            $qty = floatval($r['report_num'] ?? 0);
+            if ($mid <= 0 || $code === '' || $qty == 0.0) {
+                continue;
+            }
+            $rel = trim((string) ($r['relation_code'] ?? ''));
+            $planCode = $taskToPlan[$rel] ?? $rel;
+            $finishedId = intval($planFinished[$planCode] ?? 0);
+            $finished = $finishedMap[$finishedId] ?? [];
+            $cSpec = self::normalizeSpec((string) ($finished['material_spec'] ?? ''));
+            $cModel = self::normalizeSpec((string) ($finished['material_model'] ?? ''));
+            if ($cSpec === '' && $cModel === '') {
+                continue;
+            }
+            $date = date('Y-m-d', strtotime((string) $r['report_date']));
+            $index[$mid][$code][$cSpec][$cModel][$date] =
+                ($index[$mid][$code][$cSpec][$cModel][$date] ?? 0.0) + $qty;
+        }
+
+        return $index;
+    }
+
+    /**
+     * @param array<int, array<string, array<string, array<string, array<string, float>>>>> $finishedIndex
+     */
+    public static function sumFinishedReportDaily(
+        array $finishedIndex,
+        int $mid,
+        string $code,
+        string $cSpec,
+        string $cModel,
+        string $startDate,
+        string $endDate
+    ): ?float {
+        $cSpec = self::normalizeSpec($cSpec);
+        $cModel = self::normalizeSpec($cModel);
+        if ($mid <= 0 || $code === '' || ($cSpec === '' && $cModel === '')) {
+            return null;
+        }
+        if (empty($finishedIndex[$mid][$code][$cSpec][$cModel])) {
+            return null;
+        }
+        if (strtotime($startDate) > strtotime($endDate)) {
+            return 0.0;
+        }
+        $sum = 0.0;
+        $found = false;
+        foreach ($finishedIndex[$mid][$code][$cSpec][$cModel] as $d => $qty) {
+            if ($d >= $startDate && $d <= $endDate) {
+                $sum += floatval($qty);
+                $found = true;
+            }
+        }
+        return $found ? $sum : 0.0;
     }
 
     /**
@@ -1714,6 +1834,278 @@ class MaterialInventoryService
     }
 
     /**
+     * [AI-2026-08] 断钢用计划成品规格；穿孔及以后同时取规格（长度）和型号。
+     *
+     * @return array{c_material_spec: string, c_material_model: string}
+     */
+    public static function pickProcessIdentityFromFinishedArchive(
+        string $processName,
+        string $planSpec,
+        string $planModel
+    ): array {
+        $planSpec = self::normalizeSpec($planSpec);
+        $planModel = self::normalizeSpec($planModel);
+        if ($processName === '断钢') {
+            return [
+                'c_material_spec' => $planSpec !== '' ? $planSpec : $planModel,
+                'c_material_model' => '',
+            ];
+        }
+        return [
+            'c_material_spec' => $planSpec,
+            'c_material_model' => $planModel !== '' ? $planModel : $planSpec,
+        ];
+    }
+
+    /**
+     * [AI-2026-08] 断钢用计划成品规格，穿孔及以后优先成品型号（兼容旧调用）。
+     *
+     * @param string $processName 断钢|穿孔|球化|矫直|酸洗
+     * @param string $planSpec 计划成品 material_spec
+     * @param string $planModel 计划成品 material_model
+     * @return string
+     */
+    public static function pickProcessSpecFromFinishedArchive(
+        string $processName,
+        string $planSpec,
+        string $planModel
+    ): string {
+        $identity = self::pickProcessIdentityFromFinishedArchive($processName, $planSpec, $planModel);
+        if ($processName === '断钢') {
+            return $identity['c_material_spec'];
+        }
+        return $identity['c_material_model'] !== ''
+            ? $identity['c_material_model']
+            : $identity['c_material_spec'];
+    }
+
+    /**
+     * [AI-2026-08] 该工序基线是否已有此圆钢型号（不区分工序规格）。
+     *
+     * @param array<int, array<string, mixed>> $baseline
+     * @return bool
+     */
+    public static function processBaselineHasMaterial(
+        array $baseline,
+        string $processName,
+        int $materialId,
+        string $name = '',
+        string $manufacturer = '',
+        string $spec = '',
+        string $model = '',
+        string $cMaterialSpec = '',
+        string $cMaterialModel = ''
+    ): bool {
+        $cMaterialSpec = self::normalizeSpec($cMaterialSpec);
+        $cMaterialModel = self::normalizeSpec($cMaterialModel);
+        foreach ($baseline as $row) {
+            if (($row['process_name'] ?? '') !== $processName) {
+                continue;
+            }
+            $rowMid = intval($row['material_id'] ?? 0);
+            $roundMatched = false;
+            if ($materialId > 0 && $rowMid === $materialId) {
+                $roundMatched = true;
+            } elseif (
+                $materialId <= 0
+                && trim((string) ($row['material_name'] ?? '')) === trim($name)
+                && trim((string) ($row['y_material_manufacturer'] ?? '')) === trim($manufacturer)
+                && trim((string) ($row['y_material_spec'] ?? '')) === trim($spec)
+                && trim((string) ($row['y_material_model'] ?? '')) === trim($model)
+            ) {
+                $roundMatched = true;
+            }
+            if (!$roundMatched) {
+                continue;
+            }
+            if ($cMaterialSpec === '' && $cMaterialModel === '') {
+                return true;
+            }
+            $rowSpec = self::normalizeSpec($row['c_material_spec'] ?? '');
+            $rowModel = self::normalizeSpec($row['c_material_model'] ?? '');
+            if ($cMaterialSpec !== '' && $rowSpec !== $cMaterialSpec) {
+                continue;
+            }
+            if ($cMaterialModel !== '' && $rowModel !== $cMaterialModel) {
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * [AI-2026-08] 盘点没有、但重置日后有报工的工序行：期初 0 补进日推算。
+     *
+     * @param array<int, array<string, mixed>> $baseline
+     * @return array<int, array<string, mixed>>
+     */
+    private static function appendDailyMissingProcessFromReport(
+        array $baseline,
+        string $resetDate,
+        string $calcDate
+    ): array {
+        $codeToProcess = [
+            'gx_0010' => '断钢',
+            'gx_0011' => '穿孔',
+            'gx_0012' => '球化',
+            'gx_0013' => '矫直',
+            'gx_0014' => '酸洗',
+        ];
+        if (strtotime($resetDate) > strtotime($calcDate)) {
+            return $baseline;
+        }
+
+        $reportRows = Db::name('product_report')
+            ->alias('pr')
+            ->join('material m', 'pr.material_id = m.id AND m.is_delete = 0 AND m.material_property = \'圆钢\'')
+            ->where('pr.is_delete', 0)
+            ->where('pr.report_date', '>=', $resetDate)
+            ->where('pr.report_date', '<=', $calcDate)
+            ->whereIn('pr.processes_code', array_keys($codeToProcess))
+            ->field(
+                'pr.processes_code, pr.relation_code, pr.material_id,
+                 m.material_name, m.manufacturer, m.material_spec, m.material_model'
+            )
+            ->select()
+            ->toArray();
+        if ($reportRows === []) {
+            return $baseline;
+        }
+
+        $taskCodes = [];
+        $planCodesDirect = [];
+        foreach ($reportRows as $r) {
+            $rel = trim((string) ($r['relation_code'] ?? ''));
+            if ($rel === '') {
+                continue;
+            }
+            $taskCodes[$rel] = true;
+            $planCodesDirect[$rel] = true;
+        }
+
+        $taskToPlan = [];
+        if ($taskCodes !== []) {
+            $taskRows = Db::name('product_task')
+                ->whereIn('task_code', array_keys($taskCodes))
+                ->where('is_delete', 0)
+                ->field('task_code, relation_code')
+                ->select()
+                ->toArray();
+            foreach ($taskRows as $tr) {
+                $plan = trim((string) ($tr['relation_code'] ?? ''));
+                if ($plan !== '') {
+                    $taskToPlan[trim((string) $tr['task_code'])] = $plan;
+                    $planCodesDirect[$plan] = true;
+                }
+            }
+        }
+
+        $planFinished = [];
+        if ($planCodesDirect !== []) {
+            $planRows = Db::name('production')
+                ->whereIn('production_plan_code', array_keys($planCodesDirect))
+                ->where('is_delete', 0)
+                ->field('production_plan_code, english_material')
+                ->select()
+                ->toArray();
+            $finishedIds = [];
+            foreach ($planRows as $pr) {
+                $fid = intval($pr['english_material'] ?? 0);
+                if ($fid > 0) {
+                    $planFinished[trim((string) $pr['production_plan_code'])] = $fid;
+                    $finishedIds[$fid] = true;
+                }
+            }
+            $finishedMap = $finishedIds === [] ? [] : self::loadFinishedSpecMap(array_keys($finishedIds));
+        } else {
+            $finishedMap = [];
+        }
+
+        $seenAppend = [];
+        foreach ($reportRows as $r) {
+            $processName = $codeToProcess[$r['processes_code'] ?? ''] ?? '';
+            $mid = intval($r['material_id'] ?? 0);
+            if ($processName === '' || $mid <= 0) {
+                continue;
+            }
+
+            $rel = trim((string) ($r['relation_code'] ?? ''));
+            $planCode = $taskToPlan[$rel] ?? $rel;
+            $finishedId = intval($planFinished[$planCode] ?? 0);
+            $finished = $finishedMap[$finishedId] ?? [];
+            $identity = self::pickProcessIdentityFromFinishedArchive(
+                $processName,
+                (string) ($finished['material_spec'] ?? ''),
+                (string) ($finished['material_model'] ?? '')
+            );
+            $cSpec = $identity['c_material_spec'];
+            $cModel = $identity['c_material_model'];
+            if (self::processBaselineHasMaterial(
+                $baseline,
+                $processName,
+                $mid,
+                '',
+                '',
+                '',
+                '',
+                $cSpec,
+                $cModel
+            )) {
+                continue;
+            }
+
+            $dedupeKey = $processName . "\x00" . $mid . "\x00" . self::normalizeSpec($cSpec)
+                . "\x00" . self::normalizeSpec($cModel);
+            if (isset($seenAppend[$dedupeKey])) {
+                continue;
+            }
+            $seenAppend[$dedupeKey] = true;
+
+            $baseline[] = [
+                'process_name' => $processName,
+                'material_id' => $mid,
+                'material_name' => (string) ($r['material_name'] ?? ''),
+                'y_material_name' => (string) ($r['material_name'] ?? ''),
+                'y_material_manufacturer' => (string) ($r['manufacturer'] ?? ''),
+                'y_material_spec' => (string) ($r['material_spec'] ?? ''),
+                'y_material_model' => (string) ($r['material_model'] ?? ''),
+                'c_material_spec' => $cSpec,
+                'c_material_model' => $cModel,
+                'total_tonnage' => 0,
+                'inventory_date' => $resetDate,
+                'source' => 'manual',
+                'is_report_fill' => 1,
+            ];
+        }
+
+        return $baseline;
+    }
+
+    /**
+     * @param int[] $materialIds
+     * @return array<int, array<string, mixed>>
+     */
+    private static function loadFinishedSpecMap(array $materialIds): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $materialIds))));
+        if ($ids === []) {
+            return [];
+        }
+        $rows = Db::name('material')
+            ->whereIn('id', $ids)
+            ->where('is_delete', 0)
+            ->field('id, material_spec, material_model')
+            ->select()
+            ->toArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[intval($row['id'] ?? 0)] = $row;
+        }
+        return $map;
+    }
+
+    /**
      * 自动推算线边仓库存
      *
      * 核心逻辑：
@@ -1754,6 +2146,7 @@ class MaterialInventoryService
 
         // Step 2: 按日索引报工/入库/发货（各品种在推算时按自己的期初日期截取区间）
         $reportDaily = self::fetchReportDailyIndex($minBaselineDate, $calcDate);
+        $finishedDaily = self::buildFinishedReportQtyIndex($minBaselineDate, $calcDate);
         $inboundDaily = self::fetchInboundDailyIndex($minBaselineDate, $calcDate);
         $shipDaily = self::fetchShipDailyIndex($minBaselineDate, $calcDate);
 
@@ -1894,19 +2287,14 @@ class MaterialInventoryService
             }
         }
 
-        // Helper: 读取今日报工（含 material_id 与 规格+型号 回退）
-        $getTodayReport = function ($code, $mid, $name, $spec, $model = '') use (&$todayReportIdx, &$todayNameReportIdx, &$todaySpecModelReportIdx, &$todayVarietyReportIdx) {
+        // Helper: 读取今日报工。有档案 ID 只按 ID，禁止规格+型号跨钢厂串扣。
+        $getTodayReport = function ($code, $mid, $name, $spec, $model = '') use (&$todayReportIdx, &$todayNameReportIdx) {
             $spec = trim((string) $spec);
-            $model = trim((string) $model);
             $name = trim((string) $name);
-            if ($name !== '' && $spec !== '' && $model !== '' && isset($todayVarietyReportIdx[$name][$spec][$model][$code])) {
-                return floatval($todayVarietyReportIdx[$name][$spec][$model][$code]);
-            }
-            if ($spec !== '' && $model !== '' && isset($todaySpecModelReportIdx[$spec][$model][$code])) {
-                return floatval($todaySpecModelReportIdx[$spec][$model][$code]);
-            }
-            if ($mid > 0 && isset($todayReportIdx[$mid][$code])) {
-                return $todayReportIdx[$mid][$code];
+            $mid = intval($mid);
+            // [AI-2026-08] 钢厂串扣修复
+            if ($mid > 0) {
+                return floatval($todayReportIdx[$mid][$code] ?? 0);
             }
             return $todayNameReportIdx[$name][$spec][$code] ?? 0;
         };
@@ -1931,6 +2319,12 @@ class MaterialInventoryService
 
         // [AI-2026-08] 圆钢基线优先 material_id，否则按含厂商四字段合并。
         $baseline = self::mergeRoundSteelBaselineRows($baseline);
+        // [AI-2026-08] 盘点未覆盖但已报工的工序（如矫直从 0 干出来）补进推算
+        $baseline = self::appendDailyMissingProcessFromReport(
+            $baseline,
+            self::MANUAL_BASELINE_RESET_DATE,
+            $calcDate
+        );
 
         // Step 5: 逐条推算（v2：按工序维度匹配）
         $result = [];
@@ -1943,6 +2337,8 @@ class MaterialInventoryService
             $baselineQty = floatval($stock['total_tonnage']);
             // 从该条盘点记录的 c_material_spec 提取匹配键
             $matchKey = self::extractSpecKey($stock['c_material_spec'] ?? '');
+            $rowCSpec = (string) ($stock['c_material_spec'] ?? '');
+            $rowCModel = (string) ($stock['c_material_model'] ?? '');
 
             if (!isset($processFlow[$processName])) {
                 continue;
@@ -1971,7 +2367,8 @@ class MaterialInventoryService
                     $materialName,
                     $matchSpec,
                     $matchModel,
-                    $matchKey
+                    $matchKey,
+                    $rowCModel
                 );
                 $todaySpecRatio = $ratio;
             } elseif (isset($processFlow[$processName])) {
@@ -1982,7 +2379,8 @@ class MaterialInventoryService
                     $materialName,
                     $matchSpec,
                     $matchModel,
-                    $matchKey
+                    $matchKey,
+                    $rowCModel
                 );
             }
 
@@ -2041,18 +2439,44 @@ class MaterialInventoryService
 
                     $currentQty = $reportQtyFn($currentCode);
                     $nextQty = $nextCode ? $reportQtyFn($nextCode) : 0;
+                    $matchedCurrent = self::sumFinishedReportDaily(
+                        $finishedDaily,
+                        $stockMaterialId,
+                        $currentCode,
+                        $rowCSpec,
+                        $rowCModel,
+                        $itemStartDate,
+                        $itemEndDate
+                    );
+                    $matchedNext = $nextCode
+                        ? self::sumFinishedReportDaily(
+                            $finishedDaily,
+                            $stockMaterialId,
+                            $nextCode,
+                            $rowCSpec,
+                            $rowCModel,
+                            $itemStartDate,
+                            $itemEndDate
+                        )
+                        : 0.0;
+                    $currentQty = $matchedCurrent !== null ? $matchedCurrent : ($currentQty * $todaySpecRatio);
+                    $nextQty = $nextCode
+                        ? ($matchedNext !== null ? $matchedNext : ($nextQty * $todaySpecRatio))
+                        : 0.0;
 
                     $predictedQty = $baselineQty + $currentQty - $nextQty;
                     $calcDetail = [
                         'baseline'       => round($baselineQty, 3),
                         'current_output' => round($currentQty, 3),
                         'next_consume'   => round($nextQty, 3),
-                        'match_type'     => 'mid',
+                        'match_type'     => $matchedCurrent !== null ? 'finished+len' : 'mid+prop',
+                        'proportion'     => round($todaySpecRatio, 4),
                     ];
 
                     // 酸洗（最后工序）：扣减发货出库
                     if ($flow['type'] === 'finish') {
                         $shipQty = self::sumShipDaily($shipDaily, $stockMaterialId, $itemStartDate, $itemEndDate);
+                        $shipQty = $shipQty * $todaySpecRatio;
                         $predictedQty -= $shipQty;
                         $calcDetail['ship_out'] = round($shipQty, 3);
                         $calcDetail['baseline_date'] = $itemBaselineDate;
@@ -2115,6 +2539,26 @@ class MaterialInventoryService
                 $nextCode = $flow['next_code'];
                 $todayOutRaw = $getTodayReport($code, $stockMaterialId, $materialName, $matchSpec);
                 $todayConsumeRaw = $nextCode ? $getTodayReport($nextCode, $stockMaterialId, $materialName, $matchSpec) : 0;
+                $todayMatchedOut = self::sumFinishedReportDaily(
+                    $finishedDaily,
+                    $stockMaterialId,
+                    $code,
+                    $rowCSpec,
+                    $rowCModel,
+                    $calcDate,
+                    $calcDate
+                );
+                $todayMatchedNext = $nextCode
+                    ? self::sumFinishedReportDaily(
+                        $finishedDaily,
+                        $stockMaterialId,
+                        $nextCode,
+                        $rowCSpec,
+                        $rowCModel,
+                        $calcDate,
+                        $calcDate
+                    )
+                    : 0.0;
                 $rawConsumeDetails = $nextCode
                     ? self::pickTodayReportDetails(
                         $nextCode,
@@ -2135,9 +2579,22 @@ class MaterialInventoryService
                         $rawConsumeDetails[] = ['date' => $calcDate, 'qty' => round($todayShip, 3)];
                     }
                 }
-                $todayOut = $todayOutRaw * $todaySpecRatio;
-                $todayConsume = $todayConsumeRaw * $todaySpecRatio;
-                $todayConsumeDetails = self::scaleTodayReportDetails($rawConsumeDetails, $todaySpecRatio);
+                $todayOut = $todayMatchedOut !== null ? $todayMatchedOut : ($todayOutRaw * $todaySpecRatio);
+                $todayNext = $nextCode
+                    ? ($todayMatchedNext !== null ? $todayMatchedNext : 0.0)
+                    : 0.0;
+                if ($todayMatchedNext === null && $nextCode) {
+                    $todayConsume = $todayConsumeRaw * $todaySpecRatio;
+                } elseif ($flow['type'] === 'finish') {
+                    $todayShip = $stockMaterialId > 0 ? (($todayShipIdx[$stockMaterialId] ?? 0) * $todaySpecRatio) : 0;
+                    $todayConsume = $todayNext + $todayShip;
+                } else {
+                    $todayConsume = $todayNext;
+                }
+                $todayConsumeDetails = self::scaleTodayReportDetails(
+                    $rawConsumeDetails,
+                    $todayMatchedNext !== null ? 1.0 : $todaySpecRatio
+                );
             }
             $beginToday = round($predictedQty, 3); // predicted_qty = 昨日结存
             $todayPredicted = $beginToday + $todayIn + $todayOut - $todayConsume;
@@ -2174,11 +2631,17 @@ class MaterialInventoryService
 
         // ========== Step 6: 补充新入库圆钢（期初没有的品种） ==========
         // [AI-2026-08] 查重优先 material_id，否则使用含厂商的圆钢四字段身份。
+        // [AI-2026-08] 全厂盘点重置后：只显示重置日手动盘点品种，关闭「新入库自动检出」混入旧/未盘品种。
+        $skipNewInboundDetect = strtotime($calcDate) >= strtotime(self::MANUAL_BASELINE_RESET_DATE);
 
         // 新入库圆钢（期初无该品种）：从全局最早手动期初次日起至推算日前一天
         $newInboundMidSeen = [];
         $newInboundMaterialMap = self::loadMaterialBriefMap(array_keys($inboundDaily['id'] ?? []));
-        if (strtotime($newRawStartDate) <= strtotime($globalEndDate) && !empty($inboundDaily['id'])) {
+        if (
+            !$skipNewInboundDetect
+            && strtotime($newRawStartDate) <= strtotime($globalEndDate)
+            && !empty($inboundDaily['id'])
+        ) {
             foreach ($inboundDaily['id'] as $mid => $dateQty) {
                 $mid = intval($mid);
                 $matRow = $newInboundMaterialMap[$mid] ?? null;
@@ -2240,7 +2703,11 @@ class MaterialInventoryService
         }
 
         // 文本维度补充：仅处理 material_id=0 的历史入库（避免与上表重复）
-        if (strtotime($newRawStartDate) <= strtotime($globalEndDate) && !empty($inboundDaily['name'])) {
+        if (
+            !$skipNewInboundDetect
+            && strtotime($newRawStartDate) <= strtotime($globalEndDate)
+            && !empty($inboundDaily['name'])
+        ) {
             foreach ($inboundDaily['name'] as $rName => $specMap) {
                 foreach ($specMap as $rSpec => $dateQty) {
                     if ($rName === '' || $rSpec === '') {
@@ -2436,8 +2903,14 @@ class MaterialInventoryService
         // ========== Step 9: 去重 + 过滤零值 ==========
         $result = self::dedupeCalcResults($result);
         $result = array_values(array_filter($result, function ($item) {
-            // 负数（异常）保留，为零的隐藏
-            return $item['predicted_qty'] != 0;
+            // 负数（异常）保留；有期初盘点日期的行（含 0 吨锁品种）保留；其余零值隐藏
+            if (($item['predicted_qty'] ?? 0) != 0) {
+                return true;
+            }
+            if (!empty($item['baseline_date'])) {
+                return true;
+            }
+            return !empty($item['is_manual']) || !empty($item['is_history']);
         }));
 
         return $result;
@@ -2464,22 +2937,46 @@ class MaterialInventoryService
         // ====== Step 2-3: 按工序独立取期初（各工序可不同日期） ======
         $processNames = ['圆钢', '断钢', '穿孔', '球化', '矫直', '酸洗', '次成品', '半成品'];
         $baseline = [];
+        $resetDate = self::MANUAL_BASELINE_RESET_DATE;
+        $resetInMonth = strtotime($resetDate) >= strtotime($monthStart)
+            && strtotime($resetDate) <= strtotime($monthEnd);
 
         foreach ($processNames as $pn) {
-            $dateRow = Db::query(
-                "SELECT MAX(inventory_date) AS d FROM ya_material_inventory
-                 WHERE is_delete=0 AND confirmed=1 AND process_name = ? AND inventory_date < ?",
-                [$pn, $monthStart]
-            );
-            $date = $dateRow[0]['d'] ?? null;
+            $date = null;
+
+            // [AI-2026-08] 重置日落在本月内：以全厂盘点日为期初，不再用更早 import/旧手动
+            if ($resetInMonth) {
+                $hasReset = Db::name('material_inventory')
+                    ->where('is_delete', 0)
+                    ->where('confirmed', 1)
+                    ->where('process_name', $pn)
+                    ->where('inventory_date', $resetDate)
+                    ->where(function ($q) {
+                        $q->where('source', 'manual')
+                            ->whereOr('source', '')
+                            ->whereOr('source', null);
+                    })
+                    ->count();
+                if ($hasReset > 0) {
+                    $date = $resetDate;
+                }
+            }
+
             if (!$date) {
-                $dateRow = Db::query(
-                    "SELECT MAX(inventory_date) AS d FROM ya_material_inventory
-                     WHERE is_delete=0 AND process_name = ? AND inventory_date < ?",
-                    [$pn, $monthStart]
-                );
+                // 仅取手动期初；重置月之后不得回落到重置日前
+                $sql = "SELECT MAX(inventory_date) AS d FROM ya_material_inventory
+                        WHERE is_delete=0 AND confirmed=1 AND process_name = ?
+                          AND inventory_date < ?
+                          AND (source='manual' OR source='' OR source IS NULL)";
+                $params = [$pn, $monthStart];
+                if (strtotime($monthStart) > strtotime($resetDate)) {
+                    $sql .= ' AND inventory_date >= ?';
+                    $params[] = $resetDate;
+                }
+                $dateRow = Db::query($sql, $params);
                 $date = $dateRow[0]['d'] ?? null;
             }
+
             if (!$date) {
                 continue;
             }
@@ -2489,6 +2986,11 @@ class MaterialInventoryService
                 ->where('is_delete', 0)
                 ->where('inventory_date', $date)
                 ->where('process_name', $pn)
+                ->where(function ($q) {
+                    $q->where('source', 'manual')
+                        ->whereOr('source', '')
+                        ->whereOr('source', null);
+                })
                 ->select()
                 ->toArray();
             $baseline = array_merge($baseline, $procBaseline);
@@ -2641,7 +3143,7 @@ class MaterialInventoryService
             ->where('wi.is_delete', 0)
             ->where('wi.status', 0)
         )
-            ->field('m.id as material_id, m.material_name, m.material_spec,
+            ->field('m.id as material_id, m.material_name, m.manufacturer, m.material_spec,
                      m.material_model, wi.in_num, wi.inbound_date, wi.create_time')
             ->select()
             ->toArray();
@@ -2743,18 +3245,23 @@ class MaterialInventoryService
             return $dayNameSpecIdx[$name][$ySpec][$date][$code][$specKey] ?? 0;
         };
 
-        $baseline = self::appendMonthlyMissingRoundSteelBaseline(
-            $baseline,
-            $monthStart,
-            $monthEnd,
-            $inboundRows,
-            $reportRows
-        );
-        $baseline = self::appendMonthlyMissingProcessBaseline(
-            $baseline,
-            $monthStart,
-            $monthEnd
-        );
+        // [AI-2026-08] 全厂盘点重置后：月台账只展示重置日手动盘点品种，禁止按流水自动补品种
+        $skipMonthlyMissingAppend = $resetInMonth
+            || strtotime($monthStart) >= strtotime($resetDate);
+        if (!$skipMonthlyMissingAppend) {
+            $baseline = self::appendMonthlyMissingRoundSteelBaseline(
+                $baseline,
+                $monthStart,
+                $monthEnd,
+                $inboundRows,
+                $reportRows
+            );
+            $baseline = self::appendMonthlyMissingProcessBaseline(
+                $baseline,
+                $monthStart,
+                $monthEnd
+            );
+        }
         $baseline = self::dedupeMonthlyBaseline($baseline);
 
         // ====== Step 9.5: 预计算断钢穿孔计划级联分摊消耗，消灭 O(N^3) 嵌套循环 ======
@@ -2795,6 +3302,7 @@ class MaterialInventoryService
         }
 
         // ====== Step 10: 期初推算月度台账 ======
+        $finishedMonthly = self::buildFinishedReportQtyIndex($monthStart, $monthEnd);
         $result = [];
         // 记录基线中已有的material_id（用于步骤11判断新入库）
         $baselineMids = [];
@@ -2839,14 +3347,31 @@ class MaterialInventoryService
         }
 
         foreach ($baseline as $stock) {
+            // [AI-2026-08] 圆钢行规范化后吐出四字段，供月台账「品种」列展示
+            if (($stock['process_name'] ?? '') === '圆钢') {
+                $stock = self::normalizeRoundSteelRow($stock);
+            }
             $processName = $stock['process_name'];
             $materialName = $stock['material_name'];
             $stockMid = intval($stock['material_id'] ?? 0);
             $baselineQty = floatval($stock['total_tonnage']);
             $matchKey = self::extractSpecKey($stock['c_material_spec'] ?? '');
+            $yName = trim((string) ($stock['y_material_name'] ?? $stock['material_name'] ?? ''));
+            $yManufacturer = trim((string) ($stock['y_material_manufacturer'] ?? ''));
             $ySpec = $stock['y_material_spec'] ?? '';
             $yModel = $stock['y_material_model'] ?? '';
             $cSpec = $stock['c_material_spec'] ?? '';
+            $cModel = $stock['c_material_model'] ?? '';
+            $rowRatio = self::calcProcessBaselineRatio(
+                $baseline,
+                $processName,
+                $stockMid,
+                $materialName,
+                $ySpec,
+                $yModel,
+                $matchKey,
+                $cModel
+            );
 
             if (!isset($processFlow[$processName])) {
                 continue;
@@ -2910,13 +3435,32 @@ class MaterialInventoryService
                         }
                     }
                 } else {
-                    // 穿孔+：按(圆钢ID, spec_key)匹配
-                    $output = $getDaySpec($iterDate, $stockMid, $currentCode, $matchKey, $materialName, $ySpec);
+                    $matchedOut = self::sumFinishedReportDaily(
+                        $finishedMonthly,
+                        $stockMid,
+                        $currentCode,
+                        $cSpec,
+                        $cModel,
+                        $iterDate,
+                        $iterDate
+                    );
+                    $output = $matchedOut !== null
+                        ? $matchedOut
+                        : ($getDayTotal($iterDate, $stockMid, $currentCode, $materialName, $ySpec) * $rowRatio);
                     if ($nextCode) {
-                        $consume = $getDaySpec($iterDate, $stockMid, $nextCode, $matchKey, $materialName, $ySpec);
+                        $matchedNext = self::sumFinishedReportDaily(
+                            $finishedMonthly,
+                            $stockMid,
+                            $nextCode,
+                            $cSpec,
+                            $cModel,
+                            $iterDate,
+                            $iterDate
+                        );
+                        $consume = $matchedNext !== null
+                            ? $matchedNext
+                            : ($getDayTotal($iterDate, $stockMid, $nextCode, $materialName, $ySpec) * $rowRatio);
                     }
-
-                    // 酸洗额外减发货（月末一次性扣减，不在循环里扣）
                 }
 
                 $runningQty += ($inbound + $output - $consume);
@@ -2947,6 +3491,7 @@ class MaterialInventoryService
                     $shipQty = $shipNameIdx[$materialName] ?? 0;
                 }
                 if ($shipQty > 0) {
+                    $shipQty = $shipQty * $rowRatio;
                     $totalConsume += $shipQty;
                     $runningQty -= $shipQty;
                     $dailyChanges[] = [
@@ -2964,9 +3509,13 @@ class MaterialInventoryService
                 'process_name'     => $processName,
                 'material_name'    => $materialName,
                 'category'         => self::resolveMonthlyLedgerCategory($stock, $midCategoryMap),
+                // [AI-2026-08] 品种列用圆钢四字段；物料型号列用 c_material_spec
+                'y_material_name'  => $yName,
+                'y_material_manufacturer' => $yManufacturer,
                 'y_material_spec'  => $ySpec,
                 'y_material_model' => $yModel,
                 'c_material_spec'  => $cSpec,
+                'c_material_model' => $cModel,
                 'begin_qty'        => round($baselineQty, 3),
                 'total_inbound'    => round($totalInbound, 3),
                 'total_output'     => round($totalOutput, 3),
@@ -2979,6 +3528,10 @@ class MaterialInventoryService
         }
 
         // ====== Step 11: 补充新入库圆钢（期初没有的品种，仅限同类别） ======
+        // [AI-2026-08] 重置日后不再自动补「Excel未盘」品种
+        if ($skipMonthlyMissingAppend) {
+            $inboundRows = [];
+        }
         // 收集基线中已有的物料类别名（如"溯源"），供Step 11过滤非同类物料
         $baselineCategoryNames = [];
         foreach ($baseline as $b) {
@@ -2997,12 +3550,10 @@ class MaterialInventoryService
                 continue;
             }
 
-            $nm = $r['material_name'] ?? '';   // material表里的名称（如"溯源"）
-            $sp = $r['material_spec'] ?? '';   // 圆钢规格（如"宣钢"）
-            $md = $r['material_model'] ?? '';  // 圆钢型号（如"55"）
-
-            // 品种按"规格｜型号"展示
-            $varietyName = ($sp && $md) ? ($sp . '｜' . $md) : $nm;
+            $nm = $r['material_name'] ?? '';   // 圆钢名称（如"溯源"）
+            $mf = trim((string) ($r['manufacturer'] ?? '')); // 厂商
+            $sp = $r['material_spec'] ?? '';   // 材质
+            $md = $r['material_model'] ?? '';  // 型号
 
             // 仅加入与期初同类别的新入库圆钢（排除不同类别的物料，如凯亚）
             if (!empty($baselineCategoryNames) && !isset($baselineCategoryNames[$nm])) {
@@ -3013,6 +3564,8 @@ class MaterialInventoryService
             $candidateKey = self::calcResultDedupeKey(self::normalizeRoundSteelRow([
                 'process_name'     => '圆钢',
                 'material_name'    => $nm,
+                'y_material_name'  => $nm,
+                'y_material_manufacturer' => $mf,
                 'y_material_spec'  => $sp,
                 'y_material_model' => $md,
                 'c_material_spec'  => '',
@@ -3024,6 +3577,8 @@ class MaterialInventoryService
                 $rrKey = self::calcResultDedupeKey(self::normalizeRoundSteelRow([
                     'process_name'     => '圆钢',
                     'material_name'    => $rr['category'] ?? $rr['material_name'] ?? '',
+                    'y_material_name'  => $rr['y_material_name'] ?? ($rr['category'] ?? $rr['material_name'] ?? ''),
+                    'y_material_manufacturer' => $rr['y_material_manufacturer'] ?? '',
                     'y_material_spec'  => $rr['y_material_spec'] ?? '',
                     'y_material_model' => $rr['y_material_model'] ?? '',
                     'c_material_spec'  => $rr['c_material_spec'] ?? '',
@@ -3072,8 +3627,10 @@ class MaterialInventoryService
 
             $result[] = [
                 'process_name'     => '圆钢',
-                'material_name'    => ($sp && $md) ? ($sp . '｜' . $md) : $varietyName,
+                'material_name'    => $nm,
                 'category'         => $nm,
+                'y_material_name'  => $nm,
+                'y_material_manufacturer' => $mf,
                 'y_material_spec'  => $sp,
                 'y_material_model' => $md,
                 'c_material_spec'  => '',
@@ -3113,6 +3670,8 @@ class MaterialInventoryService
                     'process_name'     => $ht,
                     'material_name'    => $hr['material_name'] ?? '',
                     'category'         => $hr['material_name'] ?? '',
+                    'y_material_name'  => $hr['y_material_name'] ?? ($hr['material_name'] ?? ''),
+                    'y_material_manufacturer' => $hr['y_material_manufacturer'] ?? '',
                     'y_material_spec'  => $hr['y_material_spec'] ?? '',
                     'y_material_model' => $hr['y_material_model'] ?? '',
                     'c_material_spec'  => $hr['c_material_spec'] ?? '',

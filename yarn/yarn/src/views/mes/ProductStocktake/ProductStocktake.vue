@@ -50,8 +50,17 @@
         </el-form-item>
         <el-form-item class="filter-form-item--field">
           <el-input
+            v-model="query.c_material_model"
+            placeholder="成品型号"
+            clearable
+            size="small"
+            class="filter-input"
+          />
+        </el-form-item>
+        <el-form-item class="filter-form-item--field">
+          <el-input
             v-model="query.c_material_spec"
-            placeholder="工序规格"
+            placeholder="成品规格"
             clearable
             size="small"
             class="filter-input"
@@ -85,9 +94,14 @@
         <el-table-column prop="y_material_manufacturer" label="圆钢厂商" min-width="120" />
         <el-table-column prop="y_material_spec" label="圆钢材质" min-width="100" />
         <el-table-column prop="y_material_model" label="圆钢型号" min-width="100" />
-        <el-table-column label="工序规格" min-width="120">
+        <el-table-column label="成品型号" min-width="110">
           <template #default="scope">
-            <span>{{ scope.row.c_material_spec || scope.row.c_product_spec || '-' }}</span>
+            <span>{{ displayFinishedModel(scope.row) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="成品规格" min-width="110">
+          <template #default="scope">
+            <span>{{ displayFinishedSpec(scope.row) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="total_tonnage" label="吨数" width="100" align="center">
@@ -132,6 +146,7 @@ export default {
         inventory_end_date: '',
         y_material_spec: '',
         y_material_model: '',
+        c_material_model: '',
         c_material_spec: ''
       },
       dateRange: [],
@@ -197,6 +212,25 @@ export default {
         this.query.inventory_end_date = ''
       }
     },
+    isPiercePlus(row) {
+      return ['穿孔', '球化', '矫直', '酸洗'].includes(row.process_name)
+    },
+    displayFinishedModel(row) {
+      const model = (row.c_material_model || '').trim()
+      if (model) return model
+      if (this.isPiercePlus(row)) {
+        return (row.c_material_spec || row.c_product_spec || '-').trim() || '-'
+      }
+      return '-'
+    },
+    displayFinishedSpec(row) {
+      const spec = (row.c_material_spec || row.c_product_spec || '').trim()
+      const model = (row.c_material_model || '').trim()
+      if (this.isPiercePlus(row) && !model) {
+        return '-'
+      }
+      return spec || '-'
+    },
     handleSearch() {
       this.query.page = 1
       this.getList()
@@ -212,6 +246,7 @@ export default {
         inventory_end_date: '',
         y_material_spec: '',
         y_material_model: '',
+        c_material_model: '',
         c_material_spec: ''
       }
       this.dateRange = []

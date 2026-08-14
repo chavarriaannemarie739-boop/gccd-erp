@@ -85,3 +85,15 @@ export function monthlyLedger(data) {
     data
   })
 }
+
+/**
+ * 批量提交盘点（与小程序 submitStocktake 同源）
+ * @param {object} data { stocktake_date, process_name, remark?, items[] }
+ */
+export function submitStocktake(data) {
+  return request({
+    url: url + 'submitStocktake',
+    method: 'post',
+    data
+  })
+}

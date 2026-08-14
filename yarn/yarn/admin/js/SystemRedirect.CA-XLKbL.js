@@ -1,1 +1,0 @@
-import{u as e,l as a,f as s,b as t}from"./index.Do6b8hFY.js";const r=Object.assign({name:"SystemRedirect"},{__name:"SystemRedirect",setup(r){const m=e(),n=a(),{params:p,query:c}=m,{path:i}=p;return n.replace({path:"/"+i,query:c}),(e,a)=>(t(),s("div"))}});export{r as default};

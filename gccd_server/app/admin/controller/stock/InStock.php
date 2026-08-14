@@ -229,6 +229,7 @@ class InStock extends BaseController
         $where = [['is_delete','=','0']];
         /*添加搜索条件*/
         $param = $this->params(InStockService::$search_field);
+        $isProductTab = false;
         /*入库单号*/
         $wh = [];
         if (!empty($param['material_batch'])) {
@@ -314,9 +315,36 @@ class InStock extends BaseController
             $result = array_column($result, 'id');
             $where[] = ['material_id', 'in', $result];
         }
-        /* [AI-2026-08] 库存圆钢四字段独立/组合检索 */
+        /* [AI-2026-08] 库存圆钢四字段独立/组合检索；成品库按计划单号交集，避免与成品信息抢 material_id */
         $roundFilters = MaterialSearchHelper::resolveRoundSteelFilters($param);
-        if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+        if ($isProductTab) {
+            $planGroups = [];
+            if (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
+                $planGroups[] = MaterialSearchHelper::planCodesByRawMaterial(
+                    $roundFilters['spec'],
+                    $roundFilters['model'],
+                    $roundFilters['name'],
+                    $roundFilters['manufacturer']
+                );
+            }
+            if (!empty($param['product_info'])) {
+                $planGroups[] = MaterialSearchHelper::planCodesByFinishedKeyword(
+                    (string) $param['product_info']
+                );
+            }
+            if ($planGroups !== []) {
+                $matchingCodes = MaterialSearchHelper::intersectPlanCodeGroups($planGroups);
+                if ($matchingCodes === []) {
+                    $where[] = ['relation_code', '=', 'non-existent-code-to-force-empty-result'];
+                } else {
+                    $where[] = [
+                        'relation_code',
+                        'in',
+                        array_values(array_unique(array_filter($matchingCodes))),
+                    ];
+                }
+            }
+        } elseif (MaterialSearchHelper::hasRoundSteelFilters($roundFilters)) {
             $roundQuery = (new MaterialModel())->alias('m')
                 ->where('m.is_delete', 0)
                 ->where('m.material_property', 'like', '%圆钢%');

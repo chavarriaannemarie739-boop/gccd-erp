@@ -103,7 +103,8 @@ class Inventory extends BaseController
      */
     public function submitStocktake()
     {
-        $param = $this->request->post();
+        // [AI-2026-08] param() 兼容 JSON / form，避免 PC 端 post() 读不到 items
+        $param = $this->request->param();
         $data = MaterialInventoryService::batchSubmitStocktake($param);
         return success($data);
     }

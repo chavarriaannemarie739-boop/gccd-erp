@@ -283,8 +283,9 @@ export default {
         ]
       }
       if (this.activeName === '圆钢仓库') {
+        // [AI-2026-08] 入库时间跟序号后；入库编号/库位/备注放最后
         return [
-          { prop: 'in_code', label: '入库编号', minWidth: 130 },
+          { prop: 'inbound_date', label: '入库日期', minWidth: 110 },
           { prop: 'material_name', label: '圆钢名称', minWidth: 120 },
           { prop: 'manufacturer', label: '厂商', minWidth: 120 },
           { prop: 'material_spec', label: '材质', minWidth: 120 },
@@ -293,11 +294,11 @@ export default {
           { prop: 'money', label: '单价', width: 88 },
           { prop: 'sum', label: '总额', width: 88 },
           { prop: 'material_batch', label: '批次信息', minWidth: 120 },
-          { prop: 'location', label: '库位', minWidth: 88 },
-          { prop: 'remark', label: '备注', minWidth: 100 },
           { prop: 'create_name', label: '创建人', minWidth: 88 },
-          { prop: 'inbound_date', label: '入库日期', minWidth: 110 },
-          { prop: 'create_time', label: '创建时间', minWidth: 160 }
+          { prop: 'create_time', label: '创建时间', minWidth: 160 },
+          { prop: 'in_code', label: '入库编号', minWidth: 130 },
+          { prop: 'location', label: '库位', minWidth: 88 },
+          { prop: 'remark', label: '备注', minWidth: 100 }
         ]
       }
       if (this.activeName === '配件仓库') {

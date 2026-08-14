@@ -61,6 +61,7 @@ class InStockService
         'y_mateial_manufacturer' => '',
         'y_mateial_spec' => '',
         'y_mateial_model' => '',
+        'product_info' => '',
         'stock_alert_only' => '',
     ];
     /**
@@ -881,6 +882,21 @@ class InStockService
             }
             if ($field === 'material_id' && $op === 'in') {
                 $materialIds = is_array($val) ? $val : [];
+            }
+            if ($field === 'relation_code') {
+                if ($op === 'in') {
+                    $codes = is_array($val) ? array_values(array_filter($val)) : [];
+                    if ($codes === []) {
+                        $sql .= ' AND 1=0';
+                    } else {
+                        $codePh = implode(',', array_fill(0, count($codes), '?'));
+                        $sql .= " AND p.production_plan_code IN ({$codePh})";
+                        $params = array_merge($params, $codes);
+                    }
+                } elseif ($val !== null && $val !== '') {
+                    $sql .= ' AND p.production_plan_code = ?';
+                    $params[] = (string) $val;
+                }
             }
         }
 

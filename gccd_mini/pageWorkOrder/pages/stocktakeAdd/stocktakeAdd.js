@@ -33,7 +33,8 @@ function processFlags(processName) {
   const isDuanGangManualProduct = processName === "断钢";
   const isCiChengPin = processName === "次成品";
   const isBanChengPin = processName === "半成品";
-  const isSpecInputMode = ["穿孔", "球化", "矫直", "酸洗", "次成品", "半成品"].includes(processName);
+  // [AI-2026-08] 次成品/半成品手填规格；穿孔到酸洗选成品档案（型号+长度）
+  const isSpecInputMode = processName === "次成品" || processName === "半成品";
   return { isDuanGangStyle, isDuanGangManualProduct, isCiChengPin, isBanChengPin, isSpecInputMode };
 }
 
@@ -102,8 +103,8 @@ Page({
       sectionHint = "选圆钢、填吨数，可添加多行";
     } else if (isDuanGangManualProduct) {
       sectionHint = "选圆钢型号、输入断钢规格（如 50*1.2）、填吨数";
-    } else if (isSpecInputMode) {
-      sectionHint = "选圆钢型号、输入规格（如 51*5）、填吨数";
+    } else {
+      sectionHint = "选圆钢、选成品档案（型号+长度）、填吨数";
     }
 
     this.setData({
@@ -270,7 +271,7 @@ Page({
           "POST"
         );
 
-    // 规格输入模式（穿孔+）：不加载成品档案，仅需圆钢档案
+    // 次成品/半成品手填规格不加载成品档案；穿孔到酸洗要加载
     const productReq = (isDuanGangStyle || isSpecInputMode)
       ? Promise.resolve({ data: { code: 200, data: { list: [] } } })
       : util.request(
@@ -724,7 +725,7 @@ Page({
       const product = line.product;
       cProductSpec = isDuanGangStyle ? "" : (product && product.c_product_spec) || "";
       cProductModel = isDuanGangStyle ? "" : (product && product.c_product_model) || "";
-      cModelSubmit = isDuanGangStyle ? "" : [cProductSpec, cProductModel].filter(Boolean).join(" / ");
+      cModelSubmit = isDuanGangStyle ? "" : [cProductModel, cProductSpec].filter(Boolean).join(" / ");
     }
     const qtyStr = String(line.qty != null ? line.qty : "").trim();
     if (qtyStr === "") return null;
@@ -755,10 +756,10 @@ Page({
       y_material_manufacturer: mat.y_material_manufacturer || "",
       y_material_spec: mat.y_material_spec,
       y_material_model: yModel,
-      c_material_spec: isSpecInputMode ? cProductSpec : (mat.c_material_spec || cProductSpec),
+      c_material_spec: cProductSpec,
       c_product_spec: cProductSpec,
       c_product_model: cProductModel,
-      c_material_model: cModelSubmit,
+      c_material_model: this.data.isDuanGangManualProduct || isSpecInputMode ? cModelSubmit : cProductModel,
       label: isDuanGangStyle ? mat.label : `${mat.label} → ${cModelSubmit}`,
       day_shift_qty: qty.toFixed(3),
       night_shift_qty: "0",
@@ -1219,7 +1220,7 @@ Page({
       return `proc|${p.materialId || `${p.category}|${p.manufacturer}|${p.spec}|${p.model}`}|${it.c_material_spec || ""}`;
     }
     const p = this._parseCalcMaterialFields(it);
-    return `full|${p.materialId || `${p.category}|${p.manufacturer}|${p.spec}|${p.model}`}|${it.c_material_spec || ""}|${it.c_product_spec || ""}`;
+    return `full|${p.materialId || `${p.category}|${p.manufacturer}|${p.spec}|${p.model}`}|${it.c_material_spec || ""}|${it.c_material_model || it.c_product_model || ""}`;
   },
 
   _resolveAutoFillMat(it, index) {
@@ -1284,14 +1285,16 @@ Page({
         // 断钢：spec 填入 manualProduct
         extra = { manualProduct: it.c_material_spec || '' };
       } else if (isSpecInputMode) {
-        // 穿孔+：spec 填入 specInput
         extra = { specInput: it.c_material_spec || '' };
-      } else if (!isDuanGangStyle && it.c_material_spec) {
+      } else if (!isDuanGangStyle && (it.c_material_spec || it.c_material_model)) {
+        const spec = it.c_material_spec || it.c_product_spec || '';
+        const model = it.c_material_model || it.c_product_model || '';
         extra = {
           product: {
             uniqKey: `fp-auto-${i}`,
-            label: it.c_material_spec,
-            c_product_spec: it.c_material_spec || '',
+            label: [model, spec].filter(Boolean).join(' / ') || spec || model,
+            c_product_spec: spec,
+            c_product_model: model,
           }
         };
       }

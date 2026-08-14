@@ -221,21 +221,107 @@ class PublicService
     public static function getcodenum($prefix)
     {
         /* [AI-2026-06] 行锁取号，避免并发建计划/下推时 mes_code 死锁 */
+        $nums = self::allocateCodeNums($prefix, 1);
+
+        return $nums[0];
+    }
+
+    /**
+     * [AI-2026-08] 批量行锁取号：一次锁定递增，避免盘点批量提交时逐条 lock 拖死事务
+     *
+     * @param string $prefix 编码前缀
+     * @param int $count 需要的数量
+     * @return int[] 连续序号（已写入 mes_code）
+     */
+    public static function allocateCodeNums($prefix, $count)
+    {
+        $count = (int) $count;
+        if ($count <= 0) {
+            return [];
+        }
+        if ($prefix === '' || $prefix === null) {
+            exception('参数错误！');
+        }
+
         $model = new MesCodeModel();
         $row = $model->where('prefix', $prefix)->lock(true)->find();
         if (empty($row)) {
             exception('编码前缀不存在：' . $prefix);
         }
+
         $today = date('Y-m-d');
         if (strtotime((string) $row['date']) < strtotime($today)) {
-            $model->where('prefix', $prefix)->update(['date' => $today, 'code_num' => 1]);
-
-            return 1;
+            $start = 1;
+            $end = $count;
+            $model->where('prefix', $prefix)->update([
+                'date' => $today,
+                'code_num' => $end,
+            ]);
+        } else {
+            $start = (int) $row['code_num'] + 1;
+            $end = $start + $count - 1;
+            $model->where('prefix', $prefix)->update(['code_num' => $end]);
         }
-        $next = (int) $row['code_num'] + 1;
-        $model->where('prefix', $prefix)->update(['code_num' => $next]);
 
-        return $next;
+        $nums = [];
+        for ($i = $start; $i <= $end; $i++) {
+            $nums[] = $i;
+        }
+
+        return $nums;
+    }
+
+    /**
+     * [AI-2026-08] 按 getCode 规则批量生成完整编码
+     *
+     * @param int $type getCode 类型（当前盘点使用 10=WLPC）
+     * @param int $count 数量
+     * @return string[]
+     */
+    public static function allocateCodes($type, $count)
+    {
+        $count = (int) $count;
+        if ($count <= 0) {
+            return [];
+        }
+        if (empty($type)) {
+            exception('参数错误！');
+        }
+
+        // 与 getCode() 前缀/补位规则保持一致；盘点批量仅用 type=10
+        $prefixMap = [
+            1 => ['rkd', 4],
+            2 => ['ckd', 4],
+            3 => ['scjh', 4],
+            4 => ['scgd', 4],
+            5 => ['gy', 2],
+            6 => ['scbg', 4],
+            7 => ['device', 2],
+            8 => ['zj', 3],
+            9 => ['ll', 4],
+            10 => ['WLPC', 4],
+            11 => ['CK', 2],
+            12 => ['BX', 4],
+            13 => ['FH', 4],
+        ];
+        if (!isset($prefixMap[$type])) {
+            exception('参数错误！');
+        }
+
+        [$prefix, $pad] = $prefixMap[$type];
+        $nums = self::allocateCodeNums($prefix, $count);
+        $ymd = date('Ymd');
+        $codes = [];
+        foreach ($nums as $num) {
+            $strand = str_pad((string) $num, $pad, '0', STR_PAD_LEFT);
+            if ($type == 5) {
+                $codes[] = 'gy-' . $strand;
+            } else {
+                $codes[] = $prefix . '-' . $ymd . $strand;
+            }
+        }
+
+        return $codes;
     }
 
     /**

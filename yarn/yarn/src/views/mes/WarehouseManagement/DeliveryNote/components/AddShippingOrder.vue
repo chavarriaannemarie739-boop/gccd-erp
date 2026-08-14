@@ -52,22 +52,55 @@
           :header-cell-style="{ 'text-align': 'center' }"
           :cell-style="{ 'text-align': 'center' }"
         >
+          <!-- [AI-2026-08] 表头顺序与「从成品库选择物料」一致，末尾保留发货数量/备注/操作 -->
           <el-table-column type="index" label="序号" width="55" />
-          <el-table-column prop="material_batch" label="批次" show-overflow-tooltip />
+          <el-table-column
+            prop="y_material_manufacturer"
+            label="圆钢厂商"
+            min-width="80"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="y_material_spec"
+            label="圆钢材质"
+            min-width="80"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="y_material_model"
+            label="圆钢型号"
+            min-width="80"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="product_info"
+            label="成品信息"
+            min-width="180"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="in_num" label="入库数量" show-overflow-tooltip />
+          <el-table-column prop="shipped_num" label="已发数" show-overflow-tooltip />
+          <el-table-column prop="stock_num" label="库存数" show-overflow-tooltip />
+          <el-table-column
+            prop="create_time"
+            label="入库时间"
+            min-width="140"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="material_batch" label="批次号" show-overflow-tooltip />
           <el-table-column prop="relation_code" label="计划单" show-overflow-tooltip />
           <el-table-column
             prop="production_plan_name"
             label="计划名称"
-            min-width="140"
+            min-width="70"
             show-overflow-tooltip
           />
-          <el-table-column prop="stock_owner" label="归属" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="y_material_name" label="圆钢名称" />
-          <el-table-column prop="y_material_manufacturer" label="圆钢厂商" />
-          <el-table-column prop="y_material_spec" label="圆钢材质" />
-          <el-table-column prop="y_material_model" label="圆钢型号" />
-          <el-table-column prop="product_info" label="成品信息" />
-          <el-table-column prop="stock_num" label="库存数" />
+          <el-table-column
+            prop="y_material_name"
+            label="圆钢名称"
+            min-width="80"
+            show-overflow-tooltip
+          />
           <el-table-column prop="material_num" label="发货数量" width="150">
             <template #default="{ row }">
               <el-input-number
@@ -97,37 +130,44 @@
         </el-table>
       </el-form-item>
     </el-form>
-    <!-- [AI-2026-05] 优化弹窗宽度从 70% 提升至 85% 以容纳宽表数据 -->
-    <!-- [AI-2026-08] 嵌套在「新增」弹窗内，必须 append-to-body，否则遮罩挡住检索输入 -->
-    <el-dialog
+    <!-- [AI-2026-08] 选料改为抽屉，避免嵌套弹窗列被挤窄 -->
+    <el-drawer
       v-model="processVisible"
       v-if="processVisible"
-      width="85%"
+      size="90%"
+      direction="rtl"
       append-to-body
       :close-on-click-modal="false"
       title="从成品库选择物料"
     >
       <el-form :model="query" @submit.prevent>
-        <el-row :gutter="24">
+        <el-row :gutter="16">
           <el-col :span="6">
-            <el-form-item label="物料名称：">
+            <el-form-item label="圆钢材质：">
               <el-input
-                v-model="query.material_name"
-                style="width: 260px"
+                v-model="query.y_material_spec"
                 clearable
-                placeholder="请输入"
+                placeholder="圆钢材质"
                 @keyup.enter="searchFinishedStock"
               />
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="物料规格：">
+            <el-form-item label="圆钢型号：">
               <el-input
-                v-model="query.material_spec"
-                style="width: 260px"
+                v-model="query.y_material_model"
                 clearable
-                placeholder="请输入"
-                class="filter-item"
+                placeholder="圆钢型号"
+                @keyup.enter="searchFinishedStock"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="成品信息：">
+              <el-input
+                v-model="query.product_info"
+                clearable
+                placeholder="成品信息，如 70*1.2"
                 @keyup.enter="searchFinishedStock"
               />
             </el-form-item>
@@ -155,52 +195,56 @@
         :cell-style="{ 'text-align': 'center' }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column show-overflow-tooltip :reserve-selection="true" type="selection" />
-        <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
-        <el-table-column prop="material_batch" label="批次号" show-overflow-tooltip />
-        <el-table-column prop="relation_code" label="计划单" show-overflow-tooltip />
-        <el-table-column
-          prop="production_plan_name"
-          label="计划名称"
-          min-width="140"
-          show-overflow-tooltip
-        />
-        <el-table-column prop="stock_owner" label="归属" min-width="100" show-overflow-tooltip />
-        <!-- [AI-2026-05] 扩宽圆钢与成品信息列的最小宽度，防止内容展示不全 -->
-        <el-table-column
-          prop="y_material_name"
-          label="圆钢名称"
-          min-width="120"
-          show-overflow-tooltip
-        />
+        <el-table-column show-overflow-tooltip :reserve-selection="true" type="selection" width="42" />
+        <el-table-column type="index" :index="handleIndex" label="序号" width="50" />
+        <!-- [AI-2026-08] 选料弹窗隐藏归属列；批次号/计划单/计划名称/圆钢名称放到最后 -->
         <el-table-column
           prop="y_material_manufacturer"
           label="圆钢厂商"
-          min-width="120"
+          min-width="80"
           show-overflow-tooltip
         />
         <el-table-column
           prop="y_material_spec"
           label="圆钢材质"
-          min-width="120"
+          min-width="80"
           show-overflow-tooltip
         />
         <el-table-column
           prop="y_material_model"
           label="圆钢型号"
-          min-width="120"
+          min-width="80"
           show-overflow-tooltip
         />
         <el-table-column
           prop="product_info"
           label="成品信息"
-          min-width="200"
+          min-width="180"
           show-overflow-tooltip
         />
         <el-table-column prop="in_num" label="入库数量" show-overflow-tooltip />
         <el-table-column prop="shipped_num" label="已发数" show-overflow-tooltip />
         <el-table-column prop="stock_num" label="库存数" show-overflow-tooltip />
-        <el-table-column prop="create_time" label="入库时间" show-overflow-tooltip />
+        <el-table-column
+          prop="create_time"
+          label="入库时间"
+          min-width="140"
+          show-overflow-tooltip
+        />
+        <el-table-column prop="material_batch" label="批次号" show-overflow-tooltip />
+        <el-table-column prop="relation_code" label="计划单" show-overflow-tooltip />
+        <el-table-column
+          prop="production_plan_name"
+          label="计划名称"
+          min-width="70"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="y_material_name"
+          label="圆钢名称"
+          min-width="80"
+          show-overflow-tooltip
+        />
       </el-table>
       <!-- 分页 -->
       <el-pagination
@@ -220,7 +264,7 @@
           <el-button type="primary" v-preventReClick @click="processSubmit"> 确认 </el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
     <!-- 关联计划/任务 -->
     <el-dialog
       v-model="dialogTableVisible"
@@ -386,8 +430,9 @@ export default {
         page: 1,
         limit: 10,
         warehouse: '成品库',
-        material_name: '',
-        material_spec: ''
+        y_material_spec: '',
+        y_material_model: '',
+        product_info: ''
       },
       queryGoods: {
         AdminToken: '',
@@ -505,8 +550,9 @@ export default {
       this.mateiallist()
     },
     resetFinishedStock() {
-      this.query.material_name = ''
-      this.query.material_spec = ''
+      this.query.y_material_spec = ''
+      this.query.y_material_model = ''
+      this.query.product_info = ''
       this.query.page = 1
       this.mateiallist()
     },
@@ -560,7 +606,10 @@ export default {
           y_material_spec: item.y_material_spec,
           y_material_model: item.y_material_model || '',
           product_info: item.product_info,
+          in_num: item.in_num,
+          shipped_num: item.shipped_num,
           stock_num: item.stock_num,
+          create_time: item.create_time,
           ship_max_qty: item.ship_max_qty,
           material_num: null
         })

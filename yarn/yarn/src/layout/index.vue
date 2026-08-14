@@ -80,17 +80,12 @@ const classObj = computed(() => ({
 }))
 
 watchEffect(() => {
+  // [AI-2026-08] PC 默认折叠侧栏，大屏不再自动展开；仅移动端强制收起
   if (width.value < WIDTH) {
     appStore.toggleDevice('mobile')
     appStore.closeSideBar(true)
   } else {
     appStore.toggleDevice('desktop')
-
-    if (width.value >= 1200) {
-      appStore.openSideBar(true)
-    } else {
-      appStore.closeSideBar(true)
-    }
   }
 })
 

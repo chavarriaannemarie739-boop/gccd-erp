@@ -181,17 +181,19 @@
           @current-change="handleCurrentChange"
         />
       </el-card>
-      <!-- 新增 -->
-      <el-dialog
-        title="新增"
+      <!-- [AI-2026-08] 新增改为抽屉，宽表才能铺开 -->
+      <el-drawer
+        title="新增发货"
         v-if="processVisible"
         v-model="processVisible"
-        width="60%"
+        size="92%"
+        direction="rtl"
         append-to-body
+        destroy-on-close
         :close-on-click-modal="false"
       >
         <AddShippingOrder :processes="selectList" v-model:is-show="processVisible" @list="list" />
-      </el-dialog>
+      </el-drawer>
     </div>
   </div>
 </template>

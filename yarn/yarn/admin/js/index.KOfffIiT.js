@@ -1,1 +1,0 @@
-import s from"./CockpitDashboard.YWadtvGS.js";import{c as t,b as i}from"./index.Do6b8hFY.js";import"./install.DQyETQDV.js";import"./sectorHelper.UmVhTc5M.js";import"./install.jXZBYI54.js";import"./installPictorialBar.BzXzfUFZ.js";import"./install.D55br-MR.js";const o={__name:"index",setup:o=>(o,r)=>(i(),t(s))};export{o as default};

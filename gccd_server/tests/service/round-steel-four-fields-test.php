@@ -616,6 +616,17 @@ namespace {
             str_contains($service, 'applyProductReportRoundSteelFilters'),
             '报工列表未在分页查询中应用圆钢子查询'
         );
+        $helper = (string) file_get_contents(
+            dirname(__DIR__, 2) . '/app/common/service/utils/MaterialSearchHelper.php'
+        );
+        expectRoundSteel(
+            str_contains($helper, 'whereExists(function'),
+            '报工圆钢 EXISTS 未使用 Closure，ThinkPHP parseExists 会类型错误'
+        );
+        expectRoundSteel(
+            !preg_match('/whereExists\(\s*\$subQuery\s*\)/', $helper),
+            '报工圆钢 EXISTS 仍传入 Query 对象'
+        );
     });
 
     runRoundSteelCase('product_report_grouping_is_chunked_for_current_page', static function (): void {
@@ -812,6 +823,49 @@ namespace {
                 'c_material_spec' => '20*2',
             ]) === '20*2',
             '工资规则成品规格兜底改变'
+        );
+    });
+
+    runRoundSteelCase('daily_report_fill_picks_process_spec_and_skips_existing_model', static function (): void {
+        expectRoundSteel(
+            MaterialInventoryService::pickProcessSpecFromFinishedArchive('断钢', '70*1.2', '74*6.3') === '70*1.2',
+            '断钢应取计划成品规格'
+        );
+        expectRoundSteel(
+            MaterialInventoryService::pickProcessSpecFromFinishedArchive('矫直', '70*1.2', '74*6.3') === '74*6.3',
+            '矫直应取计划成品型号'
+        );
+        expectRoundSteel(
+            MaterialInventoryService::pickProcessSpecFromFinishedArchive('酸洗', '', '74*6.3') === '74*6.3',
+            '酸洗规格空时应回退型号'
+        );
+        $pierceIdentity = MaterialInventoryService::pickProcessIdentityFromFinishedArchive('穿孔', '50*1.2', '51*5');
+        expectRoundSteel(
+            $pierceIdentity['c_material_spec'] === '50*1.2' && $pierceIdentity['c_material_model'] === '51*5',
+            '穿孔应同时取长度和成品型号'
+        );
+        $duanIdentity = MaterialInventoryService::pickProcessIdentityFromFinishedArchive('断钢', '50*1.25', '51*5');
+        expectRoundSteel(
+            $duanIdentity['c_material_spec'] === '50*1.25' && $duanIdentity['c_material_model'] === '',
+            '断钢只取长度'
+        );
+        $baseline = [[
+            'process_name' => '矫直',
+            'material_id' => 825,
+            'material_name' => '溯源',
+            'c_material_spec' => '74*6.3',
+        ]];
+        expectRoundSteel(
+            MaterialInventoryService::processBaselineHasMaterial($baseline, '矫直', 825),
+            '已有矫直型号未识别'
+        );
+        expectRoundSteel(
+            !MaterialInventoryService::processBaselineHasMaterial($baseline, '矫直', 999),
+            '缺失矫直型号被误判已存在'
+        );
+        expectRoundSteel(
+            !MaterialInventoryService::processBaselineHasMaterial($baseline, '酸洗', 825),
+            '矫直有货时酸洗不应算已盘'
         );
     });
 

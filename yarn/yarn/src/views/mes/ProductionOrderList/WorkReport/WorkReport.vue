@@ -159,16 +159,11 @@
           >
             <el-table-column type="selection" align="center" :reserve-selection="true" width="40" />
             <el-table-column type="index" :index="handleIndex" label="序号" width="70" />
+            <!-- [AI-2026-08] 创建时间紧跟序号；计划编号/计划名称置末 -->
             <el-table-column
-              prop="plan_code"
-              label="计划编号"
-              min-width="140"
-              show-overflow-tooltip
-            />
-            <el-table-column
-              prop="production_plan_name"
-              label="计划名称"
-              min-width="120"
+              prop="create_time"
+              label="创建时间"
+              min-width="160"
               show-overflow-tooltip
             />
             <el-table-column
@@ -254,12 +249,6 @@
                 {{ row.class === 1 ? '夜班' : '白班' }}
               </template>
             </el-table-column>
-            <el-table-column
-              prop="create_time"
-              label="创建时间"
-              min-width="160"
-              show-overflow-tooltip
-            />
             <el-table-column label="工资" min-width="90" show-overflow-tooltip>
               <template #default="{ row }">
                 <el-link type="primary" @click="goToUserWageList(row)">
@@ -275,6 +264,18 @@
             />
             <el-table-column prop="defective" label="不良品" min-width="80" show-overflow-tooltip />
             <el-table-column prop="remark" label="备注" min-width="100" show-overflow-tooltip />
+            <el-table-column
+              prop="plan_code"
+              label="计划编号"
+              min-width="140"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              prop="production_plan_name"
+              label="计划名称"
+              min-width="120"
+              show-overflow-tooltip
+            />
           </el-table>
         </div>
         <el-pagination

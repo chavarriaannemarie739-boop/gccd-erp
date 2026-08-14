@@ -95,6 +95,13 @@ class Material extends BaseController
         $allowedProps = \app\common\service\admin\WarehouseScopeService::materialPropertyFilter(
             \app\common\service\admin\WarehouseScopeService::ACTION_ARCHIVE
         );
+        /*
+         * [AI-2026-08] 无任何仓库档案权限时不收窄：
+         * 质检/盘点等生产选料仍可读成品主数据；仅「有部分仓档案权限」的用户才按仓隔离。
+         */
+        if (is_array($allowedProps) && in_array('__NO_MATERIAL_ACCESS__', $allowedProps, true)) {
+            $allowedProps = null;
+        }
         if ($allowedProps !== null) {
             if (!empty($param['material_property'])) {
                 $reqProp = trim((string) $param['material_property']);

@@ -13,9 +13,11 @@ export const useAppStore = defineStore('app', () => {
   const size = useStorage(storePrefix + 'size', defaultSettings.size)
   const language = useStorage(storePrefix + 'language', defaultSettings.language)
   const activeTopMenu = useStorage(storePrefix + 'activeTop', '')
+  // [AI-2026-08] PC 侧栏默认折叠，进入页面不沿用上次展开状态
   const sidebarStatus = useStorage(storePrefix + 'sidebarStatus', 'closed')
+  sidebarStatus.value = 'closed'
   const sidebar = reactive({
-    opened: sidebarStatus.value != 'closed',
+    opened: false,
     withoutAnimation: false
   })
   // 语言包
