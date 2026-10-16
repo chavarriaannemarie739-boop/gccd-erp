@@ -835,6 +835,7 @@ class FinishedStockService
                 'sort_time' => (string) ($row['sort_time'] ?? ''),
                 'plan_id' => (int) ($row['plan_id'] ?? 0),
                 'is_inventory_owner' => $isInventoryOwner,
+                'seq' => count($ordered),
             ];
         }
         if ($ordered === []) {
@@ -842,15 +843,7 @@ class FinishedStockService
         }
 
         usort($ordered, static function (array $left, array $right): int {
-            $timeCompare = strcmp($left['sort_time'], $right['sort_time']);
-            if ($timeCompare !== 0) {
-                return $timeCompare;
-            }
-            if ($left['plan_id'] !== $right['plan_id']) {
-                return $left['plan_id'] <=> $right['plan_id'];
-            }
-            // 同一计划：盘亏时先扣公共「库存」，再扣客户
-            return ($left['is_inventory_owner'] ? 0 : 1) <=> ($right['is_inventory_owner'] ? 0 : 1);
+            return self::compareStocktakeRows($left, $right);
         });
 
         $original = [];
@@ -884,7 +877,7 @@ class FinishedStockService
         } elseif ($gap > 0.001) {
             $newestKey = null;
             foreach ($ordered as $row) {
-                $key = $row['sort_time'] . '#' . str_pad((string) $row['plan_id'], 12, '0', STR_PAD_LEFT);
+                $key = self::stocktakePlanKey($row);
                 if ($newestKey === null || strcmp($key, $newestKey) > 0) {
                     $newestKey = $key;
                 }
@@ -892,8 +885,7 @@ class FinishedStockService
             $customerIndex = null;
             $inventoryIndex = null;
             foreach ($ordered as $index => $row) {
-                $key = $row['sort_time'] . '#' . str_pad((string) $row['plan_id'], 12, '0', STR_PAD_LEFT);
-                if ($key !== $newestKey) {
+                if (self::stocktakePlanKey($row) !== $newestKey) {
                     continue;
                 }
                 if ($row['is_inventory_owner']) {
@@ -932,12 +924,146 @@ class FinishedStockService
     }
 
     /**
+     * 计划先后：创建时间，时间相同按计划编号，同一计划先「库存」后客户。
+     *
+     * @param array<string, mixed> $left
+     * @param array<string, mixed> $right
+     * @return int
+     */
+    private static function compareStocktakeRows(array $left, array $right): int
+    {
+        $timeCompare = strcmp((string) ($left['sort_time'] ?? ''), (string) ($right['sort_time'] ?? ''));
+        if ($timeCompare !== 0) {
+            return $timeCompare;
+        }
+        $codeCompare = strcmp((string) ($left['plan_code'] ?? ''), (string) ($right['plan_code'] ?? ''));
+        if ($codeCompare !== 0) {
+            return $codeCompare;
+        }
+        $ownerCompare = ((int) !empty($left['is_inventory_owner'])) <=> ((int) !empty($right['is_inventory_owner']));
+        if ($ownerCompare !== 0) {
+            // 盘亏先扣公共「库存」（0 在前），再扣客户
+            return ((int) !empty($left['is_inventory_owner'])) ? -1 : 1;
+        }
+
+        return ((int) ($left['seq'] ?? 0)) <=> ((int) ($right['seq'] ?? 0));
+    }
+
+    /**
+     * 同一张计划的排序键。盘盈落在键最大的那张计划上。
+     *
+     * @param array<string, mixed> $row
+     * @return string
+     */
+    private static function stocktakePlanKey(array $row): string
+    {
+        return (string) ($row['sort_time'] ?? '') . '#' . (string) ($row['plan_code'] ?? '');
+    }
+
+    /**
+     * 多种圆钢挤在同一计划时，整行都不改库存。
+     *
+     * @param array<int, mixed> $plans
+     * @param string[] $mixedPlanCodes
+     * @return string ok|none|mixed
+     */
+    public static function acidWashCoverMatchStatus(array $plans, array $mixedPlanCodes): string
+    {
+        if ($mixedPlanCodes !== []) {
+            return 'mixed';
+        }
+        if ($plans === []) {
+            return 'none';
+        }
+
+        return 'ok';
+    }
+
+    /**
+     * 结存行是不是成品。圆钢、配件以及对应仓库名一律不动。
+     *
+     * @param string $materialProperty
+     * @param string $warehouseName
+     * @return bool
+     */
+    public static function wmsRowAllowedForFinishedCover(string $materialProperty, string $warehouseName): bool
+    {
+        $property = trim($materialProperty);
+        if ($property === '圆钢' || $property === '配件') {
+            return false;
+        }
+        $warehouseName = trim($warehouseName);
+        foreach (['圆钢', '配件', '原料'] as $word) {
+            if ($warehouseName !== '' && mb_strpos($warehouseName, $word) !== false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 把已有结存行调成覆盖后的合计。多行时差额只落在最新一条，落下去会变成负数则整批不动。
+     *
+     * @param array<int, array{id?: int, material_num?: float}> $rows 从旧到新
+     * @param float $targetQty
+     * @return array{id: int, material_num: float}|null
+     */
+    public static function planWmsBalanceUpdate(array $rows, float $targetQty): ?array
+    {
+        if ($rows === [] || $targetQty < -0.001) {
+            return null;
+        }
+        $targetQty = round($targetQty, 2);
+        $normalized = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $rowId = (int) ($row['id'] ?? 0);
+            if ($rowId <= 0) {
+                continue;
+            }
+            $normalized[] = [
+                'id' => $rowId,
+                'material_num' => round((float) ($row['material_num'] ?? 0), 2),
+            ];
+        }
+        if ($normalized === []) {
+            return null;
+        }
+        if (count($normalized) === 1) {
+            return [
+                'id' => $normalized[0]['id'],
+                'material_num' => $targetQty,
+            ];
+        }
+        $others = 0.0;
+        $lastIndex = count($normalized) - 1;
+        foreach ($normalized as $index => $row) {
+            if ($index === $lastIndex) {
+                continue;
+            }
+            $others += $row['material_num'];
+        }
+        $latestQty = round($targetQty - round($others, 2), 2);
+        if ($latestQty < -0.001) {
+            return null;
+        }
+
+        return [
+            'id' => $normalized[$lastIndex]['id'],
+            'material_num' => $latestQty,
+        ];
+    }
+
+    /**
      * 酸洗盘点提交后，把对上的成品库存合计改成确认吨数。
      *
      * @param array<int, array<string, mixed>> $items
      * @param string $stocktakeDate
      * @param int $userId
-     * @return array{unmatched: string[], skipped_negative: string[], adjust_count: int, matched: int}
+     * @return array{unmatched: string[], skipped_negative: string[], adjust_count: int, matched: int, blocked: string}
      */
     public static function coverByAcidWashStocktake(array $items, string $stocktakeDate, int $userId): array
     {
@@ -945,8 +1071,22 @@ class FinishedStockService
         $skippedNegative = [];
         $adjustCount = 0;
         $matched = 0;
+        $blocked = '';
         $stocktakeDate = date('Y-m-d', strtotime($stocktakeDate) ?: time());
+        // [AI-2026-10] 留痕必须是当前登录人，不采用前端传入的 user_id
+        if ($userId <= 0) {
+            $blocked = '未登录，发货库存未改';
 
+            return [
+                'unmatched' => $unmatched,
+                'skipped_negative' => $skippedNegative,
+                'adjust_count' => 0,
+                'matched' => 0,
+                'blocked' => $blocked,
+            ];
+        }
+
+        $pending = [];
         foreach (self::collapseAcidWashCoverLines($items) as $line) {
             $label = self::acidWashCoverLabel($line['item']);
             if ($line['qty'] < -0.001) {
@@ -958,11 +1098,39 @@ class FinishedStockService
                 continue;
             }
 
-            $plans = self::findAcidWashCoverPlans($line);
-            if ($plans === []) {
+            $found = self::findAcidWashCoverPlans($line);
+            $status = self::acidWashCoverMatchStatus($found['plans'], $found['mixed']);
+            if ($status === 'mixed') {
+                $unmatched[] = $label . '（未对上：同一计划有多种圆钢）';
+                continue;
+            }
+            if ($status !== 'ok') {
                 $unmatched[] = $label . '（未对上）';
                 continue;
             }
+            $pending[] = [
+                'line' => $line,
+                'label' => $label,
+                'plans' => $found['plans'],
+            ];
+        }
+
+        $planCodes = [];
+        foreach ($pending as $item) {
+            foreach ($item['plans'] as $plan) {
+                $planCode = trim((string) ($plan['plan_code'] ?? ''));
+                if ($planCode !== '') {
+                    $planCodes[$planCode] = true;
+                }
+            }
+        }
+        // [AI-2026-10] 先锁住要对的计划，再读当前库存，避免两份提交按同一差额各写一笔
+        self::lockCoverPlanRows(array_keys($planCodes));
+
+        foreach ($pending as $item) {
+            $line = $item['line'];
+            $label = $item['label'];
+            $plans = $item['plans'];
 
             $rows = [];
             $materialByPlan = [];
@@ -971,11 +1139,8 @@ class FinishedStockService
                 $summary = self::planSummary($planCode, [
                     'production_plan_name' => (string) ($plan['production_plan_name'] ?? ''),
                 ]);
-                $materialId = (int) ($summary['material_id'] ?? 0);
-                if ($materialId <= 0) {
-                    $materialId = (int) $line['material_id'];
-                }
-                $materialByPlan[$planCode] = $materialId;
+                // [AI-2026-10] 只认计划成品档案。结存表里按批次取到的可能是圆钢，不能拿来改数量
+                $materialByPlan[$planCode] = (int) ($plan['finished_material_id'] ?? 0);
                 $owners = $summary['owners'] ?? [];
                 if ($owners === []) {
                     continue;
@@ -1037,6 +1202,7 @@ class FinishedStockService
             'skipped_negative' => $skippedNegative,
             'adjust_count' => $adjustCount,
             'matched' => $matched,
+            'blocked' => $blocked,
         ];
     }
 
@@ -1044,7 +1210,7 @@ class FinishedStockService
      * 找出能对上这一盘点行、并且已经有酸洗报工的计划。多种圆钢挤在一张计划里的跳过。
      *
      * @param array{item: array<string, mixed>, qty: float, spec: string, model: string, material_id: int} $line
-     * @return array<int, array<string, mixed>>
+     * @return array{plans: array<int, array<string, mixed>>, mixed: string[]}
      */
     private static function findAcidWashCoverPlans(array $line): array
     {
@@ -1068,7 +1234,7 @@ class FinishedStockService
             $roundModel = trim((string) ($item['y_material_model'] ?? ''));
             $manufacturer = trim((string) ($item['y_material_manufacturer'] ?? ''));
             if ($name === '' || $roundSpec === '' || $roundModel === '') {
-                return [];
+                return ['plans' => [], 'mixed' => []];
             }
             $query->where('rm.material_name', $name)
                 ->where('rm.material_spec', $roundSpec)
@@ -1081,12 +1247,12 @@ class FinishedStockService
         $rawRows = $query
             ->field(
                 'p.id as plan_id, p.production_plan_code as plan_code, p.production_plan_name, p.create_time, '
-                . 'fm.material_spec as finished_spec, fm.material_model as finished_model, '
+                . 'fm.id as finished_material_id, fm.material_spec as finished_spec, fm.material_model as finished_model, '
                 . 'SUM(pr.report_num) as in_num'
             )
             ->group(
                 'p.id, p.production_plan_code, p.production_plan_name, p.create_time, '
-                . 'fm.material_spec, fm.material_model'
+                . 'fm.id, fm.material_spec, fm.material_model'
             )
             ->select()
             ->toArray();
@@ -1113,15 +1279,17 @@ class FinishedStockService
                 'plan_code' => $planCode,
                 'production_plan_name' => (string) ($row['production_plan_name'] ?? ''),
                 'sort_time' => (string) ($row['create_time'] ?? ''),
+                'finished_material_id' => (int) ($row['finished_material_id'] ?? 0),
             ];
         }
         if ($candidates === []) {
-            return [];
+            return ['plans' => [], 'mixed' => []];
         }
 
         $mixedCodes = self::acidWashPlansWithMixedRoundSteel(array_keys($candidates));
-        foreach ($mixedCodes as $mixedCode) {
-            unset($candidates[$mixedCode]);
+        // [AI-2026-10] 有一张计划对不上（多种圆钢），这一行整行不改，避免只改一部分后合计对不上实盘
+        if ($mixedCodes !== []) {
+            return ['plans' => [], 'mixed' => $mixedCodes];
         }
 
         $plans = array_values($candidates);
@@ -1131,10 +1299,10 @@ class FinishedStockService
                 return $timeCompare;
             }
 
-            return ((int) $left['plan_id']) <=> ((int) $right['plan_id']);
+            return strcmp((string) $left['plan_code'], (string) $right['plan_code']);
         });
 
-        return $plans;
+        return ['plans' => $plans, 'mixed' => []];
     }
 
     /**
@@ -1233,7 +1401,13 @@ class FinishedStockService
             return $hasColumn;
         }
         try {
-            $columns = Db::query("SHOW COLUMNS FROM `ya_stock_adjust` LIKE 'stocktake_date'");
+            $table = (new StockAdjustModel())->getTable();
+            if (!is_string($table) || !preg_match('/^[A-Za-z0-9_]+$/', $table)) {
+                $hasColumn = false;
+
+                return false;
+            }
+            $columns = Db::query("SHOW COLUMNS FROM `{$table}` LIKE 'stocktake_date'");
             $hasColumn = !empty($columns);
         } catch (\Throwable $e) {
             $hasColumn = false;
@@ -1243,33 +1417,124 @@ class FinishedStockService
     }
 
     /**
-     * 把该计划成品结存改成覆盖后的合计。没有结存行不新建。同一批次多行只改最新一条。
+     * 把该计划成品结存改成覆盖后的合计。没有结存行不新建。圆钢、配件不改。
+     * 同一批次多行时，差额只改最新一条，保证各行加起来等于覆盖后的合计；改了会变成负数则整批不动。
      *
-     * @param int $materialId
+     * @param int $materialId 计划成品档案 id
      * @param string $planCode
      * @param float $qty
      * @return void
      */
     private static function syncPlanWmsBalance(int $materialId, string $planCode, float $qty): void
     {
-        if ($planCode === '') {
+        if ($materialId <= 0 || $planCode === '' || $qty < -0.001) {
             return;
         }
-        $model = new StockMaterialModel();
-        $query = $model->where('material_batch', $planCode)->where('is_delete', 0);
-        if ($materialId > 0) {
-            $query->where('material_id', $materialId);
+        $rows = Db::name('wms_material')->alias('w')
+            ->leftJoin('material m', 'm.id = w.material_id')
+            ->where('w.material_batch', $planCode)
+            ->where('w.material_id', $materialId)
+            ->where('w.is_delete', 0)
+            ->field('w.id, w.material_num, w.stock, m.material_property')
+            ->order('w.id', 'asc')
+            ->select()
+            ->toArray();
+        $allowed = [];
+        foreach ($rows as $row) {
+            if (!self::wmsRowAllowedForFinishedCover(
+                (string) ($row['material_property'] ?? ''),
+                (string) ($row['stock'] ?? '')
+            )) {
+                continue;
+            }
+            $allowed[] = [
+                'id' => (int) ($row['id'] ?? 0),
+                'material_num' => (float) ($row['material_num'] ?? 0),
+            ];
         }
-        $row = $query->order('id', 'desc')->find();
-        if (empty($row)) {
+        $update = self::planWmsBalanceUpdate($allowed, $qty);
+        if ($update === null) {
             return;
         }
-        $rowId = (int) ($row['id'] ?? 0);
-        if ($rowId <= 0) {
-            return;
-        }
-        $model->where('id', $rowId)->update([
-            'material_num' => round($qty, 2),
+        (new StockMaterialModel())->where('id', $update['id'])->update([
+            'material_num' => $update['material_num'],
         ]);
+    }
+
+    /**
+     * 串行化酸洗盘点覆盖。锁要持有到外层事务提交之后再放。
+     *
+     * @return void
+     */
+    public static function acquireAcidWashCoverLock(): void
+    {
+        $name = self::acidWashCoverLockName();
+        try {
+            $rows = Db::query('SELECT GET_LOCK(?, 15) AS got_lock', [$name]);
+        } catch (\Throwable $e) {
+            exception('酸洗盘点提交加锁失败:' . $e->getMessage());
+        }
+        $got = $rows[0]['got_lock'] ?? null;
+        if ((int) $got !== 1) {
+            exception('有一份酸洗盘点正在提交，请稍后再试');
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public static function releaseAcidWashCoverLock(): void
+    {
+        try {
+            Db::query('SELECT RELEASE_LOCK(?)', [self::acidWashCoverLockName()]);
+        } catch (\Throwable $e) {
+            trace('释放酸洗盘点锁失败:' . $e->getMessage(), 'error');
+        }
+    }
+
+    /**
+     * @return string
+     */
+    private static function acidWashCoverLockName(): string
+    {
+        $db = '';
+        try {
+            $nameRow = Db::query('SELECT DATABASE() AS dbname');
+            $db = (string) ($nameRow[0]['dbname'] ?? '');
+        } catch (\Throwable $e) {
+            $db = '';
+        }
+        $db = preg_replace('/[^A-Za-z0-9_]/', '', $db);
+        if (!is_string($db) || $db === '') {
+            $db = 'default';
+        }
+
+        return 'acid_wash_cover_' . $db;
+    }
+
+    /**
+     * 按计划编号顺序锁计划单和已有调整，再读库存。
+     *
+     * @param string[] $planCodes
+     * @return void
+     */
+    private static function lockCoverPlanRows(array $planCodes): void
+    {
+        $planCodes = array_values(array_unique(array_filter(array_map(static function ($code) {
+            return is_string($code) ? trim($code) : '';
+        }, $planCodes))));
+        sort($planCodes, SORT_STRING);
+        if ($planCodes === []) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($planCodes), '?'));
+        Db::query(
+            "SELECT id FROM ya_production WHERE is_delete = 0 AND production_plan_code IN ({$placeholders}) ORDER BY production_plan_code FOR UPDATE",
+            $planCodes
+        );
+        Db::query(
+            "SELECT id FROM ya_stock_adjust WHERE is_delete = 0 AND plan_code IN ({$placeholders}) ORDER BY plan_code, id FOR UPDATE",
+            $planCodes
+        );
     }
 }

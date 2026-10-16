@@ -1666,7 +1666,7 @@ export default {
 
     showCoverNotice(message, fallback) {
       const text = message || fallback
-      if (text && (text.indexOf('未对上') !== -1 || text.indexOf('负数未写入') !== -1)) {
+      if (text && (text.indexOf('未对上') !== -1 || text.indexOf('负数未写入') !== -1 || text.indexOf('发货库存未改') !== -1)) {
         this.$message.warning({ message: text, duration: 8000, showClose: true })
         return
       }
@@ -1680,7 +1680,7 @@ export default {
         const processName = processes[i]
         try {
           const message = await this.submitProcessByName(processName)
-          if (message && (message.indexOf('未对上') !== -1 || message.indexOf('负数未写入') !== -1)) {
+          if (message && (message.indexOf('未对上') !== -1 || message.indexOf('负数未写入') !== -1 || message.indexOf('发货库存未改') !== -1)) {
             notes.push(message)
           }
         } catch (e) {

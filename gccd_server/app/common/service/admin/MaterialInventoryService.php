@@ -793,15 +793,29 @@ class MaterialInventoryService
     public static function batchSubmitStocktake($data)
     {
         Db::startTrans();
+        $coverLocked = false;
         try {
             $stocktakeDate = $data['stocktake_date'] ?? date('Y-m-d');
-            $processName = $data['process_name'] ?? '';
+            $processName = trim((string) ($data['process_name'] ?? ''));
             $remark = $data['remark'] ?? '';
             $items = $data['items'] ?? [];
             $userId = user_id() ?: ($data['user_id'] ?? 0);
 
             if (empty($items)) {
                 exception('盘点明细不能为空');
+            }
+
+            // [AI-2026-10] 酸洗要改发货库存，先占锁再写盘点，避免两个人同时提交把差额叠两次
+            $acidActorId = 0;
+            $acidBlocked = '';
+            if ($processName === '酸洗') {
+                $acidActorId = (int) user_id();
+                if ($acidActorId <= 0) {
+                    $acidBlocked = '未登录，发货库存未改';
+                } else {
+                    FinishedStockService::acquireAcidWashCoverLock();
+                    $coverLocked = true;
+                }
             }
 
             // 调试日志：检查传入数据
@@ -892,16 +906,24 @@ class MaterialInventoryService
                 'unmatched' => [],
                 'skipped_negative' => [],
                 'adjust_count' => 0,
+                'blocked' => '',
             ];
             if ($processName === '酸洗') {
-                $cover = FinishedStockService::coverByAcidWashStocktake(
-                    $items,
-                    (string) $stocktakeDate,
-                    (int) $userId
-                );
+                if ($acidBlocked !== '') {
+                    $cover['blocked'] = $acidBlocked;
+                } else {
+                    $cover = FinishedStockService::coverByAcidWashStocktake(
+                        $items,
+                        (string) $stocktakeDate,
+                        $acidActorId
+                    );
+                }
             }
             Db::commit();
             $message = "盘点提报成功，已入库 {$itemCount} 条明细记录";
+            if (!empty($cover['blocked'])) {
+                $message .= '。' . $cover['blocked'];
+            }
             if (!empty($cover['unmatched'])) {
                 $message .= '。未对上：' . implode('、', $cover['unmatched']);
             }
@@ -914,10 +936,15 @@ class MaterialInventoryService
                 'unmatched' => $cover['unmatched'],
                 'skipped_negative' => $cover['skipped_negative'],
                 'adjust_count' => (int) ($cover['adjust_count'] ?? 0),
+                'blocked' => (string) ($cover['blocked'] ?? ''),
             ];
         } catch (\Exception $e) {
             Db::rollback();
             exception('提报失败:' . $e->getMessage());
+        } finally {
+            if ($coverLocked) {
+                FinishedStockService::releaseAcidWashCoverLock();
+            }
         }
     }
 
@@ -1866,10 +1893,83 @@ class MaterialInventoryService
     }
 
     /**
-     * 酸洗发货：规格型号齐全时只扣这一档；对不上才退回按圆钢整包占比。
+     * 酸洗发货：规格型号齐全时扣这一档，再把对不上计划的发货按占比分摊。
+     * 规格型号都空时，退回按圆钢整包占比。
      *
      * @param array<string, mixed> $shipIndex
-     * @return float|null null 表示身份不全，调用方继续走旧占比
+     * @return float
+     */
+    public static function resolveAcidWashShipQty(
+        array $shipIndex,
+        int $materialId,
+        string $cSpec,
+        string $cModel,
+        string $startDate,
+        string $endDate,
+        float $ratio
+    ): float {
+        $matched = self::sumFinishedShipDaily(
+            $shipIndex,
+            $materialId,
+            $cSpec,
+            $cModel,
+            $startDate,
+            $endDate
+        );
+        if ($matched === null) {
+            return self::sumShipDaily($shipIndex, $materialId, $startDate, $endDate) * $ratio;
+        }
+        $unclassified = self::sumUnclassifiedShipDaily($shipIndex, $materialId, $startDate, $endDate);
+
+        return $matched + ($unclassified * $ratio);
+    }
+
+    /**
+     * 发货进了圆钢合计、但没有对上成品规格的数量。这些吨不能从规格行里漏掉。
+     *
+     * @param array<string, mixed> $shipIndex
+     * @return float
+     */
+    public static function sumUnclassifiedShipDaily(
+        array $shipIndex,
+        int $materialId,
+        string $startDate,
+        string $endDate
+    ): float {
+        if ($materialId <= 0 || strtotime($startDate) > strtotime($endDate)) {
+            return 0.0;
+        }
+        $total = self::sumShipDaily($shipIndex, $materialId, $startDate, $endDate);
+        $classified = 0.0;
+        $bySpec = $shipIndex['finished'][$materialId] ?? [];
+        if (is_array($bySpec)) {
+            foreach ($bySpec as $models) {
+                if (!is_array($models)) {
+                    continue;
+                }
+                foreach ($models as $dates) {
+                    if (!is_array($dates)) {
+                        continue;
+                    }
+                    foreach ($dates as $date => $qty) {
+                        if ((string) $date >= $startDate && (string) $date <= $endDate) {
+                            $classified += (float) $qty;
+                        }
+                    }
+                }
+            }
+        }
+        $unclassified = round($total - $classified, 6);
+
+        return $unclassified > 0 ? $unclassified : 0.0;
+    }
+
+    /**
+     * 酸洗发货按「圆钢 + 计划成品规格/型号」归堆后的某一档合计。
+     * 规格型号都空时返回 null。
+     *
+     * @param array<string, mixed> $shipIndex
+     * @return float|null null 表示身份不全
      */
     public static function sumFinishedShipDaily(
         array $shipIndex,
@@ -1896,34 +1996,6 @@ class MaterialInventoryService
         }
 
         return $sum;
-    }
-
-    /**
-     * @param array<string, mixed> $shipIndex
-     * @return float
-     */
-    private static function resolveAcidWashShipQty(
-        array $shipIndex,
-        int $materialId,
-        string $cSpec,
-        string $cModel,
-        string $startDate,
-        string $endDate,
-        float $ratio
-    ): float {
-        $matched = self::sumFinishedShipDaily(
-            $shipIndex,
-            $materialId,
-            $cSpec,
-            $cModel,
-            $startDate,
-            $endDate
-        );
-        if ($matched !== null) {
-            return $matched;
-        }
-
-        return self::sumShipDaily($shipIndex, $materialId, $startDate, $endDate) * $ratio;
     }
 
     /**
@@ -3714,29 +3786,20 @@ class MaterialInventoryService
                 $iterDate = date('Y-m-d', strtotime($iterDate . ' +1 day'));
             }
 
-            // [AI-2026-10] 酸洗月台账按本行成品规格型号扣发货
+            // [AI-2026-10] 酸洗月台账按本行成品规格型号扣发货；对不上计划的发货仍按占比分摊
             if ($processName === '酸洗') {
-                $matchedShip = self::sumFinishedShipDaily(
-                    $monthShipIndex,
-                    $stockMid,
-                    $cSpec,
-                    $cModel,
-                    $monthStart,
-                    $monthEnd
-                );
-                if ($matchedShip !== null) {
-                    $shipQty = $matchedShip;
+                if ($stockMid > 0) {
+                    $shipQty = self::resolveAcidWashShipQty(
+                        $monthShipIndex,
+                        $stockMid,
+                        $cSpec,
+                        $cModel,
+                        $monthStart,
+                        $monthEnd,
+                        $rowRatio
+                    );
                 } else {
-                    $shipQty = 0;
-                    if ($stockMid > 0) {
-                        $shipQty = $shipIdx[$stockMid] ?? 0;
-                    }
-                    if ($shipQty == 0) {
-                        $shipQty = $shipNameIdx[$materialName] ?? 0;
-                    }
-                    if ($shipQty > 0) {
-                        $shipQty = $shipQty * $rowRatio;
-                    }
+                    $shipQty = ($shipNameIdx[$materialName] ?? 0) * $rowRatio;
                 }
                 if ($shipQty > 0) {
                     $totalConsume += $shipQty;

@@ -195,6 +195,117 @@ runAcidWashCoverCase('negative_rows_are_lifted_then_fifo_reaches_counted_total',
     expectAcidWashCover(abs($total - 10) < 0.001, '覆盖后合计应等于确认吨数');
 });
 
+runAcidWashCoverCase('same_time_follows_plan_code_not_database_id', static function (): void {
+    $rows = [
+        [
+            'plan_code' => 'scjh-002',
+            'stock_owner' => '客户乙',
+            'stock_num' => 5,
+            'sort_time' => '2026-05-01 00:00:00',
+            'plan_id' => 1,
+        ],
+        [
+            'plan_code' => 'scjh-001',
+            'stock_owner' => '客户甲',
+            'stock_num' => 5,
+            'sort_time' => '2026-05-01 00:00:00',
+            'plan_id' => 9,
+        ],
+    ];
+    $adjusts = FinishedStockService::allocateStocktakeCover($rows, 3);
+    $early = findCoverAdjust($adjusts, 'scjh-001', '客户甲');
+    $later = findCoverAdjust($adjusts, 'scjh-002', '客户乙');
+    expectAcidWashCover($early !== null && $early['after_qty'] === 0.0, '时间相同应先扣计划编号靠前的单');
+    expectAcidWashCover($later !== null && $later['after_qty'] === 3.0, '编号靠后的单只承担剩下的盘亏');
+
+    $gain = FinishedStockService::allocateStocktakeCover($rows, 12);
+    expectAcidWashCover(findCoverAdjust($gain, 'scjh-001', '客户甲') === null, '盘盈不记到编号靠前的单');
+    $newest = findCoverAdjust($gain, 'scjh-002', '客户乙');
+    expectAcidWashCover($newest !== null && $newest['after_qty'] === 7.0, '盘盈记到计划编号最新的客户行');
+});
+
+runAcidWashCoverCase('surplus_uses_inventory_row_when_plan_has_no_customer', static function (): void {
+    $adjusts = FinishedStockService::allocateStocktakeCover([
+        [
+            'plan_code' => 'scjh-1',
+            'stock_owner' => '库存',
+            'stock_num' => 3,
+            'sort_time' => '2026-05-01 00:00:00',
+            'plan_id' => 1,
+            'is_inventory_owner' => true,
+        ],
+    ], 8);
+    $inventory = findCoverAdjust($adjusts, 'scjh-1', '库存');
+    expectAcidWashCover($inventory !== null && $inventory['after_qty'] === 8.0, '没有客户归属时盘盈记在库存行');
+});
+
+runAcidWashCoverCase('resubmit_same_qty_does_not_stack_after_stock_is_updated', static function (): void {
+    $rows = [
+        [
+            'plan_code' => 'scjh-1',
+            'stock_owner' => '客户甲',
+            'stock_num' => 10,
+            'sort_time' => '2026-05-01 00:00:00',
+            'plan_id' => 1,
+        ],
+    ];
+    $first = FinishedStockService::allocateStocktakeCover($rows, 8);
+    expectAcidWashCover(count($first) === 1 && $first[0]['after_qty'] === 8.0, '第一次应按差额改到 8');
+    $rows[0]['stock_num'] = $first[0]['after_qty'];
+    $second = FinishedStockService::allocateStocktakeCover($rows, 8);
+    expectAcidWashCover($second === [], '同一天再交同一个数，按改完后的库存重算，不再写一笔');
+    $third = FinishedStockService::allocateStocktakeCover($rows, 6);
+    expectAcidWashCover(count($third) === 1 && $third[0]['adjust_qty'] === -2.0, '改成另一个数只写新的差额');
+    expectAcidWashCover($third[0]['after_qty'] === 6.0, '改完应等于新的确认吨数');
+});
+
+runAcidWashCoverCase('mixed_round_steel_plan_blocks_the_whole_line', static function (): void {
+    expectAcidWashCover(
+        FinishedStockService::acidWashCoverMatchStatus([['plan_code' => 'scjh-1']], ['scjh-1']) === 'mixed',
+        '计划里有多种圆钢时应整行未对上'
+    );
+    expectAcidWashCover(
+        FinishedStockService::acidWashCoverMatchStatus([], []) === 'none',
+        '没有计划时未对上'
+    );
+    expectAcidWashCover(
+        FinishedStockService::acidWashCoverMatchStatus([['plan_code' => 'scjh-1']], []) === 'ok',
+        '对上的计划可以改'
+    );
+});
+
+runAcidWashCoverCase('wms_sync_skips_round_steel_and_will_not_drive_latest_row_negative', static function (): void {
+    expectAcidWashCover(
+        FinishedStockService::wmsRowAllowedForFinishedCover('圆钢', '成品仓库') === false,
+        '圆钢结存不能被酸洗盘点改掉'
+    );
+    expectAcidWashCover(
+        FinishedStockService::wmsRowAllowedForFinishedCover('', '配件仓库') === false,
+        '配件仓库结存不能被酸洗盘点改掉'
+    );
+    expectAcidWashCover(
+        FinishedStockService::wmsRowAllowedForFinishedCover('', '成品仓库') === true,
+        '成品仓库已有结存可以改成覆盖后的合计'
+    );
+    $single = FinishedStockService::planWmsBalanceUpdate([
+        ['id' => 3, 'material_num' => 10],
+    ], 8);
+    expectAcidWashCover($single !== null && $single['id'] === 3 && $single['material_num'] === 8.0, '只有一行时直接改成合计');
+    $split = FinishedStockService::planWmsBalanceUpdate([
+        ['id' => 1, 'material_num' => 6],
+        ['id' => 2, 'material_num' => 4],
+    ], 8);
+    expectAcidWashCover(
+        $split !== null && $split['id'] === 2 && $split['material_num'] === 2.0,
+        '多行时只改最新一条，使各行加起来等于覆盖后的合计'
+    );
+    $unsafe = FinishedStockService::planWmsBalanceUpdate([
+        ['id' => 1, 'material_num' => 6],
+        ['id' => 2, 'material_num' => 4],
+    ], 3);
+    expectAcidWashCover($unsafe === null, '最新一条改成负数时整批不动');
+});
+
 runAcidWashCoverCase('same_total_does_not_stack_another_adjust', static function (): void {
     $adjusts = FinishedStockService::allocateStocktakeCover([
         [
@@ -303,6 +414,27 @@ runAcidWashCoverCase('acid_wash_ship_deducts_only_matching_finished_identity', s
         $idTotal += $qty;
     }
     expectAcidWashCover(abs($idTotal - 26.64) < 0.001, '没有计划单号的发货仍留在圆钢合计里，不摊进规格行');
+
+    $withOrphan = MaterialInventoryService::resolveAcidWashShipQty(
+        $index,
+        55,
+        '55*1.2',
+        '53*6.5',
+        '2026-10-01',
+        '2026-10-31',
+        0.5
+    );
+    expectAcidWashCover(abs($withOrphan - 21.14) < 0.001, '对上的发货按规格扣，没计划单号的再按占比分摊');
+    $noIdentity = MaterialInventoryService::resolveAcidWashShipQty(
+        $index,
+        55,
+        '',
+        '',
+        '2026-10-01',
+        '2026-10-31',
+        0.5
+    );
+    expectAcidWashCover(abs($noIdentity - 13.32) < 0.001, '没有成品规格时仍按圆钢整包占比');
 });
 
 echo 'passed=' . $passed . ' failed=' . count($failed) . PHP_EOL;

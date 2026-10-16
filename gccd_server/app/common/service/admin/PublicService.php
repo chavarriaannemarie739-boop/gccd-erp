@@ -143,6 +143,8 @@ class PublicService
             return error('参数错误！');
         }
         $info = [];
+        // [AI-2026-10] 未登记的类型（如调整单 15）返回空单号，交给调用方兜底，避免未定义变量把整单提交打回滚
+        $code = null;
         if ($type == 1) {
             //1入库单号
             $Count = self::getcodenum('rkd');//获取当日增加总数
