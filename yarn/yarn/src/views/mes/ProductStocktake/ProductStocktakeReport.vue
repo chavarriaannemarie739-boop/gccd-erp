@@ -1632,8 +1632,8 @@ export default {
         if (this.submitMode === 'all') {
           await this.submitAll()
         } else {
-          await this.submitProcessByName(this.submitProcessName)
-          this.$message.success(`${this.submitProcessName} 提交成功`)
+          const message = await this.submitProcessByName(this.submitProcessName)
+          this.showCoverNotice(message, `${this.submitProcessName} 提交成功`)
         }
         this.submitDialogVisible = false
         // [AI-2026-08] 先结束提交转圈，再异步刷新推算，避免「提交+autoCalc」叠在一起像卡死
@@ -1661,19 +1661,41 @@ export default {
       if (!res || res.code !== 200) {
         throw new Error((res && res.msg) || `${processName} 提交失败`)
       }
+      return (res && (res.msg || (res.data && res.data.message))) || `${processName} 提交成功`
+    },
+
+    showCoverNotice(message, fallback) {
+      const text = message || fallback
+      if (text && (text.indexOf('未对上') !== -1 || text.indexOf('负数未写入') !== -1)) {
+        this.$message.warning({ message: text, duration: 8000, showClose: true })
+        return
+      }
+      this.$message.success(text)
     },
 
     async submitAll() {
       const processes = this.categories.filter((p) => (this.processRowCounts[p] || 0) > 0)
+      const notes = []
       for (let i = 0; i < processes.length; i++) {
         const processName = processes[i]
         try {
-          await this.submitProcessByName(processName)
+          const message = await this.submitProcessByName(processName)
+          if (message && (message.indexOf('未对上') !== -1 || message.indexOf('负数未写入') !== -1)) {
+            notes.push(message)
+          }
         } catch (e) {
           throw new Error(
             `${processName} 提交失败：${e?.message || e?.msg || '未知错误'}（已完成 ${i}/${processes.length}，后续已中断）`
           )
         }
+      }
+      if (notes.length) {
+        this.$message.warning({
+          message: notes.join('；'),
+          duration: 8000,
+          showClose: true
+        })
+        return
       }
       this.$message.success(`全部提交成功（${processes.length} 个工序）`)
     },

@@ -1038,7 +1038,14 @@ Page({
       .then((res) => {
         if (res.data.code === 200) {
           this._clearDraft();
-          this.setData({ loading: false, showSubmitSuccessDialog: true });
+          const body = res.data || {};
+          const payload = body.data || {};
+          const serverMessage = body.msg || payload.message || "";
+          this.setData({
+            loading: false,
+            showSubmitSuccessDialog: true,
+            successDialogMessage: serverMessage || this.data.successDialogMessage,
+          });
         } else {
           Toast.fail(res.data.msg || "提交失败");
           this.setData({ loading: false });

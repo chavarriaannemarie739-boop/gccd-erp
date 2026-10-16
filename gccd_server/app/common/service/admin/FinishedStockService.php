@@ -24,6 +24,9 @@ class FinishedStockService
 
     public const ADJUST_OVER_SHIP = 'over_ship';
 
+    /** 酸洗盘点把成品库存覆盖成实盘数 */
+    public const ADJUST_STOCKTAKE = 'stocktake';
+
     /** 发货超发容差比例 ±2% */
     public const SHIP_OVER_TOLERANCE_RATIO = 0.02;
 
@@ -716,5 +719,557 @@ class FinishedStockService
         }
 
         return false;
+    }
+
+    /**
+     * 同一盘点身份多行时保留最后一行（与盘点期初“取最后一次”一致，避免同一次提交把吨数加两次）。
+     *
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array{item: array<string, mixed>, qty: float, spec: string, model: string, material_id: int}>
+     */
+    public static function collapseAcidWashCoverLines(array $items): array
+    {
+        $grouped = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $qty = round(
+                (float) ($item['day_shift_qty'] ?? $item['day_shift_tonnage'] ?? 0)
+                + (float) ($item['night_shift_qty'] ?? $item['night_shift_tonnage'] ?? 0),
+                2
+            );
+            $spec = MaterialInventoryService::normalizeSpec(
+                (string) ($item['c_material_spec'] ?? $item['c_product_spec'] ?? '')
+            );
+            $model = MaterialInventoryService::normalizeSpec(
+                (string) ($item['c_material_model'] ?? $item['c_product_model'] ?? '')
+            );
+            $materialId = (int) ($item['material_id'] ?? 0);
+            $name = trim((string) ($item['y_material_name'] ?? $item['material_name'] ?? ''));
+            $manufacturer = trim((string) ($item['y_material_manufacturer'] ?? ''));
+            $roundSpec = trim((string) ($item['y_material_spec'] ?? ''));
+            $roundModel = trim((string) ($item['y_material_model'] ?? ''));
+            $identity = $materialId > 0
+                ? 'id:' . $materialId
+                : implode("\x00", [$name, $manufacturer, $roundSpec, $roundModel]);
+            $identity .= "\x00" . $spec . "\x00" . $model;
+            $grouped[$identity] = [
+                'item' => $item,
+                'qty' => $qty,
+                'spec' => $spec,
+                'model' => $model,
+                'material_id' => $materialId,
+            ];
+        }
+
+        return array_values($grouped);
+    }
+
+    /**
+     * 盘点行在提示里怎么称呼。
+     *
+     * @param array<string, mixed> $item
+     * @return string
+     */
+    public static function acidWashCoverLabel(array $item): string
+    {
+        $parts = [];
+        foreach (
+            [
+                'y_material_manufacturer',
+                'y_material_spec',
+                'y_material_model',
+                'c_material_spec',
+                'c_material_model',
+            ] as $field
+        ) {
+            $value = trim((string) ($item[$field] ?? ''));
+            if ($value !== '') {
+                $parts[] = $value;
+            }
+        }
+        if ($parts === []) {
+            $fallback = trim((string) ($item['material_name'] ?? $item['y_material_name'] ?? ''));
+
+            return $fallback !== '' ? $fallback : '未命名型号';
+        }
+
+        return implode(' ', $parts);
+    }
+
+    /**
+     * 把多张计划的现有库存调成实盘合计。
+     *
+     * 行序（盘亏）：计划按 sort_time、plan_id 从早到晚；同一计划先扣「库存」行到 0，再扣客户行到 0。
+     * 不把客户吨数改记到「库存」，也不把「库存」吨数改记回客户。
+     * 盘盈：差额全部加在最新一张计划的客户行上；该计划没有单独客户归属时，加在「库存」行。
+     * 负数行先拉回 0，再做盈亏，这样发货页能看到的正数合计等于确认吨数。
+     *
+     * @param array<int, array<string, mixed>> $rows
+     * @return array<int, array{plan_code: string, stock_owner: string, before_qty: float, after_qty: float, adjust_qty: float}>
+     */
+    public static function allocateStocktakeCover(array $rows, float $targetQty): array
+    {
+        $targetQty = round($targetQty, 2);
+        if ($targetQty < -0.001) {
+            return [];
+        }
+
+        $ordered = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $planCode = trim((string) ($row['plan_code'] ?? ''));
+            $owner = trim((string) ($row['stock_owner'] ?? ''));
+            if ($planCode === '' || $owner === '') {
+                continue;
+            }
+            $isInventoryOwner = !empty($row['is_inventory_owner'])
+                || $owner === self::STOCK_OWNER_INVENTORY;
+            $ordered[] = [
+                'plan_code' => $planCode,
+                'stock_owner' => $owner,
+                'stock_num' => round((float) ($row['stock_num'] ?? 0), 2),
+                'sort_time' => (string) ($row['sort_time'] ?? ''),
+                'plan_id' => (int) ($row['plan_id'] ?? 0),
+                'is_inventory_owner' => $isInventoryOwner,
+            ];
+        }
+        if ($ordered === []) {
+            return [];
+        }
+
+        usort($ordered, static function (array $left, array $right): int {
+            $timeCompare = strcmp($left['sort_time'], $right['sort_time']);
+            if ($timeCompare !== 0) {
+                return $timeCompare;
+            }
+            if ($left['plan_id'] !== $right['plan_id']) {
+                return $left['plan_id'] <=> $right['plan_id'];
+            }
+            // 同一计划：盘亏时先扣公共「库存」，再扣客户
+            return ($left['is_inventory_owner'] ? 0 : 1) <=> ($right['is_inventory_owner'] ? 0 : 1);
+        });
+
+        $original = [];
+        foreach ($ordered as $index => $row) {
+            $original[$index] = $row['stock_num'];
+            if ($row['stock_num'] < -0.001) {
+                $ordered[$index]['stock_num'] = 0.0;
+            }
+        }
+
+        $sum = 0.0;
+        foreach ($ordered as $row) {
+            $sum += $row['stock_num'];
+        }
+        $gap = round($targetQty - round($sum, 2), 2);
+
+        if ($gap < -0.001) {
+            $remain = round(-$gap, 2);
+            foreach ($ordered as $index => $row) {
+                if ($remain <= 0.001) {
+                    break;
+                }
+                $available = (float) $row['stock_num'];
+                if ($available <= 0.001) {
+                    continue;
+                }
+                $deduct = min($available, $remain);
+                $ordered[$index]['stock_num'] = round($available - $deduct, 2);
+                $remain = round($remain - $deduct, 2);
+            }
+        } elseif ($gap > 0.001) {
+            $newestKey = null;
+            foreach ($ordered as $row) {
+                $key = $row['sort_time'] . '#' . str_pad((string) $row['plan_id'], 12, '0', STR_PAD_LEFT);
+                if ($newestKey === null || strcmp($key, $newestKey) > 0) {
+                    $newestKey = $key;
+                }
+            }
+            $customerIndex = null;
+            $inventoryIndex = null;
+            foreach ($ordered as $index => $row) {
+                $key = $row['sort_time'] . '#' . str_pad((string) $row['plan_id'], 12, '0', STR_PAD_LEFT);
+                if ($key !== $newestKey) {
+                    continue;
+                }
+                if ($row['is_inventory_owner']) {
+                    $inventoryIndex = $index;
+                } elseif ($customerIndex === null) {
+                    $customerIndex = $index;
+                }
+            }
+            $gainIndex = $customerIndex !== null ? $customerIndex : $inventoryIndex;
+            if ($gainIndex !== null) {
+                $ordered[$gainIndex]['stock_num'] = round(
+                    (float) $ordered[$gainIndex]['stock_num'] + $gap,
+                    2
+                );
+            }
+        }
+
+        $adjusts = [];
+        foreach ($ordered as $index => $row) {
+            $beforeQty = round((float) $original[$index], 2);
+            $afterQty = round((float) $row['stock_num'], 2);
+            $adjustQty = round($afterQty - $beforeQty, 2);
+            if (abs($adjustQty) < 0.001) {
+                continue;
+            }
+            $adjusts[] = [
+                'plan_code' => $row['plan_code'],
+                'stock_owner' => $row['stock_owner'],
+                'before_qty' => $beforeQty,
+                'after_qty' => $afterQty,
+                'adjust_qty' => $adjustQty,
+            ];
+        }
+
+        return $adjusts;
+    }
+
+    /**
+     * 酸洗盘点提交后，把对上的成品库存合计改成确认吨数。
+     *
+     * @param array<int, array<string, mixed>> $items
+     * @param string $stocktakeDate
+     * @param int $userId
+     * @return array{unmatched: string[], skipped_negative: string[], adjust_count: int, matched: int}
+     */
+    public static function coverByAcidWashStocktake(array $items, string $stocktakeDate, int $userId): array
+    {
+        $unmatched = [];
+        $skippedNegative = [];
+        $adjustCount = 0;
+        $matched = 0;
+        $stocktakeDate = date('Y-m-d', strtotime($stocktakeDate) ?: time());
+
+        foreach (self::collapseAcidWashCoverLines($items) as $line) {
+            $label = self::acidWashCoverLabel($line['item']);
+            if ($line['qty'] < -0.001) {
+                $skippedNegative[] = $label;
+                continue;
+            }
+            if ($line['spec'] === '' && $line['model'] === '') {
+                $unmatched[] = $label . '（未对上：缺少成品规格型号）';
+                continue;
+            }
+
+            $plans = self::findAcidWashCoverPlans($line);
+            if ($plans === []) {
+                $unmatched[] = $label . '（未对上）';
+                continue;
+            }
+
+            $rows = [];
+            $materialByPlan = [];
+            foreach ($plans as $plan) {
+                $planCode = (string) $plan['plan_code'];
+                $summary = self::planSummary($planCode, [
+                    'production_plan_name' => (string) ($plan['production_plan_name'] ?? ''),
+                ]);
+                $materialId = (int) ($summary['material_id'] ?? 0);
+                if ($materialId <= 0) {
+                    $materialId = (int) $line['material_id'];
+                }
+                $materialByPlan[$planCode] = $materialId;
+                $owners = $summary['owners'] ?? [];
+                if ($owners === []) {
+                    continue;
+                }
+                foreach ($owners as $owner => $ownerRow) {
+                    $rows[] = [
+                        'plan_code' => $planCode,
+                        'stock_owner' => (string) $owner,
+                        'stock_num' => (float) ($ownerRow['stock_num'] ?? 0),
+                        'sort_time' => (string) ($plan['sort_time'] ?? ''),
+                        'plan_id' => (int) ($plan['plan_id'] ?? 0),
+                        'is_inventory_owner' => (string) $owner === self::STOCK_OWNER_INVENTORY,
+                    ];
+                }
+            }
+            if ($rows === []) {
+                $unmatched[] = $label . '（未对上）';
+                continue;
+            }
+
+            $adjusts = self::allocateStocktakeCover($rows, (float) $line['qty']);
+            $matched++;
+            $touchedPlans = [];
+            foreach ($adjusts as $adjust) {
+                self::insertStocktakeAdjust(
+                    $adjust,
+                    (int) ($materialByPlan[$adjust['plan_code']] ?? 0),
+                    $stocktakeDate,
+                    $userId,
+                    $label
+                );
+                $adjustCount++;
+                $touchedPlans[$adjust['plan_code']] = true;
+            }
+
+            $finalByPlan = [];
+            foreach ($rows as $row) {
+                $planCode = $row['plan_code'];
+                $finalByPlan[$planCode] = ($finalByPlan[$planCode] ?? 0) + (float) $row['stock_num'];
+            }
+            foreach ($adjusts as $adjust) {
+                $planCode = $adjust['plan_code'];
+                $finalByPlan[$planCode] = round(
+                    ($finalByPlan[$planCode] ?? 0) + (float) $adjust['adjust_qty'],
+                    2
+                );
+            }
+            foreach (array_keys($touchedPlans) as $planCode) {
+                self::syncPlanWmsBalance(
+                    (int) ($materialByPlan[$planCode] ?? 0),
+                    (string) $planCode,
+                    (float) ($finalByPlan[$planCode] ?? 0)
+                );
+            }
+        }
+
+        return [
+            'unmatched' => $unmatched,
+            'skipped_negative' => $skippedNegative,
+            'adjust_count' => $adjustCount,
+            'matched' => $matched,
+        ];
+    }
+
+    /**
+     * 找出能对上这一盘点行、并且已经有酸洗报工的计划。多种圆钢挤在一张计划里的跳过。
+     *
+     * @param array{item: array<string, mixed>, qty: float, spec: string, model: string, material_id: int} $line
+     * @return array<int, array<string, mixed>>
+     */
+    private static function findAcidWashCoverPlans(array $line): array
+    {
+        $query = Db::name('production')->alias('p')
+            ->join('product_task pt', 'pt.relation_code = p.production_plan_code AND pt.is_delete = 0')
+            ->join(
+                'product_report pr',
+                "pr.relation_code = pt.task_code AND pr.processes_code = 'gx_0014' AND pr.is_delete = 0"
+            )
+            ->join('material fm', 'p.english_material = fm.id AND fm.is_delete = 0')
+            ->join('material rm', 'pt.material_id = rm.id AND rm.is_delete = 0')
+            ->where('p.is_delete', 0);
+
+        $materialId = (int) $line['material_id'];
+        if ($materialId > 0) {
+            $query->where('pt.material_id', $materialId);
+        } else {
+            $item = $line['item'];
+            $name = trim((string) ($item['y_material_name'] ?? $item['material_name'] ?? ''));
+            $roundSpec = trim((string) ($item['y_material_spec'] ?? ''));
+            $roundModel = trim((string) ($item['y_material_model'] ?? ''));
+            $manufacturer = trim((string) ($item['y_material_manufacturer'] ?? ''));
+            if ($name === '' || $roundSpec === '' || $roundModel === '') {
+                return [];
+            }
+            $query->where('rm.material_name', $name)
+                ->where('rm.material_spec', $roundSpec)
+                ->where('rm.material_model', $roundModel);
+            if ($manufacturer !== '') {
+                $query->where('rm.manufacturer', $manufacturer);
+            }
+        }
+
+        $rawRows = $query
+            ->field(
+                'p.id as plan_id, p.production_plan_code as plan_code, p.production_plan_name, p.create_time, '
+                . 'fm.material_spec as finished_spec, fm.material_model as finished_model, '
+                . 'SUM(pr.report_num) as in_num'
+            )
+            ->group(
+                'p.id, p.production_plan_code, p.production_plan_name, p.create_time, '
+                . 'fm.material_spec, fm.material_model'
+            )
+            ->select()
+            ->toArray();
+
+        $wantSpec = (string) $line['spec'];
+        $wantModel = (string) $line['model'];
+        $candidates = [];
+        foreach ($rawRows as $row) {
+            $inNum = (float) ($row['in_num'] ?? 0);
+            if ($inNum <= 0.000001) {
+                continue;
+            }
+            $finishedSpec = MaterialInventoryService::normalizeSpec((string) ($row['finished_spec'] ?? ''));
+            $finishedModel = MaterialInventoryService::normalizeSpec((string) ($row['finished_model'] ?? ''));
+            if ($finishedSpec !== $wantSpec || $finishedModel !== $wantModel) {
+                continue;
+            }
+            $planCode = trim((string) ($row['plan_code'] ?? ''));
+            if ($planCode === '') {
+                continue;
+            }
+            $candidates[$planCode] = [
+                'plan_id' => (int) ($row['plan_id'] ?? 0),
+                'plan_code' => $planCode,
+                'production_plan_name' => (string) ($row['production_plan_name'] ?? ''),
+                'sort_time' => (string) ($row['create_time'] ?? ''),
+            ];
+        }
+        if ($candidates === []) {
+            return [];
+        }
+
+        $mixedCodes = self::acidWashPlansWithMixedRoundSteel(array_keys($candidates));
+        foreach ($mixedCodes as $mixedCode) {
+            unset($candidates[$mixedCode]);
+        }
+
+        $plans = array_values($candidates);
+        usort($plans, static function (array $left, array $right): int {
+            $timeCompare = strcmp((string) $left['sort_time'], (string) $right['sort_time']);
+            if ($timeCompare !== 0) {
+                return $timeCompare;
+            }
+
+            return ((int) $left['plan_id']) <=> ((int) $right['plan_id']);
+        });
+
+        return $plans;
+    }
+
+    /**
+     * 一张计划的酸洗报工若来自多种圆钢，整张计划不参与覆盖。
+     *
+     * @param string[] $planCodes
+     * @return string[]
+     */
+    private static function acidWashPlansWithMixedRoundSteel(array $planCodes): array
+    {
+        if ($planCodes === []) {
+            return [];
+        }
+        $rows = Db::name('product_task')->alias('pt')
+            ->join(
+                'product_report pr',
+                "pr.relation_code = pt.task_code AND pr.processes_code = 'gx_0014' AND pr.is_delete = 0"
+            )
+            ->whereIn('pt.relation_code', $planCodes)
+            ->where('pt.is_delete', 0)
+            ->field('pt.relation_code, pt.material_id')
+            ->group('pt.relation_code, pt.material_id')
+            ->select()
+            ->toArray();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $planCode = trim((string) ($row['relation_code'] ?? ''));
+            if ($planCode === '') {
+                continue;
+            }
+            $counts[$planCode] = ($counts[$planCode] ?? 0) + 1;
+        }
+        $mixed = [];
+        foreach ($counts as $planCode => $count) {
+            if ($count > 1) {
+                $mixed[] = (string) $planCode;
+            }
+        }
+
+        return $mixed;
+    }
+
+    /**
+     * @param array{plan_code: string, stock_owner: string, before_qty: float, after_qty: float, adjust_qty: float} $adjust
+     * @param int $materialId
+     * @param string $stocktakeDate
+     * @param int $userId
+     * @param string $label
+     * @return void
+     */
+    private static function insertStocktakeAdjust(
+        array $adjust,
+        int $materialId,
+        string $stocktakeDate,
+        int $userId,
+        string $label
+    ): void {
+        $planCode = (string) $adjust['plan_code'];
+        $reason = '酸洗盘点覆盖 ' . $stocktakeDate . ' ' . $label;
+        if (mb_strlen($reason) > 255) {
+            $reason = mb_substr($reason, 0, 255);
+        }
+        $adjustCode = PublicService::getCode(15)['code'] ?? ('tz-' . date('YmdHis') . mt_rand(100, 999));
+        $row = [
+            'adjust_code' => $adjustCode,
+            'plan_code' => $planCode,
+            'material_id' => $materialId,
+            'material_batch' => $planCode,
+            'stock_owner' => (string) $adjust['stock_owner'],
+            'adjust_type' => self::ADJUST_STOCKTAKE,
+            'adjust_qty' => (float) $adjust['adjust_qty'],
+            'before_qty' => (float) $adjust['before_qty'],
+            'after_qty' => (float) $adjust['after_qty'],
+            'reason' => $reason,
+            'ship_code' => '',
+            'create_uid' => $userId,
+            'create_time' => datetime(),
+            'is_delete' => 0,
+        ];
+        if (self::stockAdjustHasStocktakeDate()) {
+            $row['stocktake_date'] = $stocktakeDate;
+        }
+        (new StockAdjustModel())->insert($row);
+    }
+
+    /**
+     * 列还没加时不写，避免没跑迁移就提交失败。跑过迁移后会带上盘点日。
+     *
+     * @return bool
+     */
+    private static function stockAdjustHasStocktakeDate(): bool
+    {
+        static $hasColumn = null;
+        if ($hasColumn !== null) {
+            return $hasColumn;
+        }
+        try {
+            $columns = Db::query("SHOW COLUMNS FROM `ya_stock_adjust` LIKE 'stocktake_date'");
+            $hasColumn = !empty($columns);
+        } catch (\Throwable $e) {
+            $hasColumn = false;
+        }
+
+        return $hasColumn;
+    }
+
+    /**
+     * 把该计划成品结存改成覆盖后的合计。没有结存行不新建。同一批次多行只改最新一条。
+     *
+     * @param int $materialId
+     * @param string $planCode
+     * @param float $qty
+     * @return void
+     */
+    private static function syncPlanWmsBalance(int $materialId, string $planCode, float $qty): void
+    {
+        if ($planCode === '') {
+            return;
+        }
+        $model = new StockMaterialModel();
+        $query = $model->where('material_batch', $planCode)->where('is_delete', 0);
+        if ($materialId > 0) {
+            $query->where('material_id', $materialId);
+        }
+        $row = $query->order('id', 'desc')->find();
+        if (empty($row)) {
+            return;
+        }
+        $rowId = (int) ($row['id'] ?? 0);
+        if ($rowId <= 0) {
+            return;
+        }
+        $model->where('id', $rowId)->update([
+            'material_num' => round($qty, 2),
+        ]);
     }
 }

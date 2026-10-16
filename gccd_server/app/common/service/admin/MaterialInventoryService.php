@@ -887,8 +887,34 @@ class MaterialInventoryService
             $model->insertAll($insertData);
 
             $itemCount = count($insertData);
+            // [AI-2026-10] 只有酸洗提交才覆盖发货用的成品库存，前面工序只记盘点表
+            $cover = [
+                'unmatched' => [],
+                'skipped_negative' => [],
+                'adjust_count' => 0,
+            ];
+            if ($processName === '酸洗') {
+                $cover = FinishedStockService::coverByAcidWashStocktake(
+                    $items,
+                    (string) $stocktakeDate,
+                    (int) $userId
+                );
+            }
             Db::commit();
-            return "盘点提报成功，已入库 {$itemCount} 条明细记录";
+            $message = "盘点提报成功，已入库 {$itemCount} 条明细记录";
+            if (!empty($cover['unmatched'])) {
+                $message .= '。未对上：' . implode('、', $cover['unmatched']);
+            }
+            if (!empty($cover['skipped_negative'])) {
+                $message .= '。负数未写入发货库存：' . implode('、', $cover['skipped_negative']);
+            }
+
+            return [
+                'message' => $message,
+                'unmatched' => $cover['unmatched'],
+                'skipped_negative' => $cover['skipped_negative'],
+                'adjust_count' => (int) ($cover['adjust_count'] ?? 0),
+            ];
         } catch (\Exception $e) {
             Db::rollback();
             exception('提报失败:' . $e->getMessage());
@@ -1743,9 +1769,8 @@ class MaterialInventoryService
 
     private static function fetchShipDailyIndex(string $minDate, string $maxDate): array
     {
-        $idIndex = [];
         if (strtotime($minDate) > strtotime($maxDate)) {
-            return ['id' => $idIndex];
+            return ['id' => [], 'finished' => []];
         }
 
         $inboundStart = $minDate . ' 12:00:00';
@@ -1758,39 +1783,201 @@ class MaterialInventoryService
             ->where('s.is_delete', 0)
             ->where('s.status', 0);
 
+        $normalized = [];
         if ($hasShipDateCol) {
             $shipQuery->where('s.ship_date', '>=', $minDate)
                 ->where('s.ship_date', '<=', $maxDate);
             $shipRows = $shipQuery
-                ->field('m.id as material_id, s.ship_date as eff_date, s.material_num')
+                ->field('m.id as material_id, s.ship_date as eff_date, s.material_num, s.relation_code, s.material_batch')
                 ->select()
                 ->toArray();
-            foreach ($shipRows as $r) {
-                $effDate = date('Y-m-d', strtotime($r['eff_date']));
-                $mid = intval($r['material_id']);
-                if ($mid > 0) {
-                    $idIndex[$mid][$effDate] = ($idIndex[$mid][$effDate] ?? 0) + floatval($r['material_num']);
-                }
+            foreach ($shipRows as $row) {
+                $normalized[] = [
+                    'material_id' => $row['material_id'] ?? 0,
+                    'qty' => $row['material_num'] ?? 0,
+                    'date' => date('Y-m-d', strtotime((string) ($row['eff_date'] ?? ''))),
+                    'relation_code' => $row['relation_code'] ?? '',
+                    'material_batch' => $row['material_batch'] ?? '',
+                ];
             }
         } else {
             $shipRows = $shipQuery
                 ->where('s.create_time', '>=', $inboundStart)
                 ->where('s.create_time', '<=', $inboundEnd)
-                ->field('m.id as material_id, s.create_time, s.material_num')
+                ->field('m.id as material_id, s.create_time, s.material_num, s.relation_code, s.material_batch')
                 ->select()
                 ->toArray();
-            foreach ($shipRows as $r) {
-                $effDate = self::shiftCalendarDateFromDatetime($r['create_time'] ?? '');
+            foreach ($shipRows as $row) {
+                $effDate = self::shiftCalendarDateFromDatetime($row['create_time'] ?? '');
                 if (!$effDate || $effDate < $minDate || $effDate > $maxDate) {
                     continue;
                 }
-                $mid = intval($r['material_id']);
-                if ($mid > 0) {
-                    $idIndex[$mid][$effDate] = ($idIndex[$mid][$effDate] ?? 0) + floatval($r['material_num']);
-                }
+                $normalized[] = [
+                    'material_id' => $row['material_id'] ?? 0,
+                    'qty' => $row['material_num'] ?? 0,
+                    'date' => $effDate,
+                    'relation_code' => $row['relation_code'] ?? '',
+                    'material_batch' => $row['material_batch'] ?? '',
+                ];
             }
         }
-        return ['id' => $idIndex];
+
+        return self::buildFinishedShipIndex($normalized, self::planFinishedIdentityMap(
+            self::planCodesFromShipRows($normalized)
+        ));
+    }
+
+    /**
+     * 发货按「圆钢 + 计划成品规格/型号」归堆。没有计划或成品档案的发货只留在 id 合计里。
+     *
+     * @param array<int, array<string, mixed>> $shipRows
+     * @param array<string, array{spec?: string, model?: string}> $planIdentityByCode
+     * @return array{id: array<int, array<string, float>>, finished: array<int, array<string, array<string, array<string, float>>>>}
+     */
+    public static function buildFinishedShipIndex(array $shipRows, array $planIdentityByCode): array
+    {
+        $index = ['id' => [], 'finished' => []];
+        foreach ($shipRows as $row) {
+            $materialId = (int) ($row['material_id'] ?? 0);
+            $qty = (float) ($row['qty'] ?? $row['material_num'] ?? 0);
+            $date = (string) ($row['date'] ?? '');
+            if ($materialId <= 0 || $date === '' || abs($qty) < 0.0000001) {
+                continue;
+            }
+            $index['id'][$materialId][$date] = ($index['id'][$materialId][$date] ?? 0) + $qty;
+            $planCode = trim((string) ($row['relation_code'] ?? ''));
+            if ($planCode === '') {
+                $planCode = trim((string) ($row['material_batch'] ?? ''));
+            }
+            $identity = $planIdentityByCode[$planCode] ?? null;
+            if (!is_array($identity)) {
+                continue;
+            }
+            $spec = self::normalizeSpec((string) ($identity['spec'] ?? ''));
+            $model = self::normalizeSpec((string) ($identity['model'] ?? ''));
+            if ($spec === '' && $model === '') {
+                continue;
+            }
+            $index['finished'][$materialId][$spec][$model][$date] =
+                ($index['finished'][$materialId][$spec][$model][$date] ?? 0) + $qty;
+        }
+
+        return $index;
+    }
+
+    /**
+     * 酸洗发货：规格型号齐全时只扣这一档；对不上才退回按圆钢整包占比。
+     *
+     * @param array<string, mixed> $shipIndex
+     * @return float|null null 表示身份不全，调用方继续走旧占比
+     */
+    public static function sumFinishedShipDaily(
+        array $shipIndex,
+        int $materialId,
+        string $cSpec,
+        string $cModel,
+        string $startDate,
+        string $endDate
+    ): ?float {
+        $cSpec = self::normalizeSpec($cSpec);
+        $cModel = self::normalizeSpec($cModel);
+        if ($materialId <= 0 || ($cSpec === '' && $cModel === '')) {
+            return null;
+        }
+        if (strtotime($startDate) > strtotime($endDate)) {
+            return 0.0;
+        }
+        $bucket = $shipIndex['finished'][$materialId][$cSpec][$cModel] ?? [];
+        $sum = 0.0;
+        foreach ($bucket as $date => $qty) {
+            if ($date >= $startDate && $date <= $endDate) {
+                $sum += (float) $qty;
+            }
+        }
+
+        return $sum;
+    }
+
+    /**
+     * @param array<string, mixed> $shipIndex
+     * @return float
+     */
+    private static function resolveAcidWashShipQty(
+        array $shipIndex,
+        int $materialId,
+        string $cSpec,
+        string $cModel,
+        string $startDate,
+        string $endDate,
+        float $ratio
+    ): float {
+        $matched = self::sumFinishedShipDaily(
+            $shipIndex,
+            $materialId,
+            $cSpec,
+            $cModel,
+            $startDate,
+            $endDate
+        );
+        if ($matched !== null) {
+            return $matched;
+        }
+
+        return self::sumShipDaily($shipIndex, $materialId, $startDate, $endDate) * $ratio;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $shipRows
+     * @return string[]
+     */
+    private static function planCodesFromShipRows(array $shipRows): array
+    {
+        $codes = [];
+        foreach ($shipRows as $row) {
+            $planCode = trim((string) ($row['relation_code'] ?? ''));
+            if ($planCode === '') {
+                $planCode = trim((string) ($row['material_batch'] ?? ''));
+            }
+            if ($planCode !== '') {
+                $codes[$planCode] = true;
+            }
+        }
+
+        return array_keys($codes);
+    }
+
+    /**
+     * @param string[] $planCodes
+     * @return array<string, array{spec: string, model: string}>
+     */
+    private static function planFinishedIdentityMap(array $planCodes): array
+    {
+        $planCodes = array_values(array_unique(array_filter(array_map(static function ($code) {
+            return is_string($code) ? trim($code) : '';
+        }, $planCodes))));
+        if ($planCodes === []) {
+            return [];
+        }
+        $rows = Db::name('production')->alias('p')
+            ->leftJoin('material m', 'p.english_material = m.id')
+            ->whereIn('p.production_plan_code', $planCodes)
+            ->where('p.is_delete', 0)
+            ->field('p.production_plan_code, m.material_spec, m.material_model')
+            ->select()
+            ->toArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $planCode = trim((string) ($row['production_plan_code'] ?? ''));
+            if ($planCode === '') {
+                continue;
+            }
+            $map[$planCode] = [
+                'spec' => (string) ($row['material_spec'] ?? ''),
+                'model' => (string) ($row['material_model'] ?? ''),
+            ];
+        }
+
+        return $map;
     }
 
     private static function sumShipDaily(array $dailyIndex, int $mid, string $startDate, string $endDate): float
@@ -2163,7 +2350,7 @@ class MaterialInventoryService
         $todaySpecModelReportDetails = [];
         $todayNameReportDetails = [];
         $todayInboundIdx = [];
-        $todayShipIdx = [];
+        $todayShipIndex = ['id' => [], 'finished' => []];
 
         if (strtotime($calcDate) <= strtotime(date('Y-m-d'))) {
             // 今日报工
@@ -2278,13 +2465,23 @@ class MaterialInventoryService
                                ->whereTime('s.create_time', '<=', $calcDate . ' 23:59:59');
             }
             $todayShipRows = $todayShipQuery
-                ->field('m.id as material_id, SUM(s.material_num) as total_qty')
-                ->group('m.id')
+                ->field('m.id as material_id, s.material_num, s.relation_code, s.material_batch')
                 ->select()
                 ->toArray();
-            foreach ($todayShipRows as $r) {
-                $todayShipIdx[intval($r['material_id'])] = floatval($r['total_qty']);
+            $todayShipNormalized = [];
+            foreach ($todayShipRows as $row) {
+                $todayShipNormalized[] = [
+                    'material_id' => $row['material_id'] ?? 0,
+                    'qty' => $row['material_num'] ?? 0,
+                    'date' => $calcDate,
+                    'relation_code' => $row['relation_code'] ?? '',
+                    'material_batch' => $row['material_batch'] ?? '',
+                ];
             }
+            $todayShipIndex = self::buildFinishedShipIndex(
+                $todayShipNormalized,
+                self::planFinishedIdentityMap(self::planCodesFromShipRows($todayShipNormalized))
+            );
         }
 
         // Helper: 读取今日报工。有档案 ID 只按 ID，禁止规格+型号跨钢厂串扣。
@@ -2473,10 +2670,17 @@ class MaterialInventoryService
                         'proportion'     => round($todaySpecRatio, 4),
                     ];
 
-                    // 酸洗（最后工序）：扣减发货出库
+                    // [AI-2026-10] 酸洗按本行成品规格型号扣发货，不再把整包圆钢发货按长度占比摊开
                     if ($flow['type'] === 'finish') {
-                        $shipQty = self::sumShipDaily($shipDaily, $stockMaterialId, $itemStartDate, $itemEndDate);
-                        $shipQty = $shipQty * $todaySpecRatio;
+                        $shipQty = self::resolveAcidWashShipQty(
+                            $shipDaily,
+                            $stockMaterialId,
+                            $rowCSpec,
+                            $rowCModel,
+                            $itemStartDate,
+                            $itemEndDate,
+                            $todaySpecRatio
+                        );
                         $predictedQty -= $shipQty;
                         $calcDetail['ship_out'] = round($shipQty, 3);
                         $calcDetail['baseline_date'] = $itemBaselineDate;
@@ -2573,7 +2777,15 @@ class MaterialInventoryService
                     )
                     : [];
                 if ($flow['type'] === 'finish') {
-                    $todayShip = $stockMaterialId > 0 ? ($todayShipIdx[$stockMaterialId] ?? 0) : 0;
+                    $todayShip = self::resolveAcidWashShipQty(
+                        $todayShipIndex,
+                        $stockMaterialId,
+                        $rowCSpec,
+                        $rowCModel,
+                        $calcDate,
+                        $calcDate,
+                        $todaySpecRatio
+                    );
                     $todayConsumeRaw += $todayShip;
                     if ($todayShip > 0.000001) {
                         $rawConsumeDetails[] = ['date' => $calcDate, 'qty' => round($todayShip, 3)];
@@ -2586,7 +2798,15 @@ class MaterialInventoryService
                 if ($todayMatchedNext === null && $nextCode) {
                     $todayConsume = $todayConsumeRaw * $todaySpecRatio;
                 } elseif ($flow['type'] === 'finish') {
-                    $todayShip = $stockMaterialId > 0 ? (($todayShipIdx[$stockMaterialId] ?? 0) * $todaySpecRatio) : 0;
+                    $todayShip = self::resolveAcidWashShipQty(
+                        $todayShipIndex,
+                        $stockMaterialId,
+                        $rowCSpec,
+                        $rowCModel,
+                        $calcDate,
+                        $calcDate,
+                        $todaySpecRatio
+                    );
                     $todayConsume = $todayNext + $todayShip;
                 } else {
                     $todayConsume = $todayNext;
@@ -3199,21 +3419,34 @@ class MaterialInventoryService
                        ->whereTime('s.create_time', '<=', $monthEnd);
                 });
             })
-            ->field('m.id as material_id, m.material_name, SUM(s.material_num) as total_qty')
-            ->group('m.id, m.material_name')
+            ->field('m.id as material_id, m.material_name, s.relation_code, s.material_batch, SUM(s.material_num) as total_qty')
+            ->group('m.id, m.material_name, s.relation_code, s.material_batch')
             ->select()
             ->toArray();
 
         $shipIdx = [];
         $shipNameIdx = [];
+        $monthShipNormalized = [];
         foreach ($shipRows as $r) {
             $mid = intval($r['material_id']);
             $qty = floatval($r['total_qty']);
             if ($mid > 0) {
-                $shipIdx[$mid] = $qty;
+                $shipIdx[$mid] = ($shipIdx[$mid] ?? 0) + $qty;
             }
-            $shipNameIdx[$r['material_name']] = $qty;
+            $shipName = (string) ($r['material_name'] ?? '');
+            $shipNameIdx[$shipName] = ($shipNameIdx[$shipName] ?? 0) + $qty;
+            $monthShipNormalized[] = [
+                'material_id' => $mid,
+                'qty' => $qty,
+                'date' => $monthStart,
+                'relation_code' => $r['relation_code'] ?? '',
+                'material_batch' => $r['material_batch'] ?? '',
+            ];
         }
+        $monthShipIndex = self::buildFinishedShipIndex(
+            $monthShipNormalized,
+            self::planFinishedIdentityMap(self::planCodesFromShipRows($monthShipNormalized))
+        );
 
         // ====== Step 9: 工序配置 ======
         $processFlow = [
@@ -3481,17 +3714,31 @@ class MaterialInventoryService
                 $iterDate = date('Y-m-d', strtotime($iterDate . ' +1 day'));
             }
 
-            // 酸洗额外减本月发货
+            // [AI-2026-10] 酸洗月台账按本行成品规格型号扣发货
             if ($processName === '酸洗') {
-                $shipQty = 0;
-                if ($stockMid > 0) {
-                    $shipQty = $shipIdx[$stockMid] ?? 0;
-                }
-                if ($shipQty == 0) {
-                    $shipQty = $shipNameIdx[$materialName] ?? 0;
+                $matchedShip = self::sumFinishedShipDaily(
+                    $monthShipIndex,
+                    $stockMid,
+                    $cSpec,
+                    $cModel,
+                    $monthStart,
+                    $monthEnd
+                );
+                if ($matchedShip !== null) {
+                    $shipQty = $matchedShip;
+                } else {
+                    $shipQty = 0;
+                    if ($stockMid > 0) {
+                        $shipQty = $shipIdx[$stockMid] ?? 0;
+                    }
+                    if ($shipQty == 0) {
+                        $shipQty = $shipNameIdx[$materialName] ?? 0;
+                    }
+                    if ($shipQty > 0) {
+                        $shipQty = $shipQty * $rowRatio;
+                    }
                 }
                 if ($shipQty > 0) {
-                    $shipQty = $shipQty * $rowRatio;
                     $totalConsume += $shipQty;
                     $runningQty -= $shipQty;
                     $dailyChanges[] = [
