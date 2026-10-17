@@ -35,6 +35,9 @@ __pycache__
 .env
 .env.local
 
+# 后端公网目录里导出的报表
+gccd_server/public/uploads/*.xlsx
+
 # 运行时
 runtime/
 gccd_server/runtime/*.php

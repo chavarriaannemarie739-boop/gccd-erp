@@ -27,3 +27,6 @@ composer.phar
 composer.lock
 # Local DB dump (contains init accounts); do not publish
 /private/database/yyladmin.sql
+
+# 导出的 xlsx 落在公网目录，不要再进仓库
+/public/uploads/*.xlsx

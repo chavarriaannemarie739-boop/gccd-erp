@@ -110,12 +110,14 @@ class Message extends BaseController
 
 
     /**
-     * 导出Excel文件
-     * @return \json
+     * 生产报表导出已关闭，避免把文件写到公网可下载目录。
+     *
+     * @return void
+     * @throws \Exception
      */
     public function exportExcel()
     {
-        $data = MessageService::export();
-        return success($data);
+        // [AI-2026-10] 禁用 message.Message/exportExcel
+        exception('导出功能已关闭');
     }
 }
