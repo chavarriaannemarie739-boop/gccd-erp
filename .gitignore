@@ -39,3 +39,29 @@ __pycache__
 runtime/
 gccd_server/runtime/*.php
 !gccd_server/runtime/.gitkeep
+
+# 客户业务资料导出：留在本机，不再入库
+/*.xlsx
+/*.xls
+/*.zip
+/*.sql
+/gccd-deploy-duangang-mirror-*.zip
+
+# 网站目录里可被直接下载的报表导出和上传包
+/gccd_server/public/storage.zip
+/gccd_server/public/uploads/**/*.xlsx
+/gccd_server/public/uploads/**/*.xls
+/gccd_server/public/uploads/**/*.csv
+
+# 误提交的旧 git 目录（含服务器地址和账号）
+**/.git.bak/
+
+# 一次性调试脚本和数据库导出结果（业务代码不引用）
+/inspect_excel.py
+/gccd_server/test_pdo.php
+/gccd_server/test_db.php
+/gccd_server/test_having.php
+/gccd_server/import_inventory.php
+/gccd_server/fix_material_id.php
+/gccd_server/db_output.json
+/gccd_server/db_output_pretty.json
